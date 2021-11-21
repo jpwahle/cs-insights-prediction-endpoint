@@ -36,7 +36,6 @@ jobs:
 
 
   Release:
-    if: github.event.pull_request.merged == true
     needs: [Test]
     runs-on: ubuntu-latest
     steps:
@@ -82,7 +81,6 @@ jobs:
 
   Coverage:
     needs: [Test]
-    if: github.event.pull_request.merged == true
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
