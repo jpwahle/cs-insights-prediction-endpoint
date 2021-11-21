@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "NLP-Land-prediction-endpoint"
+version = "v0.1.0"
+description = "This repository implements the processing of machine-learning methods for NLP-Land-backend."
+authors = ["Jan Philip Wahle <wahle@uni-wuppertal.de>", "Terry Ruas <ruas@uni-wuppertal.de>", "Alexander von Tottleben <alexander@vontottleben.de>", ]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.10"
+bcrypt = "^3.2.0"
+fastapi = "^0.70.0"
+uvicorn = "^0.15.0"
+bson = "^0.5.10"
+pydantic = "^1.8.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.0"
+pytest-cov = "^3.0.0"
+black = "^21.9b0"
+isort = "^5.9.3"
+pyright = "^0.0.10"
+pytest-mock = "^3.6.1"
+flake8 = "^4.0.1"
+flake8-black = "^0.2.3"
+flake8-isort = "^4.1.1"
+flake8-annotations = "^2.7.0"
+flake8-docstrings = "^1.6.0"
+flake8-bugbear = "^21.9.2"
+flake8-comprehensions = "^3.7.0"
+poethepoet = "^0.11.0"
+requests = "^2.26.0"
+pre-commit = "^2.15.0"
+setuptools = "^59.2.0"
+pytest-mypy-plugins = "^1.9.2"
+
+[tool.poe.tasks]
+lint = "flake8 ."
+type = "mypy nlp_land_prediction_endpoint"
+test = "py.test tests/ -s --cov=nlp_land_prediction_endpoint --cov-report=xml --cov-fail-under 100"
+doc = "python3 gen_doc.py"
+alltest = ["lint", "type", "test"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 100
+
+[package]
+include = ["nlp_land_prediction_endpoint/*.py"]
