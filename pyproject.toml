@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "NLP-Land-prediction-endpoint"
-version = "v0.1.0"
+version = "v0.2.1"
 description = "This repository implements the processing of machine-learning methods for NLP-Land-backend."
 authors = ["Jan Philip Wahle <wahle@uni-wuppertal.de>", "Terry Ruas <ruas@uni-wuppertal.de>", "Alexander von Tottleben <alexander@vontottleben.de>", ]
 
