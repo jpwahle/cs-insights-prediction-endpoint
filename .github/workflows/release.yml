@@ -73,7 +73,7 @@ jobs:
         run: |
           git config --local user.email "jan.philip.wahle@gmail.com"
           git config --local user.name "github-actions[bot]"
-          git add package.json
+          git add pyproject.toml
           git commit -m "[release-bot] Update pyproject.toml version"
       - name: Push changes
         uses: ad-m/github-push-action@master
