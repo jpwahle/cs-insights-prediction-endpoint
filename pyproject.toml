@@ -5,7 +5,7 @@ description = "This repository implements the processing of machine-learning met
 authors = ["Jan Philip Wahle <wahle@uni-wuppertal.de>", "Terry Ruas <ruas@uni-wuppertal.de>", "Alexander von Tottleben <alexander@vontottleben.de>", ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.10"
+python = ">=3.9,<4.0"
 bcrypt = "^3.2.0"
 fastapi = "^0.70.0"
 uvicorn = "^0.15.0"
