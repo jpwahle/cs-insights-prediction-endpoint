@@ -47,6 +47,7 @@ def test_post_topic_for_papers(client: TestClient, endpoint: str, dummy_paper: P
     Args:
         client (TestClient): The current test client.
         endpoint (str): Endpoint prefix.
+        dummy_paper (PaperModel): A dummy paper to test.
     """
     response = client.post(endpoint, json=dummy_paper.dict())
     assert response.status_code == 200
