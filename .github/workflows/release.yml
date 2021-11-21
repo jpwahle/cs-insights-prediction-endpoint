@@ -10,7 +10,7 @@ on:
 
 jobs:
   Test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -36,7 +36,7 @@ jobs:
 
   Release:
     needs: [Test]
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -80,7 +80,7 @@ jobs:
 
   Coverage:
     needs: [Test]
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -111,7 +111,7 @@ jobs:
 
   Docs:
     needs: [Test]
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
