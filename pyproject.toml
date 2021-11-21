@@ -5,7 +5,7 @@ description = "This repository implements the processing of machine-learning met
 authors = ["Jan Philip Wahle <wahle@uni-wuppertal.de>", "Terry Ruas <ruas@uni-wuppertal.de>", "Alexander von Tottleben <alexander@vontottleben.de>", ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.10"
+python = ">=3.8,<4.0"
 bcrypt = "^3.2.0"
 fastapi = "^0.70.0"
 uvicorn = "^0.15.0"
@@ -13,24 +13,21 @@ bson = "^0.5.10"
 pydantic = "^1.8.2"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.0"
+pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
-black = "^21.9b0"
-isort = "^5.9.3"
-pyright = "^0.0.10"
+black = "^21.11b1"
+isort = "^5.10.1"
 pytest-mock = "^3.6.1"
-flake8 = "^4.0.1"
+flake8 = "^3.8.0"
 flake8-black = "^0.2.3"
 flake8-isort = "^4.1.1"
 flake8-annotations = "^2.7.0"
 flake8-docstrings = "^1.6.0"
-flake8-bugbear = "^21.9.2"
-flake8-comprehensions = "^3.7.0"
 poethepoet = "^0.11.0"
-requests = "^2.26.0"
 pre-commit = "^2.15.0"
-setuptools = "^59.2.0"
-pytest-mypy-plugins = "^1.9.2"
+mypy = "^0.910"
+requests = "^2.26.0"
+
 
 [tool.poe.tasks]
 lint = "flake8 ."
