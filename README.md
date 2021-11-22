@@ -78,7 +78,7 @@ If you want to replicate the exact same pipeline that runs on GitHub actions, in
 To run the full check suite, execute:
 
 ```sh
-act -j Fulltests
+act -j Test
 ```
 
 To run a single check from the pipeline such as linting, execute:
