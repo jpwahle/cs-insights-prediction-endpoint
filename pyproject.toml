@@ -34,6 +34,7 @@ type = "mypy nlp_land_prediction_endpoint"
 test = "py.test tests/ -s --cov=nlp_land_prediction_endpoint --cov-report=xml --cov-fail-under 100"
 doc = "python3 gen_doc.py"
 alltest = ["lint", "type", "test"]
+isort = "isort ."
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
