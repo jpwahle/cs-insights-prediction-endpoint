@@ -24,7 +24,14 @@ TIME_DELTA = config("JWT_TOKEN_EXPIRATION_MINUTES", cast=int)
     response_model=TokenModel
 )
 async def login(user: UserModel) -> TokenModel:
-    """Logs in a User"""
+    """Login routine
+
+    Arguments:
+        user: user credentials at least (email, password)
+
+    Returns:
+        TokenModel: a JWT given a valid user from the NLP-Land-Backend
+    """
     auth_user = authenticate_user(user)
     if not auth_user:
         raise HTTPException(
@@ -43,7 +50,14 @@ async def login(user: UserModel) -> TokenModel:
     response_model=TokenModel
 )
 async def refresh(user: UserModel = Depends(get_current_user)) -> TokenModel:
-    """Refreshes a token"""
+    """Generates a new token without the need of logging in again
+
+    Arguments:
+        user: a user depending on the supplied token
+
+    Returns:
+        TokenModel: a JWT given a valid user from the NLP-Land-Backend
+    """
     token_expiration = timedelta(minutes=TIME_DELTA)
     token = create_token(TokenData(**user.dict()), token_expiration)
     return TokenModel(acces_token=token, token_type="bearer")

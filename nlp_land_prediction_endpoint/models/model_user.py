@@ -1,5 +1,5 @@
 """Model used for defining a user; Should be equivilent to the
-definition in the backend
+definition in the NLP-Land-Backend
 """
 from typing import Optional
 
@@ -7,9 +7,9 @@ from pydantic import BaseModel, Field
 
 
 class UserModel(BaseModel):
-    """The model for a paper. Should be identical to the NLP-Land-backend
+    """The model for a user. Should be identical to the NLP-Land-backend
 
-    Args:
+    Arguments:
         BaseModel(Any): Base class of FastAPI modesl.
     """
 
