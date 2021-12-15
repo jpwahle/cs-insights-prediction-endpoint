@@ -95,12 +95,6 @@ def mock_post_failure(monkeypatch: Any) -> None:
     monkeypatch.setattr(requests, "post", mock_post)
 
 
-def test_dev_auth(client: TestClient, login_endpoint: str, dummy_user: UserModel) -> None:
-    """Test the local auth"""
-    response = client.post(login_endpoint, json=dummy_user.dict())
-    assert response.status_code == 200
-
-
 def test_simulated_existing_failed_auth(client: TestClient, login_endpoint: str,
                                         dummy_user: UserModel, mock_post_failure: Any) -> None:
     os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
