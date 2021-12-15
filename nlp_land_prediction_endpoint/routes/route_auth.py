@@ -27,7 +27,7 @@ async def login(user: UserModel) -> TokenModel:
     """Login routine
 
     Arguments:
-        user: user credentials at least (email, password)
+        user (UserModel): user credentials at least (email, password)
 
     Returns:
         TokenModel: a JWT given a valid user from the NLP-Land-Backend
@@ -53,7 +53,7 @@ async def refresh(user: UserModel = Depends(get_current_user)) -> TokenModel:
     """Generates a new token without the need of logging in again
 
     Arguments:
-        user: a user depending on the supplied token
+        user(UserModel): a user depending on the supplied token
 
     Returns:
         TokenModel: a JWT given a valid user from the NLP-Land-Backend

@@ -1,4 +1,4 @@
-"""Test the auth route."""
+"""Unittests for the authentication middlware"""
 import os
 from typing import Any, Generator
 
@@ -28,7 +28,7 @@ def refresh_endpoint() -> str:
     """Get the login_endpoint for tests.
 
     Returns:
-        str: The login_endpoint including current version.
+        str: The refresh_endpoint including current version.
     """
     return f"/api/v{__version__.split('.')[0]}/auth/refresh"
 
@@ -56,7 +56,7 @@ def dummy_user() -> UserModel:
 
 @pytest.fixture
 def dummy_token() -> str:
-    """Create a dummy user.
+    """Create a dummy token.
 
     Returns:
         str: The login_endpoint including current version.
@@ -69,7 +69,11 @@ def dummy_token() -> str:
 
 @pytest.fixture
 def mock_post(monkeypatch: Any) -> None:
-    """Mocks the request.post in auth.py"""
+    """Simulates a request.post call by overwriting the function
+
+    Arguments:
+        monkeypatch: a monkeypatch object
+    """
 
     def mock_post(*agrs, **kwargs):
         # type: (*str, **int) -> Response
@@ -83,7 +87,11 @@ def mock_post(monkeypatch: Any) -> None:
 
 @pytest.fixture
 def mock_post_failure(monkeypatch: Any) -> None:
-    """Mocks the request.post in auth.py"""
+    """Simulates a request.post call by overwriting the function
+
+    Arguments:
+        monkeypatch: a monkeypatch object
+    """
 
     def mock_post(*agrs, **kwargs):
         # type: (*str, **int) -> Response
@@ -97,6 +105,14 @@ def mock_post_failure(monkeypatch: Any) -> None:
 
 def test_simulated_existing_failed_auth(client: TestClient, login_endpoint: str,
                                         dummy_user: UserModel, mock_post_failure: Any) -> None:
+    """Test the login endpoint with a failed authentication attempt
+
+    Arguments:
+        client (TestClient): The current test client.
+        login_endpoint (str): Endpoint prefix.
+        dummy_user (UserModel): A dummy user to test.
+        mock_post_failure (Any): this overwrites the request.post call
+    """
     os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
     os.environ["AUTH_TOKEN_ROUTE"] = login_endpoint
     response = client.post(login_endpoint, json=dummy_user.dict())
@@ -107,6 +123,14 @@ def test_simulated_existing_auth(
         client: TestClient, login_endpoint: str,
         dummy_user: UserModel,
         mock_post: Any) -> None:
+    """Test the login endpoint with a successful authentication attempt
+
+    Arguments:
+        client (TestClient): The current test client.
+        login_endpoint (str): Endpoint prefix.
+        dummy_user (UserModel): A dummy user to test.
+        mock_post (Any): this overwrites the request.post call
+    """
     os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
     os.environ["AUTH_TOKEN_ROUTE"] = login_endpoint
     response = client.post(login_endpoint, json=dummy_user.dict())
@@ -114,17 +138,37 @@ def test_simulated_existing_auth(
 
 
 def test_non_existing_auth(client: TestClient, login_endpoint: str, dummy_user: UserModel) -> None:
+    """Test the login endpoint with a non existing host and endpoint
+
+    Arguments:
+        client (TestClient): The current test client.
+        login_endpoint (str): Endpoint prefix.
+        dummy_user (UserModel): A dummy user to test.
+    """
     os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
     os.environ["AUTH_TOKEN_ROUTE"] = login_endpoint
     response = client.post(login_endpoint, json=dummy_user.dict())
     assert response.status_code == 401
 
 
-def test_refresh_forged(client: TestClient, refresh_endpoint: str, dummy_user: UserModel) -> None:
+def test_refresh_forged(client: TestClient, refresh_endpoint: str) -> None:
+    """Test the refresh endpoint with a invalid token
+
+    Arguments:
+        client (TestClient): The current test client.
+        refresh_endpoint (str): Endpoint prefix.
+    """
     response = client.post(refresh_endpoint, headers={"Authorization": "Bearer 123"})
     assert response.status_code == 401
 
 
 def test_refresh(client: TestClient, refresh_endpoint: str, dummy_token: str) -> None:
+    """Test the refresh endpoint with a valid token
+
+    Arguments:
+        client (TestClient): The current test client.
+        refresh_endpoint (str): Endpoint prefix.
+        dummy_token (str): a valid dummy token
+    """
     response = client.post(refresh_endpoint, headers={"Authorization": f"Bearer {dummy_token}"})
     assert response.status_code == 200

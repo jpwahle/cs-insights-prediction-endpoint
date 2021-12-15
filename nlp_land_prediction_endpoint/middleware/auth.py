@@ -23,8 +23,8 @@ def create_token(user: TokenData, expires_delta: timedelta = None) -> str:
     This will use the JWT_SECRET and JWT_ALG as defined in the .env variable.
 
     Arguments:
-        user -- TokenData object containing at minimum the email
-        expires_delta -- time offset from NOW when the token will expire
+        user (TokenData): TokenData object containing at minimum the email
+        expires_delta (timedelta): time offset from NOW when the token will expire
 
     Returns:
         str: a valid JWT as a string
@@ -46,10 +46,10 @@ def authenticate_user(user: UserModel) -> Optional[TokenData]:
     endpoint specified in AUTH_LOGIN_ROUTE at the host AUTH_LOGIN_PROVIDER.
 
     Arguments:
-        user: a user model to authenticate
+        user (UserModel): a user model to authenticate
 
     Returns:
-        Optional[TokenData]: If the authentication was successfull a TokenData object;
+        Optional[TokenData]: If the authentication was successful a TokenData object;
         None otherwise
     """
     login_provider = config("AUTH_LOGIN_PROVIDER")
@@ -72,7 +72,7 @@ async def get_current_user(token: str = Depends(jwt_scheme)) -> UserModel:
     """Returns the current user given a valid JWT
 
     Arguments:
-        token: a bearer token taken from the "Authorization" header
+        token (str): a bearer token taken from the "Authorization" header
 
     Returns:
         UserModel: If the token is valid a UserModel with at least an email;

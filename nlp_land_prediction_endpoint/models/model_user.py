@@ -11,12 +11,18 @@ class UserModel(BaseModel):
 
     Arguments:
         BaseModel(Any): Base class of FastAPI modesl.
+
+    Attributes:
+        email (str): email of the user
+        password (str): password of the user
+        fullname (Optional[str]): fullname of the user
+        isAdmin (Optional[bool]): flag indicating whether it is a admin
+        isActive (Optional[bool]): flag indicating whether the user is still active
     """
 
     email: str = Field(...)
-    password: Optional[str] = Field(...)
+    password: str = Field(...)
     fullname: Optional[str] = Field()
-    token: Optional[str] = Field()
     isAdmin: Optional[bool] = Field()
     isActive: Optional[bool] = Field()
 
