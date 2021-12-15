@@ -4,18 +4,23 @@ from typing import Optional
 
 import jwt
 import pydantic
-import requests
+import requests  # type: ignore
 from decouple import config  # type: ignore
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
+import nlp_land_prediction_endpoint
 from nlp_land_prediction_endpoint.models.model_token_data import TokenData
 from nlp_land_prediction_endpoint.models.model_user import UserModel
 
-jwt_scheme = OAuth2PasswordBearer(tokenUrl=config("AUTH_TOKEN_ROUTE"))
+token_url = config(
+    "AUTH_TOKEN_ROUTE",
+    default=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/login",
+)
+jwt_scheme = OAuth2PasswordBearer(tokenUrl=token_url)
 
-SECRET = config("JWT_SECRET")
-ALG = config("JWT_ALG")
+SECRET = config("JWT_SECRET", default="super_secret_secret")
+ALG = config("JWT_ALG", default="HS256")
 
 
 def create_token(user: TokenData, expires_delta: timedelta = None) -> str:
@@ -52,8 +57,11 @@ def authenticate_user(user: UserModel) -> Optional[TokenData]:
         Optional[TokenData]: If the authentication was successful a TokenData object;
         None otherwise
     """
-    login_provider = config("AUTH_LOGIN_PROVIDER")
-    login_route = config("AUTH_LOGIN_ROUTE")
+    login_provider = config("AUTH_LOGIN_PROVIDER", default="http://127.0.0.1")
+    login_route = config(
+        "AUTH_LOGIN_ROUTE",
+        default=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/login/services",
+    )
     try:
         r = requests.post(
             f"{login_provider}{login_route}",
