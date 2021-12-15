@@ -18,11 +18,7 @@ router = APIRouter()
 TIME_DELTA = config("JWT_TOKEN_EXPIRATION_MINUTES", cast=int)
 
 
-@router.post(
-    "/login",
-    response_description="Trigger login procedure",
-    response_model=TokenModel
-)
+@router.post("/login", response_description="Trigger login procedure", response_model=TokenModel)
 async def login(user: UserModel) -> TokenModel:
     """Login routine
 
@@ -37,18 +33,14 @@ async def login(user: UserModel) -> TokenModel:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
     token_expiration = timedelta(minutes=TIME_DELTA)
     token = create_token(auth_user, token_expiration)
     return TokenModel(acces_token=token, token_type="bearer")
 
 
-@router.post(
-    "/refresh",
-    response_description="Trigger login procedure",
-    response_model=TokenModel
-)
+@router.post("/refresh", response_description="Trigger login procedure", response_model=TokenModel)
 async def refresh(user: UserModel = Depends(get_current_user)) -> TokenModel:
     """Generates a new token without the need of logging in again
 

@@ -58,7 +58,7 @@ def authenticate_user(user: UserModel) -> Optional[TokenData]:
         r = requests.post(
             f"{login_provider}{login_route}",
             data=user.dict(),
-            headers={"content-type": "application/json"}
+            headers={"content-type": "application/json"},
         )
         if r.status_code == status.HTTP_200_OK:
             return TokenData(**r.json())
@@ -81,7 +81,7 @@ async def get_current_user(token: str = Depends(jwt_scheme)) -> UserModel:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"}
+        headers={"WWW-Authenticate": "Bearer"},
     )
     try:
         decoded_token = jwt.decode(token, SECRET, algorithms=[ALG])

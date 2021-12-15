@@ -79,7 +79,7 @@ def mock_post(monkeypatch: Any) -> None:
         # type: (*str, **int) -> Response
         response = Response()
         response.status_code = 200
-        response._content = b"{\"email\": \"test@test.de\"}"
+        response._content = b'{"email": "test@test.de"}'
         return response
 
     monkeypatch.setattr(requests, "post", mock_post)
@@ -97,14 +97,15 @@ def mock_post_failure(monkeypatch: Any) -> None:
         # type: (*str, **int) -> Response
         response = Response()
         response.status_code = 401
-        response._content = b"{\"message\": \"error\"}"
+        response._content = b'{"message": "error"}'
         return response
 
     monkeypatch.setattr(requests, "post", mock_post)
 
 
-def test_simulated_existing_failed_auth(client: TestClient, login_endpoint: str,
-                                        dummy_user: UserModel, mock_post_failure: Any) -> None:
+def test_simulated_existing_failed_auth(
+    client: TestClient, login_endpoint: str, dummy_user: UserModel, mock_post_failure: Any
+) -> None:
     """Test the login endpoint with a failed authentication attempt
 
     Arguments:
@@ -120,9 +121,8 @@ def test_simulated_existing_failed_auth(client: TestClient, login_endpoint: str,
 
 
 def test_simulated_existing_auth(
-        client: TestClient, login_endpoint: str,
-        dummy_user: UserModel,
-        mock_post: Any) -> None:
+    client: TestClient, login_endpoint: str, dummy_user: UserModel, mock_post: Any
+) -> None:
     """Test the login endpoint with a successful authentication attempt
 
     Arguments:
