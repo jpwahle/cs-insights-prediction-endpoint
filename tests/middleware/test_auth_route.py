@@ -1,5 +1,7 @@
 """Unittests for the authentication middlware"""
 import os
+import time
+from datetime import datetime
 from typing import Any, Generator
 
 import pytest
@@ -9,7 +11,11 @@ from requests.models import Response
 
 from nlp_land_prediction_endpoint import __version__
 from nlp_land_prediction_endpoint.app import app
-from nlp_land_prediction_endpoint.middleware.auth import UserModel, create_token
+from nlp_land_prediction_endpoint.middleware.auth import create_token, decode_token
+from nlp_land_prediction_endpoint.models.model_token import TokenModel
+from nlp_land_prediction_endpoint.models.model_token_data import TokenData
+from nlp_land_prediction_endpoint.models.model_user import UserModel
+from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
 
 
 @pytest.fixture
@@ -44,11 +50,22 @@ def login_endpoint() -> str:
 
 
 @pytest.fixture
+def dummy_login() -> UserLoginModel:
+    """Create a dummy login.
+
+    Returns:
+        UserLoginModel: an example UserLoginModel
+    """
+    example = UserLoginModel.Config.schema_extra.get("example")
+    return UserLoginModel(**example)
+
+
+@pytest.fixture
 def dummy_user() -> UserModel:
     """Create a dummy user.
 
     Returns:
-        str: The login_endpoint including current version.
+        UserModel: an example UserModel
     """
     example = UserModel.Config.schema_extra.get("example")
     return UserModel(**example)
@@ -59,10 +76,10 @@ def dummy_token() -> str:
     """Create a dummy token.
 
     Returns:
-        str: The login_endpoint including current version.
+        str: a valid token created from example in UserModel
     """
     example = UserModel.Config.schema_extra.get("example")
-    user = UserModel(**example)
+    user = TokenData(**example)
     token = create_token(user)
     return token
 
@@ -104,50 +121,55 @@ def mock_post_failure(monkeypatch: Any) -> None:
 
 
 def test_simulated_existing_failed_auth(
-    client: TestClient, login_endpoint: str, dummy_user: UserModel, mock_post_failure: Any
+    client: TestClient, login_endpoint: str, dummy_login: UserLoginModel, mock_post_failure: Any
 ) -> None:
     """Test the login endpoint with a failed authentication attempt
 
     Arguments:
         client (TestClient): The current test client.
         login_endpoint (str): Endpoint prefix.
-        dummy_user (UserModel): A dummy user to test.
+        dummy_login (UserLoginModel): A dummy user to test.
         mock_post_failure (Any): this overwrites the request.post call
     """
     os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
     os.environ["AUTH_TOKEN_ROUTE"] = login_endpoint
-    response = client.post(login_endpoint, json=dummy_user.dict())
+    response = client.post(login_endpoint, json=dummy_login.dict())
     assert response.status_code == 401
 
 
-def test_simulated_existing_auth(
-    client: TestClient, login_endpoint: str, dummy_user: UserModel, mock_post: Any
+def test_simulated_existing_auth_success(
+    client: TestClient, login_endpoint: str, dummy_login: UserLoginModel, mock_post: Any
 ) -> None:
     """Test the login endpoint with a successful authentication attempt
 
     Arguments:
         client (TestClient): The current test client.
         login_endpoint (str): Endpoint prefix.
-        dummy_user (UserModel): A dummy user to test.
+        dummy_login (UserLoginModel): A dummy user to test.
         mock_post (Any): this overwrites the request.post call
     """
     os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
     os.environ["AUTH_TOKEN_ROUTE"] = login_endpoint
-    response = client.post(login_endpoint, json=dummy_user.dict())
+    response = client.post(login_endpoint, json=dummy_login.dict())
     assert response.status_code == 200
+    token = TokenModel(**response.json())
+    decoded_token = decode_token(token.access_token)
+    assert decoded_token is not None
 
 
-def test_non_existing_auth(client: TestClient, login_endpoint: str, dummy_user: UserModel) -> None:
+def test_non_existing_auth(
+    client: TestClient, login_endpoint: str, dummy_login: UserLoginModel
+) -> None:
     """Test the login endpoint with a non existing host and endpoint
 
     Arguments:
         client (TestClient): The current test client.
         login_endpoint (str): Endpoint prefix.
-        dummy_user (UserModel): A dummy user to test.
+        dummy_login (UserLoginModel): A dummy user to test.
     """
     os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
     os.environ["AUTH_TOKEN_ROUTE"] = login_endpoint
-    response = client.post(login_endpoint, json=dummy_user.dict())
+    response = client.post(login_endpoint, json=dummy_login.dict())
     assert response.status_code == 401
 
 
@@ -170,5 +192,12 @@ def test_refresh(client: TestClient, refresh_endpoint: str, dummy_token: str) ->
         refresh_endpoint (str): Endpoint prefix.
         dummy_token (str): a valid dummy token
     """
+    time.sleep(1)
     response = client.post(refresh_endpoint, headers={"Authorization": f"Bearer {dummy_token}"})
     assert response.status_code == 200
+    refresh_token = TokenModel(**response.json())
+    decoded_refresh = decode_token(refresh_token.access_token)
+    decoded_dummy = decode_token(dummy_token)
+    assert datetime.fromtimestamp(int(decoded_refresh.exp)) > datetime.fromtimestamp(
+        int(decoded_dummy.exp)
+    )

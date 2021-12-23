@@ -12,6 +12,7 @@ from nlp_land_prediction_endpoint.middleware.auth import (
 from nlp_land_prediction_endpoint.models.model_token import TokenModel
 from nlp_land_prediction_endpoint.models.model_token_data import TokenData
 from nlp_land_prediction_endpoint.models.model_user import UserModel
+from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
 
 router = APIRouter()
 
@@ -19,7 +20,7 @@ TIME_DELTA = config("JWT_TOKEN_EXPIRATION_MINUTES", cast=int, default=30)
 
 
 @router.post("/login", response_description="Trigger login procedure", response_model=TokenModel)
-async def login(user: UserModel) -> TokenModel:
+async def login(user: UserLoginModel) -> TokenModel:
     """Login routine
 
     Arguments:
@@ -37,7 +38,7 @@ async def login(user: UserModel) -> TokenModel:
         )
     token_expiration = timedelta(minutes=TIME_DELTA)
     token = create_token(auth_user, token_expiration)
-    return TokenModel(acces_token=token, token_type="bearer")
+    return TokenModel(access_token=token, token_type="bearer")
 
 
 @router.post("/refresh", response_description="Trigger login procedure", response_model=TokenModel)
@@ -52,4 +53,4 @@ async def refresh(user: UserModel = Depends(get_current_user)) -> TokenModel:
     """
     token_expiration = timedelta(minutes=TIME_DELTA)
     token = create_token(TokenData(**user.dict()), token_expiration)
-    return TokenModel(acces_token=token, token_type="bearer")
+    return TokenModel(access_token=token, token_type="bearer")

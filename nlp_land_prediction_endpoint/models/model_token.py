@@ -10,5 +10,5 @@ class TokenModel(BaseModel):
         token_type (str): this will always be bearer
     """
 
-    acces_token: str = Field(...)
+    access_token: str = Field(...)
     token_type: str = Field(...)

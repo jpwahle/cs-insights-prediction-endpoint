@@ -21,10 +21,12 @@ class UserModel(BaseModel):
     """
 
     email: str = Field(...)
-    password: str = Field(...)
     fullname: Optional[str] = Field()
     isAdmin: Optional[bool] = Field()
     isActive: Optional[bool] = Field()
+
+    # XXX-TN change isAdmin to groups
+    # TODO-TN isActive is currently getting ignored
 
     class Config:
         """Configuration for UserModel"""
@@ -32,7 +34,6 @@ class UserModel(BaseModel):
         schema_extra = {
             "example": {
                 "email": "admin@nlp.de",
-                "password": "12345",
                 "fullname=": "admin",
                 "token": None,
                 "isAdmin": True,
