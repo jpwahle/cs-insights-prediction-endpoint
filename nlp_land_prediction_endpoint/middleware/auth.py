@@ -85,7 +85,7 @@ def authenticate_user(user: UserLoginModel) -> Optional[UserModel]:
     """
     login_provider = config("AUTH_LOGIN_PROVIDER", default="http://127.0.0.1")
     login_route = config(
-        "AUTH_LOGIN_ROUTE",
+        "AUTH_BACKEND_LOGIN_ROUTE",
         default=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/login/services",
     )
     try:
