@@ -16,7 +16,12 @@ class LDA_Model(myGeneric_Model):
         """Create LDA_Model"""
         data["name"] = "LDA"
         data["description"] = "Latent Dirichlet allocation model"
-        data["processingModel"] = LdaModel(common_corpus, num_topics=10)
+        # XXX-TN    Maybe we should consider adding another model
+        #           for the creationParameters, so we can validate the input
+        if "creationParameters" in data:
+            data["processingModel"] = LdaModel(**data["creationParameters"])
+        else:
+            data["processingModel"] = LdaModel(common_corpus, num_topics=10)
         data["inputObject"] = {
             # just docs (M) are mandatory, others can be computed
             "numOfTopics": Optional[int],  # aka k, default = 100

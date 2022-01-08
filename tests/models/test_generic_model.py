@@ -34,10 +34,8 @@ def test_generic_model_initial_values(dummy_generic_model: GenericModel) -> None
     assert dummy_generic_model.outputObject == {}
     assert dummy_generic_model.functionCalls == {}
 
-    with pytest.raises(Exception) as execinfo:
+    with pytest.raises(NotImplementedError):
         dummy_generic_model.train({})
-        assert execinfo.value.args[0] == "NotImplemented"
 
-    with pytest.raises(Exception) as execinfo:
+    with pytest.raises(NotImplementedError):
         dummy_generic_model.predict({})
-        assert execinfo.value.args[0] == "NotImplemented"

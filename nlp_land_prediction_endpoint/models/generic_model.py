@@ -1,7 +1,7 @@
 """This modulew implements the generic-model"""
 import random
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -14,7 +14,7 @@ class GenericModel(BaseModel):
     createdBy: str = Field(...)
     createdAt: float
     description: str = Field(...)
-    creationParameters: dict
+    creationParameters: Optional[dict]
 
     inputObject: dict
     outputObject: dict
@@ -46,8 +46,8 @@ class GenericModel(BaseModel):
 
     def train(self, inputObject: dict) -> None:
         """Train the model with data from inputObject"""
-        raise Exception("NotImplemented")
+        raise NotImplementedError("GenericModel.train has to be implemented by the subclass")
 
     def predict(self, inputObject: dict) -> dict:
         """Predict something with data from inputObject"""
-        raise Exception("NotImplemented")
+        raise NotImplementedError("GenericModel.predict has to be implemented by the subclass")
