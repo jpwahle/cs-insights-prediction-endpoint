@@ -9,15 +9,11 @@ from decouple import config  # type: ignore
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-import nlp_land_prediction_endpoint
 from nlp_land_prediction_endpoint.models.model_token_data import TokenData
 from nlp_land_prediction_endpoint.models.model_user import UserModel
 from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
 
-token_url = config(
-    "AUTH_TOKEN_ROUTE",
-    default=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/login",
-)
+token_url = config("AUTH_TOKEN_ROUTE")
 jwt_scheme = OAuth2PasswordBearer(tokenUrl=token_url)
 
 
@@ -29,8 +25,8 @@ def encode_token(data: dict) -> str:
     Returns:
         str: a valid JWT token
     """
-    SECRET = config("JWT_SECRET", default="super_secret_secret")
-    ALG = config("JWT_ALG", default="HS256")
+    SECRET = config("JWT_SECRET")
+    ALG = config("JWT_SIGN_ALG")
     return jwt.encode(data, SECRET, ALG)
 
 
@@ -44,14 +40,14 @@ def decode_token(token: str) -> TokenData:
     Returns:
         TokenData: a TokenData model representing the decoded JWT token
     """
-    SECRET = config("JWT_SECRET", default="super_secret_secret")
-    ALG = config("JWT_ALG", default="HS256")
+    SECRET = config("JWT_SECRET")
+    ALG = config("JWT_SIGN_ALG")
     return TokenData(**jwt.decode(token, SECRET, [ALG]))
 
 
 def create_token(user: UserModel, expires_delta: timedelta = None) -> str:
     """Creates a JWT given a user as TokenData.
-    This will use the JWT_SECRET and JWT_ALG as defined in the .env variable.
+    This will use the JWT_SECRET and JWT_SIGN_ALG as defined in the .env variable.
 
     Arguments:
         user (TokenData): TokenData object containing at minimum the email
@@ -83,11 +79,8 @@ def authenticate_user(user: UserLoginModel) -> Optional[UserModel]:
         Optional[UserModel]: If the authentication was successful a UserModel object;
         None otherwise
     """
-    login_provider = config("AUTH_LOGIN_PROVIDER", default="http://127.0.0.1")
-    login_route = config(
-        "AUTH_BACKEND_LOGIN_ROUTE",
-        default=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/login/services",
-    )
+    login_provider = config("AUTH_BACKEND_URL")
+    login_route = config("AUTH_BACKEND_LOGIN_ROUTE")
     try:
         r = requests.post(
             f"{login_provider}{login_route}",

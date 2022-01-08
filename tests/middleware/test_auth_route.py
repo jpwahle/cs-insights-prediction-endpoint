@@ -121,35 +121,45 @@ def mock_post_failure(monkeypatch: Any) -> None:
 
 
 def test_simulated_existing_failed_auth(
-    client: TestClient, login_endpoint: str, dummy_login: UserLoginModel, mock_post_failure: Any
+    monkeypatch: Any,
+    client: TestClient,
+    login_endpoint: str,
+    dummy_login: UserLoginModel,
+    mock_post_failure: Any,
 ) -> None:
     """Test the login endpoint with a failed authentication attempt
 
     Arguments:
+        monkeypatch (Any): monkeypatch object for simulating env variables
         client (TestClient): The current test client.
         login_endpoint (str): Endpoint prefix.
         dummy_login (UserLoginModel): A dummy user to test.
         mock_post_failure (Any): this overwrites the request.post call
     """
-    os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
-    os.environ["AUTH_TOKEN_ROUTE"] = login_endpoint
+    envs = {"AUTH_BACKEND_URL": "http://127.0.0.1", "AUTH_TOKEN_ROUTE": login_endpoint}
+    monkeypatch.setattr(os, "environ", envs)
     response = client.post(login_endpoint, json=dummy_login.dict())
     assert response.status_code == 401
 
 
 def test_simulated_existing_auth_success(
-    client: TestClient, login_endpoint: str, dummy_login: UserLoginModel, mock_post: Any
+    monkeypatch: Any,
+    client: TestClient,
+    login_endpoint: str,
+    dummy_login: UserLoginModel,
+    mock_post: Any,
 ) -> None:
     """Test the login endpoint with a successful authentication attempt
 
     Arguments:
+        monkeypatch (Any): monkeypatch object for simulating env variables
         client (TestClient): The current test client.
         login_endpoint (str): Endpoint prefix.
         dummy_login (UserLoginModel): A dummy user to test.
         mock_post (Any): this overwrites the request.post call
     """
-    os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
-    os.environ["AUTH_TOKEN_ROUTE"] = login_endpoint
+    envs = {"AUTH_BACKEND_URL": "http://127.0.0.1", "AUTH_TOKEN_ROUTE": login_endpoint}
+    monkeypatch.setattr(os, "environ", envs)
     response = client.post(login_endpoint, json=dummy_login.dict())
     assert response.status_code == 200
     token = TokenModel(**response.json())
@@ -158,17 +168,18 @@ def test_simulated_existing_auth_success(
 
 
 def test_non_existing_auth(
-    client: TestClient, login_endpoint: str, dummy_login: UserLoginModel
+    monkeypatch: Any, client: TestClient, login_endpoint: str, dummy_login: UserLoginModel
 ) -> None:
     """Test the login endpoint with a non existing host and endpoint
 
     Arguments:
+        monkeypatch (Any): monkeypatch object for simulating env variables
         client (TestClient): The current test client.
         login_endpoint (str): Endpoint prefix.
         dummy_login (UserLoginModel): A dummy user to test.
     """
-    os.environ["AUTH_LOGIN_PROVIDER"] = "http://127.0.0.1"
-    os.environ["AUTH_TOKEN_ROUTE"] = login_endpoint
+    envs = {"AUTH_BACKEND_URL": "http://127.0.0.1", "AUTH_TOKEN_ROUTE": login_endpoint}
+    monkeypatch.setattr(os, "environ", envs)
     response = client.post(login_endpoint, json=dummy_login.dict())
     assert response.status_code == 401
 

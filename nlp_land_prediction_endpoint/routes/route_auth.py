@@ -16,7 +16,7 @@ from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
 
 router = APIRouter()
 
-TIME_DELTA = config("JWT_TOKEN_EXPIRATION_MINUTES", cast=int, default=30)
+TIME_DELTA = config("JWT_TOKEN_EXPIRATION_MINUTES", cast=int)
 
 
 @router.post("/login", response_description="Trigger login procedure", response_model=TokenModel)
