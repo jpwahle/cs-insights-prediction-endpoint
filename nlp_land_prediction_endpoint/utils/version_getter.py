@@ -10,9 +10,7 @@ def get_backend_version() -> None:
     if config("AUTH_BACKEND_VERSION", default=None) is None:
         if config("AUTH_BACKEND_URL").endswith("{version}"):
             AUTH_BACKEND_VERSION_ROUTE = config("AUTH_BACKEND_URL").format(version="version")
-            print(AUTH_BACKEND_VERSION_ROUTE)
             version_response = requests.get(AUTH_BACKEND_VERSION_ROUTE)
-            print("VERSION", version_response.text)
             version = version_response.json()
             if "__v" in version:
                 AUTH_BACKEND_VERSION = "v" + str(version["__v"])
