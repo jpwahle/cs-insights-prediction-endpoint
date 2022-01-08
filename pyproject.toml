@@ -11,6 +11,8 @@ fastapi = "^0.70.0"
 uvicorn = "^0.15.0"
 bson = "^0.5.10"
 pydantic = "^1.8.2"
+gensim = "^4.1.2"
+requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
