@@ -1,5 +1,4 @@
 """Test the lda model."""
-import sys
 from datetime import datetime
 from typing import Optional
 
@@ -11,15 +10,46 @@ from nlp_land_prediction_endpoint.models.lda_model import LDA_Model
 
 
 @pytest.fixture
-def dummy_lda_instance() -> LdaModel:
-    return LdaModel(common_corpus, num_topics=10)
+def dummy_creation_parameters() -> dict:
+    """Provides some creation parameters to LDA_Model as well as
+    LdaModel (the instance to test against)
+    Currently these three options are used:
+        - corpus
+        - num_topics
+        - random_state
+
+    Returns:
+        dict: A dictionary containing the creation parameters
+    """
+    return {"corpus": common_corpus, "num_topics": 10, "random_state": 0}
 
 
 @pytest.fixture
-def dummy_lda_model() -> LDA_Model:
+def dummy_lda_instance(dummy_creation_parameters: dict) -> LdaModel:
+    """Provides the lda instance to test against
+
+    Arguments:
+        dummy_creation_parameters (dict): the creation parameters for the lda model
+
+    Returns:
+        LdaModel: the created LdaModel
+    """
+    return LdaModel(**dummy_creation_parameters)
+
+
+@pytest.fixture
+def dummy_lda_model(dummy_creation_parameters: dict) -> LDA_Model:
+    """Provides an actual instance of the implementaion
+
+    Arguments:
+        dummy_creation_parameters (dict): the creation parameters for the lda model
+
+    Returns:
+        LDA_Model: tthe created LDA_Model
+    """
     dummy_values = {
         "createdBy": "Alpha Tester",
-        "creationParameters": {"corpus": common_corpus, "num_topics": 10},
+        "creationParameters": dummy_creation_parameters,
         "outputObject": {},
         "functionCalls": {},
     }
@@ -29,6 +59,11 @@ def dummy_lda_model() -> LDA_Model:
 
 @pytest.fixture
 def dummy_lda_model_no_creation_parameters() -> LDA_Model:
+    """Provides an actual instance of the implementaion but without any creation parameters
+
+    Returns:
+        LDA_Model: tthe created LDA_Model
+    """
     dummy_values = {
         "createdBy": "Alpha Tester",
         "outputObject": {},
@@ -38,7 +73,17 @@ def dummy_lda_model_no_creation_parameters() -> LDA_Model:
     return dummy
 
 
-def test_lda_model_initial_values(dummy_lda_model: LDA_Model, dummy_lda_instance: LdaModel) -> None:
+def test_lda_model_initial_values(
+    dummy_lda_model: LDA_Model, dummy_lda_instance: LdaModel, dummy_creation_parameters: dict
+) -> None:
+    """Test for checking if the LDA_Model gets created correctly
+
+    Arguments:
+        dummy_lda_model (LDA_Model): An instance of our LDA_Model implementation
+        dummy_lda_instance (LdaModel): The Actual object from gensim used for assertions
+        dummy_creation_parameters (dict): The dictionary containing the creation parameters
+        of the LdaModel instance
+    """
     assert dummy_lda_model.name == "LDA"
     assert "Model" + dummy_lda_model.name in dummy_lda_model.id
     assert "Model" + dummy_lda_model.name in dummy_lda_model.getId()
@@ -46,7 +91,7 @@ def test_lda_model_initial_values(dummy_lda_model: LDA_Model, dummy_lda_instance
     assert dummy_lda_model.createdAt <= datetime.timestamp(datetime.now()) + 1
     assert dummy_lda_model.createdAt >= datetime.timestamp(datetime.now()) - 1
     assert dummy_lda_model.description == "Latent Dirichlet allocation model"
-    assert dummy_lda_model.creationParameters == {"corpus": common_corpus, "num_topics": 10}
+    assert dummy_lda_model.creationParameters == dummy_creation_parameters
     assert dummy_lda_model.inputObject == {
         "numOfTopics": Optional[int],  # aka k, default = 100
         "topics": Optional[dict],  # aka K
@@ -71,9 +116,9 @@ def test_lda_model_initial_values(dummy_lda_model: LDA_Model, dummy_lda_instance
 
     assert dummy_lda_model.getk() == 10
     assert dummy_lda_model.getNumTopics() == 10
-    assert sys.getsizeof(dummy_lda_model.getK()) == sys.getsizeof(
-        dummy_lda_instance.get_topics().tolist()
-    )
+    # This assertion works, because we initialize it with the same random_state
+    assert dummy_lda_model.getTopics() == dummy_lda_model.getK()
+    assert dummy_lda_model.getTopics() == dummy_lda_instance.get_topics().tolist()
 
     assert len(dummy_lda_model.getTopics()) == len(dummy_lda_instance.get_topics().tolist())
 
@@ -123,10 +168,9 @@ def test_lda_model_initial_values_no_creation_paramers(
 
     assert dummy_lda_model_no_creation_parameters.getk() == 10
     assert dummy_lda_model_no_creation_parameters.getNumTopics() == 10
-    assert sys.getsizeof(dummy_lda_model_no_creation_parameters.getK()) == sys.getsizeof(
+    assert len(dummy_lda_model_no_creation_parameters.getK()) == len(
         dummy_lda_instance.get_topics().tolist()
     )
-
     assert len(dummy_lda_model_no_creation_parameters.getTopics()) == len(
         dummy_lda_instance.get_topics().tolist()
     )

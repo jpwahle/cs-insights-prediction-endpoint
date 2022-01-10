@@ -8,6 +8,11 @@ from nlp_land_prediction_endpoint.models.generic_model import GenericModel
 
 @pytest.fixture
 def dummy_generic_model() -> GenericModel:
+    """Provides an actual instance of the implementaion
+
+    Returns:
+        GenericModel: the created GenericModel
+    """
     dummy_values = {
         "name": "Generic",
         "createdBy": "Alpha Tester",
@@ -22,6 +27,11 @@ def dummy_generic_model() -> GenericModel:
 
 
 def test_generic_model_initial_values(dummy_generic_model: GenericModel) -> None:
+    """Test for checking if the Generic_Model gets created correctly
+
+    Arguments:
+        dummy_generic_model (Generic_Model): An instance of our GenericModel implementation
+    """
     assert dummy_generic_model.name == "Generic"
     assert "Model" + dummy_generic_model.name in dummy_generic_model.id
     assert "Model" + dummy_generic_model.getName() in dummy_generic_model.getId()
