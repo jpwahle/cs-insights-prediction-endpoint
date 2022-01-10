@@ -6,12 +6,12 @@ import pytest
 from gensim.models.ldamodel import LdaModel
 from gensim.test.utils import common_corpus
 
-from nlp_land_prediction_endpoint.models.lda_model import LDA_Model
+from nlp_land_prediction_endpoint.models.lda_model import LDAModel
 
 
 @pytest.fixture
 def dummy_creation_parameters() -> dict:
-    """Provides some creation parameters to LDA_Model as well as
+    """Provides some creation parameters to LDAModel as well as
     LdaModel (the instance to test against)
     Currently these three options are used:
         - corpus
@@ -38,14 +38,14 @@ def dummy_lda_instance(dummy_creation_parameters: dict) -> LdaModel:
 
 
 @pytest.fixture
-def dummy_lda_model(dummy_creation_parameters: dict) -> LDA_Model:
+def dummy_lda_model(dummy_creation_parameters: dict) -> LDAModel:
     """Provides an actual instance of the implementaion
 
     Arguments:
         dummy_creation_parameters (dict): the creation parameters for the lda model
 
     Returns:
-        LDA_Model: tthe created LDA_Model
+        LDAModel: The created LDAModel
     """
     dummy_values = {
         "createdBy": "Alpha Tester",
@@ -53,33 +53,35 @@ def dummy_lda_model(dummy_creation_parameters: dict) -> LDA_Model:
         "outputObject": {},
         "functionCalls": {},
     }
-    dummy = LDA_Model(**dummy_values)
+    dummy = LDAModel(**dummy_values)
     return dummy
 
 
 @pytest.fixture
-def dummy_lda_model_no_creation_parameters() -> LDA_Model:
+def dummy_lda_model_no_creation_parameters() -> LDAModel:
     """Provides an actual instance of the implementaion but without any creation parameters
 
     Returns:
-        LDA_Model: tthe created LDA_Model
+        LDAModel: tthe created LDAModel
     """
     dummy_values = {
         "createdBy": "Alpha Tester",
         "outputObject": {},
         "functionCalls": {},
     }
-    dummy = LDA_Model(**dummy_values)
+    dummy = LDAModel(**dummy_values)
     return dummy
 
 
 def test_lda_model_initial_values(
-    dummy_lda_model: LDA_Model, dummy_lda_instance: LdaModel, dummy_creation_parameters: dict
+    dummy_lda_model: LDAModel,
+    dummy_lda_instance: LdaModel,
+    dummy_creation_parameters: dict,
 ) -> None:
-    """Test for checking if the LDA_Model gets created correctly
+    """Test for checking if the LDAModel gets created correctly
 
     Arguments:
-        dummy_lda_model (LDA_Model): An instance of our LDA_Model implementation
+        dummy_lda_model (LDAModel): An instance of our LDA_Model implementation
         dummy_lda_instance (LdaModel): The Actual object from gensim used for assertions
         dummy_creation_parameters (dict): The dictionary containing the creation parameters
         of the LdaModel instance
@@ -101,7 +103,6 @@ def test_lda_model_initial_values(
         "docs": set,  # documents id as str -> convert in set (hashed) of str #do as set?
     }
     assert dummy_lda_model.outputObject == {}
-    assert dummy_lda_model.functionCalls == {}
     assert dummy_lda_model.alpha("None") == {
         "name": "AI",
         "keyword": "Deep Learning; Knowledge; Computer Vison",
@@ -120,12 +121,23 @@ def test_lda_model_initial_values(
     assert dummy_lda_model.getTopics() == dummy_lda_model.getK()
     assert dummy_lda_model.getTopics() == dummy_lda_instance.get_topics().tolist()
 
-    assert len(dummy_lda_model.getTopics()) == len(dummy_lda_instance.get_topics().tolist())
+    dummy_lda_instance.update(common_corpus)
+    dummy_lda_model.train({"corpus": common_corpus})
+    assert dummy_lda_model.getTopics() == dummy_lda_instance.get_topics().tolist()
+    test_training = list(dummy_lda_instance.get_document_topics(common_corpus))
+    assert dummy_lda_model.predict({"bow": common_corpus}) == test_training
 
 
 def test_lda_model_initial_values_no_creation_paramers(
-    dummy_lda_model_no_creation_parameters: LDA_Model, dummy_lda_instance: LdaModel
+    dummy_lda_model_no_creation_parameters: LDAModel, dummy_lda_instance: LdaModel
 ) -> None:
+    """Test for checking if the LDAModel gets created correctly (without creation parameters)
+
+    Arguments:
+        dummy_lda_model_no_creation_parameters (LDAModel): An instance of our
+        LDA_Model implementation
+        dummy_lda_instance (LdaModel): The Actual object from gensim used for assertions
+    """
     assert dummy_lda_model_no_creation_parameters.name == "LDA"
     assert (
         "Model" + dummy_lda_model_no_creation_parameters.name
@@ -153,7 +165,6 @@ def test_lda_model_initial_values_no_creation_paramers(
         "docs": set,  # documents id as str -> convert in set (hashed) of str #do as set?
     }
     assert dummy_lda_model_no_creation_parameters.outputObject == {}
-    assert dummy_lda_model_no_creation_parameters.functionCalls == {}
     assert dummy_lda_model_no_creation_parameters.alpha("None") == {
         "name": "AI",
         "keyword": "Deep Learning; Knowledge; Computer Vison",
@@ -168,6 +179,7 @@ def test_lda_model_initial_values_no_creation_paramers(
 
     assert dummy_lda_model_no_creation_parameters.getk() == 10
     assert dummy_lda_model_no_creation_parameters.getNumTopics() == 10
+    # We cannot assert getTopics like we did in the previous test due to randomness in LDA
     assert len(dummy_lda_model_no_creation_parameters.getK()) == len(
         dummy_lda_instance.get_topics().tolist()
     )

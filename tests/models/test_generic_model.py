@@ -43,6 +43,7 @@ def test_generic_model_initial_values(dummy_generic_model: GenericModel) -> None
     assert dummy_generic_model.inputObject == {}
     assert dummy_generic_model.outputObject == {}
     assert dummy_generic_model.functionCalls == {}
+    assert dummy_generic_model.getFunctionCalls() == []
 
     with pytest.raises(NotImplementedError):
         dummy_generic_model.train({})

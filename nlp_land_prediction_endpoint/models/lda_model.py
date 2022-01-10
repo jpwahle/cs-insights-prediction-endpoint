@@ -9,11 +9,11 @@ from nlp_land_prediction_endpoint.models.generic_model import (
 )
 
 
-class LDA_Model(myGeneric_Model):
+class LDAModel(myGeneric_Model):
     """Implementation of the LDA (Latent Dirichlet Allocation Model)"""
 
     def __init__(self, **data: Any) -> None:
-        """Create LDA_Model"""
+        """Create LDAModel"""
         data["name"] = "LDA"
         data["description"] = "Latent Dirichlet allocation model"
         # XXX-TN    Maybe we should consider adding another model
@@ -30,6 +30,18 @@ class LDA_Model(myGeneric_Model):
             "vocabulary": set,  # words in vocabulary, aka V #do as set?
             "numOfDocs": Optional[int],  # num of documents, aka m
             "docs": set,  # documents id as str -> convert in set (hashed) of str #do as set?
+        }
+        data["functionCalls"] = {
+            "alpha": self.alpha,
+            "beta": self.beta,
+            "phi": self.phi,
+            "theta": self.theta,
+            "getk": self.getk,
+            "getNumTopics": self.getNumTopics,
+            "getK": self.getK,
+            "getTopics": self.getTopics,
+            "train": self.train,
+            "predict": self.predict,
         }
         super().__init__(**data)
 
@@ -92,3 +104,31 @@ class LDA_Model(myGeneric_Model):
             Any: A dictionary containing the topics
         """
         return self.getK()
+
+    def train(self, inputObject: dict) -> None:
+        """Trains the LDAModel given a inputObject.
+        The input object should at least contain some paper ids,
+        which will be requested from the backend
+
+        Arguments:
+            inputObject (dict): An inputObject where
+            at least one key should contain data to process
+        """
+        # XXX-TN For now we will use corpus as input, which will be a proccessed bag of words.
+        #        Later on this will be an array of paper ids. Maybe create an Issue?
+        self.processingModel.update(**inputObject)
+
+    def predict(self, inputObject: dict) -> list:
+        """Given some inputObject the LDAModel will classfiy the input data
+        according to the data it was trained on
+        Arguments:
+            inputObject (dict): An inputObject where
+            at least one key should contain data to process
+
+        Returns:
+            list: A list containg the classified topics [(int, float)]
+            as well as probabilites for the topics
+        """
+        # XXX-TN For now we will use corpus as input, which will be a proccessed bag of words.
+        #        Later on this will be an array of paper. ids Maybe create an Issue?
+        return list(self.processingModel.get_document_topics(**inputObject))
