@@ -1,12 +1,15 @@
 """This module implements the LDA-Model"""
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Set
 
 from gensim.models.ldamodel import LdaModel  # type: ignore
 from gensim.test.utils import common_corpus  # type: ignore
 
 from nlp_land_prediction_endpoint.models.generic_model import (
+    GenericInputModel,
     GenericModel as myGeneric_Model,
+    GenericOutputModel,
 )
+from pydantic import BaseModel, Field
 
 
 class LDAModel(myGeneric_Model):
@@ -22,15 +25,6 @@ class LDAModel(myGeneric_Model):
             data["processingModel"] = LdaModel(**data["creationParameters"])
         else:
             data["processingModel"] = LdaModel(common_corpus, num_topics=10)
-        data["inputObject"] = {
-            # just docs (M) are mandatory, others can be computed
-            "numOfTopics": Optional[int],  # aka k, default = 100
-            "topics": Optional[dict],  # aka K
-            "numOfVocs": Optional[int],  # num of words in vocabulary, aka v
-            "vocabulary": set,  # words in vocabulary, aka V #do as set?
-            "numOfDocs": Optional[int],  # num of documents, aka m
-            "docs": set,  # documents id as str -> convert in set (hashed) of str #do as set?
-        }
         data["functionCalls"] = {
             "alpha": self.alpha,
             "beta": self.beta,
@@ -132,3 +126,23 @@ class LDAModel(myGeneric_Model):
         # XXX-TN For now we will use corpus as input, which will be a proccessed bag of words.
         #        Later on this will be an array of paper. ids Maybe create an Issue?
         return list(self.processingModel.get_document_topics(**inputObject))
+
+
+class LDAInputModel(GenericInputModel):
+    """Input for a generic model"""
+
+    # just docs (M) are mandatory, others can be computed
+    numOfTopics: Optional[int]  # aka k, default = 100
+    topics: Optional[dict]  # aka K
+    numOfVocs: Optional[int]  # num of words in vocabulary, aka v
+    vocabulary: set  # words in vocabulary, aka V #do as set?
+    numOfDocs: Optional[int]  # num of documents, aka m
+
+
+class LDAOutputModel(GenericOutputModel):
+    """Output for a generic model"""
+
+    # wordID:float -> str: value
+    # Ex.          -> attention: 0.4325
+
+    topicFrequency: List[(str, float)]
