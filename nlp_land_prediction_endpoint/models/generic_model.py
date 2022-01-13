@@ -1,7 +1,7 @@
 """This modulew implements the generic-model"""
 import random
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, Set
 
 from pydantic import BaseModel, Field
 
@@ -70,3 +70,19 @@ class GenericModel(BaseModel):
     def predict(self, inputObject: dict) -> list:
         """Predict something with data from inputObject"""
         raise NotImplementedError("GenericModel.predict has to be implemented by the subclass")
+
+
+class GenericInputModel(BaseModel):
+    """Input for a generic model"""
+
+    # Other input for BOW's: Set[tuple]
+    # Other input for plainText: Set[str] (if we wan't to test one string outide of DB)
+
+    paperIds: Set[str] = Field(...)
+    functionCall: str = Field(...)
+
+
+class GenericOutputModel(BaseModel):
+    """Output for a generic model"""
+
+    pass
