@@ -1,11 +1,14 @@
 """This module implements a storage controller for the endpoint management"""
 
 from typing import Optional, Set
+
 from nlp_land_prediction_endpoint.models.generic_model import GenericModel
 
 
 class StorageController:
-    models: Set[GenericModel] = Set()
+    """Storage Controller class to enable access to currently created Models"""
+
+    models: Set[GenericModel] = set()
 
     def getModel(self, id: str) -> Optional[GenericModel]:
         """Returns the model with id"""

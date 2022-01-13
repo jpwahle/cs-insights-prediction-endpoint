@@ -18,8 +18,6 @@ def dummy_generic_model() -> GenericModel:
         "createdBy": "Alpha Tester",
         "description": "This is a test",
         "creationParameters": {},
-        "inputObject": {},
-        "outputObject": {},
         "functionCalls": {},
     }
     dummy = GenericModel(**dummy_values)
@@ -40,8 +38,6 @@ def test_generic_model_initial_values(dummy_generic_model: GenericModel) -> None
     assert dummy_generic_model.createdAt >= datetime.timestamp(datetime.now()) - 1
     assert dummy_generic_model.description == "This is a test"
     assert dummy_generic_model.creationParameters == {}
-    assert dummy_generic_model.inputObject == {}
-    assert dummy_generic_model.outputObject == {}
     assert dummy_generic_model.functionCalls == {}
     assert dummy_generic_model.getFunctionCalls() == []
 

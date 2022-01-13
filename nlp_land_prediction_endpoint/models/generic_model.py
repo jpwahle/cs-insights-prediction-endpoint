@@ -14,21 +14,9 @@ class GenericModel(BaseModel):
     createdBy: str = Field(...)
     createdAt: float
     description: str = Field(...)
+    # XXX-TN We should a GenericCreationParameters, same as GenericInputModel
     creationParameters: Optional[dict]
 
-    # XXX-TN Maybe we should also create Models for the following two dicts.
-    #        This will make it easier to catch errors as well as provbide some nice
-    #        structure to the project.
-    #        It could be as follows:
-    #           - GenericModelInput
-    #               - SomeModelImplementaionInput(GenericModelInput)
-    #               - SomeOtherModelInput(GenericModelInput)
-    #        Where GenericModelInput could contain keys like "paperIds", "corpus", "bow".
-    #        And SomeModelImplementaionInput would contain model specific keys
-    #        like "number of rounds".
-    #        The same applies to outputObject
-    inputObject: dict
-    outputObject: dict
     functionCalls: dict = Field(...)
 
     processingModel: Any
@@ -38,6 +26,10 @@ class GenericModel(BaseModel):
         data["createdAt"] = datetime.timestamp(datetime.now())
         data["id"] = "Model" + data["name"] + str(data["createdAt"] * random.random())
         super().__init__(**data)
+
+    def __hash__(self) -> int:
+        """Compute the hash of this object via the id"""
+        return hash(self.id)
 
     def getId(self) -> str:
         """Returns the id of the object

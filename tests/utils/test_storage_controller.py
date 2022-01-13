@@ -1,12 +1,8 @@
 """Test the lda model."""
-from datetime import datetime
-from typing import Optional
-from nlp_land_prediction_endpoint.models.generic_model import GenericModel
 
 import pytest
-from gensim.models.ldamodel import LdaModel
-from gensim.test.utils import common_corpus
 
+from nlp_land_prediction_endpoint.models.generic_model import GenericModel
 from nlp_land_prediction_endpoint.utils.storage_controller import StorageController
 
 
@@ -33,8 +29,6 @@ def dummyGenericModel() -> GenericModel:
         "createdBy": "Alpha Tester",
         "description": "This is a test",
         "creationParameters": {},
-        "inputObject": {},
-        "outputObject": {},
         "functionCalls": {},
     }
     dummy = GenericModel(**dummy_values)
@@ -42,25 +36,37 @@ def dummyGenericModel() -> GenericModel:
     return dummy
 
 
-def testAddModel(
-    dummyStorageController: StorageController, dummyGenericModel: GenericModel
-) -> None:
-    dummyStorageController.addModel(dummyGenericModel)
-
-    assert dummyStorageController.getAllModels() == set(dummyGenericModel)
-    assert dummyStorageController.getModel(dummyGenericModel.id) == dummyGenericModel
-
-
 def testDeleteModel(
     dummyStorageController: StorageController, dummyGenericModel: GenericModel
 ) -> None:
+    """Test for deleteing models from the StorageController
+
+    Arguments:
+        dummyStorageController (StorageController): A dummy storage_controller
+        dummyGenericModel (GenericModel): A dummy GenericModel
+    """
     # add
     dummyStorageController.addModel(dummyGenericModel)
     # delete
     dummyStorageController.delModel(dummyGenericModel.id)
-
-    assert dummyStorageController.getAllModels() == set()
+    assert dummyStorageController.getAllModels() == set([])
     assert dummyStorageController.getModel(dummyGenericModel.id) is None
 
+    # Try to delete no existent Model
     with pytest.raises(KeyError):
         dummyStorageController.delModel("kjsdhgf8iuz")
+
+
+def testAddModel(
+    dummyStorageController: StorageController, dummyGenericModel: GenericModel
+) -> None:
+    """Test for adding models to the StorageController
+
+    Arguments:
+        dummyStorageController (StorageController): A dummy storage_controller
+        dummyGenericModel (GenericModel): A dummy GenericModel
+    """
+    dummyStorageController.addModel(dummyGenericModel)
+
+    assert dummyStorageController.getAllModels() == set([dummyGenericModel])
+    assert dummyStorageController.getModel(dummyGenericModel.id) == dummyGenericModel

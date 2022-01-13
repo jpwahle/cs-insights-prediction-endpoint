@@ -1,6 +1,5 @@
 """Test the lda model."""
 from datetime import datetime
-from typing import Optional
 
 import pytest
 from gensim.models.ldamodel import LdaModel
@@ -50,7 +49,6 @@ def dummy_lda_model(dummy_creation_parameters: dict) -> LDAModel:
     dummy_values = {
         "createdBy": "Alpha Tester",
         "creationParameters": dummy_creation_parameters,
-        "outputObject": {},
         "functionCalls": {},
     }
     dummy = LDAModel(**dummy_values)
@@ -66,7 +64,6 @@ def dummy_lda_model_no_creation_parameters() -> LDAModel:
     """
     dummy_values = {
         "createdBy": "Alpha Tester",
-        "outputObject": {},
         "functionCalls": {},
     }
     dummy = LDAModel(**dummy_values)
@@ -94,15 +91,6 @@ def test_lda_model_initial_values(
     assert dummy_lda_model.createdAt >= datetime.timestamp(datetime.now()) - 1
     assert dummy_lda_model.description == "Latent Dirichlet allocation model"
     assert dummy_lda_model.creationParameters == dummy_creation_parameters
-    assert dummy_lda_model.inputObject == {
-        "numOfTopics": Optional[int],  # aka k, default = 100
-        "topics": Optional[dict],  # aka K
-        "vocabulary": set,  # words in vocabulary, aka V #do as set?
-        "numOfVocs": Optional[int],  # num of words in vocabulary, aka v
-        "numOfDocs": Optional[int],  # num of documents, aka m
-        "docs": set,  # documents id as str -> convert in set (hashed) of str #do as set?
-    }
-    assert dummy_lda_model.outputObject == {}
     assert dummy_lda_model.alpha("None") == {
         "name": "AI",
         "keyword": "Deep Learning; Knowledge; Computer Vison",
@@ -156,15 +144,6 @@ def test_lda_model_initial_values_no_creation_paramers(
     )
     assert dummy_lda_model_no_creation_parameters.description == "Latent Dirichlet allocation model"
     assert dummy_lda_model_no_creation_parameters.creationParameters is None
-    assert dummy_lda_model_no_creation_parameters.inputObject == {
-        "numOfTopics": Optional[int],  # aka k, default = 100
-        "topics": Optional[dict],  # aka K
-        "vocabulary": set,  # words in vocabulary, aka V #do as set?
-        "numOfVocs": Optional[int],  # num of words in vocabulary, aka v
-        "numOfDocs": Optional[int],  # num of documents, aka m
-        "docs": set,  # documents id as str -> convert in set (hashed) of str #do as set?
-    }
-    assert dummy_lda_model_no_creation_parameters.outputObject == {}
     assert dummy_lda_model_no_creation_parameters.alpha("None") == {
         "name": "AI",
         "keyword": "Deep Learning; Knowledge; Computer Vison",

@@ -1,15 +1,14 @@
 """This module implements the LDA-Model"""
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, List, Optional, Tuple
 
 from gensim.models.ldamodel import LdaModel  # type: ignore
 from gensim.test.utils import common_corpus  # type: ignore
 
+from nlp_land_prediction_endpoint.models.generic_model import GenericInputModel
 from nlp_land_prediction_endpoint.models.generic_model import (
-    GenericInputModel,
     GenericModel as myGeneric_Model,
-    GenericOutputModel,
 )
-from pydantic import BaseModel, Field
+from nlp_land_prediction_endpoint.models.generic_model import GenericOutputModel
 
 
 class LDAModel(myGeneric_Model):
@@ -145,4 +144,4 @@ class LDAOutputModel(GenericOutputModel):
     # wordID:float -> str: value
     # Ex.          -> attention: 0.4325
 
-    topicFrequency: List[(str, float)]
+    topicFrequency: List[Tuple[str, float]]
