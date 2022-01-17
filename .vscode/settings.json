@@ -3,10 +3,11 @@
   "python.linting.lintOnSave": true,
   "python.linting.mypyEnabled": true,
   "python.linting.flake8Enabled": true,
+  "mypy.runUsingActiveInterpreter": true,
   "python.formatting.provider": "black",
   "python.formatting.blackArgs": [
     "--line-length",
-    "99",
+    "100",
     "--experimental-string-processing"
   ],
   "editor.formatOnSave": true,
