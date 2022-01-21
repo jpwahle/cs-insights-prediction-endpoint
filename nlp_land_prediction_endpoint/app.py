@@ -20,8 +20,8 @@ from decouple import config  # type: ignore
 from fastapi import FastAPI
 
 import nlp_land_prediction_endpoint
-from nlp_land_prediction_endpoint.routes.route_model import router as ModelRouter
 from nlp_land_prediction_endpoint.routes.route_auth import router as AuthRouter
+from nlp_land_prediction_endpoint.routes.route_model import router as ModelRouter
 from nlp_land_prediction_endpoint.routes.route_status import router as StatusRouter
 from nlp_land_prediction_endpoint.routes.route_topic import router as TopicRouter
 from nlp_land_prediction_endpoint.utils.version_getter import get_backend_version
