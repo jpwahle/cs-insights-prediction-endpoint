@@ -24,7 +24,7 @@ class GenericModel(BaseModel):
     def __init__(self, **data: Any) -> None:
         """Constructor for GenericModel"""
         data["createdAt"] = datetime.timestamp(datetime.now())
-        data["id"] = "Model" + data["name"] + str(data["createdAt"] * random.random())
+        data["id"] = "Model-" + data["name"] + "-" + str(data["createdAt"] * random.random())
         super().__init__(**data)
 
     def __hash__(self) -> int:

@@ -84,8 +84,8 @@ def test_lda_model_initial_values(
         of the LdaModel instance
     """
     assert dummy_lda_model.name == "LDA"
-    assert "Model" + dummy_lda_model.name in dummy_lda_model.id
-    assert "Model" + dummy_lda_model.name in dummy_lda_model.getId()
+    assert "Model-" + dummy_lda_model.name in dummy_lda_model.id
+    assert "Model-" + dummy_lda_model.name in dummy_lda_model.getId()
     assert dummy_lda_model.createdBy == "Alpha Tester"
     assert dummy_lda_model.createdAt <= datetime.timestamp(datetime.now()) + 1
     assert dummy_lda_model.createdAt >= datetime.timestamp(datetime.now()) - 1
@@ -128,11 +128,11 @@ def test_lda_model_initial_values_no_creation_paramers(
     """
     assert dummy_lda_model_no_creation_parameters.name == "LDA"
     assert (
-        "Model" + dummy_lda_model_no_creation_parameters.name
+        "Model-" + dummy_lda_model_no_creation_parameters.name
         in dummy_lda_model_no_creation_parameters.id
     )
     assert (
-        "Model" + dummy_lda_model_no_creation_parameters.name
+        "Model-" + dummy_lda_model_no_creation_parameters.name
         in dummy_lda_model_no_creation_parameters.getId()
     )
     assert dummy_lda_model_no_creation_parameters.createdBy == "Alpha Tester"
