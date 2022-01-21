@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-import jwt
+import jwt  # type: ignore
 import pydantic
 import requests  # type: ignore
 from decouple import config  # type: ignore
