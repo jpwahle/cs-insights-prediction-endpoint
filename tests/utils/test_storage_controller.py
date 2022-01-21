@@ -13,8 +13,7 @@ def dummyStorageController() -> StorageController:
     Returns:
         StorageController: empty
     """
-    dummy = StorageController()
-    return dummy
+    return StorageController()
 
 
 @pytest.fixture

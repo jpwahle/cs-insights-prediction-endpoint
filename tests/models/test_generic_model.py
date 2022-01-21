@@ -40,6 +40,7 @@ def test_generic_model_initial_values(dummy_generic_model: GenericModel) -> None
     assert dummy_generic_model.creationParameters == {}
     assert dummy_generic_model.functionCalls == {}
     assert dummy_generic_model.getFunctionCalls() == []
+    assert str(dummy_generic_model) == dummy_generic_model.id
 
     with pytest.raises(NotImplementedError):
         dummy_generic_model.train({})

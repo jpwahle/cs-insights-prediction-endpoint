@@ -17,6 +17,7 @@ class LDAModel(myGeneric_Model):
     def __init__(self, **data: Any) -> None:
         """Create LDAModel"""
         data["name"] = "LDA"
+        # XXX-TN We should consider adding "description" as a class config example
         data["description"] = "Latent Dirichlet allocation model"
         # XXX-TN    Maybe we should consider adding another model
         #           for the creationParameters, so we can validate the input

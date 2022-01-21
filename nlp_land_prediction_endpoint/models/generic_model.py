@@ -22,7 +22,7 @@ class GenericModel(BaseModel):
     processingModel: Any
 
     def __init__(self, **data: Any) -> None:
-        """Test"""
+        """Constructor for GenericModel"""
         data["createdAt"] = datetime.timestamp(datetime.now())
         data["id"] = "Model" + data["name"] + str(data["createdAt"] * random.random())
         super().__init__(**data)
@@ -30,6 +30,14 @@ class GenericModel(BaseModel):
     def __hash__(self) -> int:
         """Compute the hash of this object via the id"""
         return hash(self.id)
+
+    def __str__(self) -> str:
+        """Returns the String-representation of this GenericModel instance
+
+        Returns:
+            str: String representation of this GenericModel instance
+        """
+        return self.id
 
     def getId(self) -> str:
         """Returns the id of the object

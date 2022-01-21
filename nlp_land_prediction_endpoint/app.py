@@ -2,17 +2,11 @@
 from fastapi import FastAPI
 
 import nlp_land_prediction_endpoint
-
-# from nlp_land_prediction_endpoint.routes.route_model import router as ModelRouter
+from nlp_land_prediction_endpoint.routes.route_model import router as ModelRouter
 from nlp_land_prediction_endpoint.routes.route_status import router as StatusRouter
 from nlp_land_prediction_endpoint.routes.route_topic import router as TopicRouter
-from nlp_land_prediction_endpoint.utils.storage_controller import StorageController
-
-myStorage = StorageController()
-
 
 app = FastAPI(title="NLP-Land-prediction-endpoint", docs_url="/api/docs", redoc_url="/api/redoc")
-
 
 # app.add_event_handler("startup", connect_to_third_party_services)
 # app.add_event_handler("shutdown", close_third_party_services)
@@ -28,8 +22,8 @@ app.include_router(
     prefix=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/topics",
 )
 
-# app.include_router(
-#    ModelRouter,
-#    tags=["Model"],
-#    prefix=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/models",
-# )
+app.include_router(
+    ModelRouter,
+    tags=["Model"],
+    prefix=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/models",
+)

@@ -5,10 +5,16 @@ from typing import Optional, Set
 from nlp_land_prediction_endpoint.models.generic_model import GenericModel
 
 
+# XXX-TN This will be only a temporary implementation
+#        we should create an Issue for an actual implementation
 class StorageController:
     """Storage Controller class to enable access to currently created Models"""
 
-    models: Set[GenericModel] = set()
+    models: Set[GenericModel] = set([])
+
+    def __init__(self) -> None:
+        """Constructor for the storage controller"""
+        self.models = set([])
 
     def getModel(self, id: str) -> Optional[GenericModel]:
         """Returns the model with id"""
@@ -33,3 +39,6 @@ class StorageController:
             raise KeyError("Model not found")
         else:
             self.models.remove(model)
+
+
+storage: StorageController = StorageController()
