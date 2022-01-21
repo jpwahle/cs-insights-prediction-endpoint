@@ -27,7 +27,7 @@ def encode_token(data: dict) -> str:
     """
     SECRET = config("JWT_SECRET")
     ALG = config("JWT_SIGN_ALG")
-    return jwt.encode(data, SECRET, ALG)
+    return str(jwt.encode(data, SECRET, ALG))
 
 
 def decode_token(token: str) -> TokenData:
