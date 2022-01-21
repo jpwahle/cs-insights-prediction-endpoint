@@ -36,7 +36,7 @@ mypy = "^0.910"
 
 [tool.poe.tasks]
 lint = "flake8 ."
-type = "mypy nlp_land_prediction_endpoint --install-types"
+type = "mypy nlp_land_prediction_endpoint --install-types --non-interactive"
 test = "py.test tests/ -s --cov=nlp_land_prediction_endpoint --cov-report=xml --cov-fail-under 100"
 doc = "python3 gen_doc.py"
 alltest = ["lint", "type", "test"]
