@@ -2,9 +2,9 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-import jwt  # type: ignore
+import jwt
 import pydantic
-import requests  # type: ignore
+import requests
 from decouple import config  # type: ignore
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer

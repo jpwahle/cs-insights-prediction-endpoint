@@ -1,9 +1,11 @@
 """This modulew implements the generic-model"""
 import random
 from datetime import datetime
-from typing import Any, Optional, Set
+from typing import Any, Optional, Set, TypeVar
 
 from pydantic import BaseModel, Field
+
+T = TypeVar("T", bound="GenericModel")
 
 
 class GenericModel(BaseModel):
@@ -21,17 +23,17 @@ class GenericModel(BaseModel):
 
     processingModel: Any
 
-    def __init__(self, **data: Any) -> None:
+    def __init__(self: T, **data: Any) -> None:
         """Constructor for GenericModel"""
         data["createdAt"] = datetime.timestamp(datetime.now())
         data["id"] = "Model-" + data["name"] + "-" + str(data["createdAt"] * random.random())
         super().__init__(**data)
 
-    def __hash__(self) -> int:
+    def __hash__(self: T) -> int:
         """Compute the hash of this object via the id"""
         return hash(self.id)
 
-    def __str__(self) -> str:
+    def __str__(self: T) -> str:
         """Returns the String-representation of this GenericModel instance
 
         Returns:
@@ -39,7 +41,7 @@ class GenericModel(BaseModel):
         """
         return self.id
 
-    def getId(self) -> str:
+    def getId(self: T) -> str:
         """Returns the id of the object
 
         Returns:
@@ -47,7 +49,7 @@ class GenericModel(BaseModel):
         """
         return self.id
 
-    def getName(self) -> str:
+    def getName(self: T) -> str:
         """Returns the name of the object
 
         Returns:
@@ -55,7 +57,7 @@ class GenericModel(BaseModel):
         """
         return self.name
 
-    def getFunctionCalls(self) -> list:
+    def getFunctionCalls(self: T) -> list:
         """Returns the name of all the functions available
 
         Returns:
@@ -63,11 +65,11 @@ class GenericModel(BaseModel):
         """
         return list(self.functionCalls.keys())
 
-    def train(self, inputObject: dict) -> None:
+    def train(self: T, inputObject: dict) -> None:
         """Train the model with data from inputObject"""
         raise NotImplementedError("GenericModel.train has to be implemented by the subclass")
 
-    def predict(self, inputObject: dict) -> list:
+    def predict(self: T, inputObject: dict) -> list:
         """Predict something with data from inputObject"""
         raise NotImplementedError("GenericModel.predict has to be implemented by the subclass")
 

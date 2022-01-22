@@ -1,5 +1,5 @@
 """This module implements the LDA-Model"""
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, TypeVar
 
 from gensim.models.ldamodel import LdaModel  # type: ignore
 from gensim.test.utils import common_corpus  # type: ignore
@@ -10,11 +10,13 @@ from nlp_land_prediction_endpoint.models.generic_model import (
 )
 from nlp_land_prediction_endpoint.models.generic_model import GenericOutputModel
 
+T = TypeVar("T", bound="LDAModel")
+
 
 class LDAModel(myGeneric_Model):
     """Implementation of the LDA (Latent Dirichlet Allocation Model)"""
 
-    def __init__(self, **data: Any) -> None:
+    def __init__(self: T, **data: Any) -> None:
         """Create LDAModel"""
         data["name"] = "LDA"
         # XXX-TN We should consider adding "description" as a class config example
@@ -39,7 +41,7 @@ class LDAModel(myGeneric_Model):
         }
         super().__init__(**data)
 
-    def alpha(self, document: str) -> dict:
+    def alpha(self: T, document: str) -> dict:
         """Calc alpha and return"""
         topic = {
             "name": "AI",
@@ -48,7 +50,7 @@ class LDAModel(myGeneric_Model):
         }
         return topic
 
-    def beta(self, topic: str, word: str) -> dict:
+    def beta(self: T, topic: str, word: str) -> dict:
         """Calc beta and return it"""
         probability = {
             "word": "consetetur",
@@ -57,17 +59,17 @@ class LDAModel(myGeneric_Model):
 
         return probability
 
-    def phi(self, word: str, topic: str) -> float:
+    def phi(self: T, word: str, topic: str) -> float:
         """Calc probability of word w occurring in topic k"""
         probability = 0.213
         return probability
 
-    def theta(self, topic: str, document: str) -> float:
+    def theta(self: T, topic: str, document: str) -> float:
         """Calc probability of topic k occurring in document d"""
         probability = 0.223
         return probability
 
-    def getk(self) -> Any:
+    def getk(self: T) -> Any:
         """Returns and computes k (Number of topics)
 
         Returns:
@@ -75,7 +77,7 @@ class LDAModel(myGeneric_Model):
         """
         return len(self.getK())
 
-    def getNumTopics(self) -> Any:
+    def getNumTopics(self: T) -> Any:
         """Returns and computes Number of topics
 
         Returns:
@@ -83,7 +85,7 @@ class LDAModel(myGeneric_Model):
         """
         return self.getk()
 
-    def getK(self) -> Any:
+    def getK(self: T) -> Any:
         """Returns and computes K (Topics in a dict)
 
         Returns:
@@ -91,7 +93,7 @@ class LDAModel(myGeneric_Model):
         """
         return self.processingModel.get_topics().tolist()
 
-    def getTopics(self) -> Any:
+    def getTopics(self: T) -> Any:
         """Returns and computes K (Topics in a dict)
 
         Returns:
@@ -99,7 +101,7 @@ class LDAModel(myGeneric_Model):
         """
         return self.getK()
 
-    def train(self, inputObject: dict) -> None:
+    def train(self: T, inputObject: dict) -> None:
         """Trains the LDAModel given a inputObject.
         The input object should at least contain some paper ids,
         which will be requested from the backend
@@ -112,7 +114,7 @@ class LDAModel(myGeneric_Model):
         #        Later on this will be an array of paper ids. Maybe create an Issue?
         self.processingModel.update(**inputObject)
 
-    def predict(self, inputObject: dict) -> list:
+    def predict(self: T, inputObject: dict) -> list:
         """Given some inputObject the LDAModel will classfiy the input data
         according to the data it was trained on
         Arguments:
