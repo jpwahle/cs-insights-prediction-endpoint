@@ -4,7 +4,7 @@ from typing import Optional
 
 import jwt
 import pydantic
-import requests  # type: ignore
+import requests
 from decouple import config  # type: ignore
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -27,7 +27,7 @@ def encode_token(data: dict) -> str:
     """
     SECRET = config("JWT_SECRET")
     ALG = config("JWT_SIGN_ALG")
-    return jwt.encode(data, SECRET, ALG)
+    return str(jwt.encode(data, SECRET, ALG))
 
 
 def decode_token(token: str) -> TokenData:

@@ -11,11 +11,12 @@ fastapi = "^0.70.0"
 uvicorn = "^0.15.0"
 bson = "^0.5.10"
 pydantic = "^1.8.2"
+gensim = "^4.1.2"
 requests = "^2.26.0"
 PyJWT = "^2.3.0"
 python-decouple = "^3.5"
 requests-mock = "^1.9.3"
-types-requests = "^2.27.3"
+types-requests = "^2.27.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
