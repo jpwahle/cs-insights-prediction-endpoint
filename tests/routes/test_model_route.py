@@ -99,3 +99,60 @@ def test_model_create_fail(
     """
     response = client.post(endpoint, json=failingModelCreationRequest.dict())
     assert response.status_code == 404
+
+
+# TODO New tests for new routes:
+# Model
+#   delete
+
+def test_model_delete(
+    client: Generator, endpoint: str, modelDeletionRequest: ModelDeletionRequest
+) -> None:
+    """Test for successfull model deletion
+
+    Arguments:
+        client (TestClient): The current test client
+        endpoint (str): Endpoint to query
+        modelDeletionRequest (ModelDeletionRequest): A correct ModelDeletionRequest
+    """
+    response = client.delete(endpoint, json=modelDeletionRequest.dict())
+    assert response.status_code == 200
+    createdModelID = response.json()["data"]
+    assert "done" in response.headers
+
+
+#   update
+
+def test_model_update(
+    client: Generator, endpoint: str, modelUpdateRequest: ModelUpdateRequest
+) -> None:
+    """Test for successfull model update
+
+    Arguments:
+        client (TestClient): The current test client
+        endpoint (str): Endpoint to query
+        modelUpdateRequest (ModelUpdateRequest): A correct ModelUpdateRequest
+    """
+    response = client.patch(endpoint, json=modelUpdateRequest.dict())
+    assert response.status_code == 201
+    createdModelID = response.json()["modelID"]
+    assert "modelID" in response.headers
+
+
+# Model/function/args
+#   post
+
+def test_model_function(
+    client: Generator, endpoint: str, modelFunctionRequest: ModelFunctionRequest
+) -> None:
+    """Test for successfull model update
+
+    Arguments:
+        client (TestClient): The current test client
+        endpoint (str): Endpoint to query
+        modelFunctionRequest (ModelFunctionRequest): A correct ModelFunctionRequest
+    """
+    response = client.post(endpoint, json=modelFunctionRequest.dict())
+    assert response.status_code == 200
+    createdModelID = response.json()["output_model"]
+    assert "output_model" in response.headers
