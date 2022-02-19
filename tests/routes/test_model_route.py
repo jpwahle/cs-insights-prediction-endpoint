@@ -5,7 +5,12 @@ from fastapi.testclient import TestClient
 
 from nlp_land_prediction_endpoint import __version__
 from nlp_land_prediction_endpoint.app import app
-from nlp_land_prediction_endpoint.routes.route_model import ModelCreationRequest
+from nlp_land_prediction_endpoint.routes.route_model import (
+    ModelCreationRequest,
+    ModelDeletionRequest,
+    ModelFunctionRequest,
+    ModelUpdateRequest,
+)
 
 
 @pytest.fixture
@@ -37,6 +42,45 @@ def modelCreationRequest() -> ModelCreationRequest:
         ModelCreationRequest: An correct modelcreation request
     """
     return ModelCreationRequest(modelType="lda", modelSpecification={"createdBy": "Test"})
+
+
+# TODO-AT change accordingly to changes in route_model.py
+@pytest.fixture
+def modelFunctionRequest() -> ModelFunctionRequest:
+    """Get a correct model deletion request
+
+    Returns:
+        ModelFunctionRequest: An correct modeldeletion request
+    """
+    return ModelFunctionRequest(
+        modelID="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+    )
+
+
+# TODO-AT change accordingly to changes in route_model.py
+@pytest.fixture
+def modelDeletionRequest() -> ModelDeletionRequest:
+    """Get a correct model deletion request
+
+    Returns:
+        ModelDeletionRequest: An correct modeldeletion request
+    """
+    return ModelDeletionRequest(
+        modelID="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+    )
+
+
+# TODO-AT change accordingly to changes in route_model.py
+@pytest.fixture
+def modelUpdateRequest() -> ModelUpdateRequest:
+    """Get a correct model deletion request
+
+    Returns:
+        ModelUpdateRequest: An correct modeldeletion request
+    """
+    return ModelUpdateRequest(
+        modelID="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+    )
 
 
 @pytest.fixture
@@ -73,6 +117,25 @@ def test_model_create(
     assert response2_json["models"] == [createdModelID]
 
 
+def test_model_list_functionCalls(client: Generator, endpoint: str) -> None:
+    """Test for listing all functions of a model
+
+    Arguments:
+        client (TestClient): The current test client
+        endpoint (str): Endpoint to query
+    """
+    models = client.get(endpoint).json()
+    assert "models" in models
+    testModelID = models["models"][0]
+    response = client.get(endpoint + testModelID)
+    assert response.status_code == 200
+    response_json = response.json()
+    assert "functionCalls" in response_json
+    assert len(response_json["functionCalls"]) == 10
+    failing_response = client.get(endpoint + "thisWillNeverEverExist")
+    assert failing_response.status_code == 404
+
+
 def test_model_list_implemented(client: Generator, endpoint: str) -> None:
     """Test for listing implemented models
 
@@ -101,9 +164,43 @@ def test_model_create_fail(
     assert response.status_code == 404
 
 
-# TODO New tests for new routes:
-# Model
-#   delete
+# TODO
+# def test_model_update(
+#     client: Generator, endpoint: str, modelUpdateRequest: ModelUpdateRequest
+# ) -> None:
+#     """Test for successfull model update
+#
+#     Arguments:
+#         client (TestClient): The current test client
+#         endpoint (str): Endpoint to query
+#         modelUpdateRequest (ModelUpdateRequest): A correct ModelUpdateRequest
+#     """
+#     response = client.patch(endpoint, json=modelUpdateRequest.dict())
+#     assert response.status_code == 201
+#     updatedModelID = response.json()["modelID"]
+#     assert updatedModelID == modelUpdateRequest.modelID
+#     assert "modelID" in response.headers
+
+
+def test_model_function(client: Generator, endpoint: str) -> None:
+    """Test for successfull model update
+
+    Arguments:
+        client (TestClient): The current test client
+        endpoint (str): Endpoint to query
+        modelFunctionRequest (ModelFunctionRequest): A correct ModelFunctionRequest
+    """
+    models = client.get(endpoint).json()
+    assert "models" in models
+    testModelID = models["models"][0]
+    mfr = ModelFunctionRequest(modelID=testModelID)
+    response = client.post(endpoint + str(mfr.modelID) + "/getTopics/test")  # TODO remove /test
+    assert response.status_code == 200
+    failing_response = client.post(endpoint + "thisWill/Never/EverExist")  # TODO
+    assert failing_response.status_code == 404
+    failing_response = client.post(endpoint + str(mfr.modelID) + "/thisWillNever/EverExist")  # TODO
+    assert failing_response.status_code == 404
+
 
 def test_model_delete(
     client: Generator, endpoint: str, modelDeletionRequest: ModelDeletionRequest
@@ -115,44 +212,13 @@ def test_model_delete(
         endpoint (str): Endpoint to query
         modelDeletionRequest (ModelDeletionRequest): A correct ModelDeletionRequest
     """
-    response = client.delete(endpoint, json=modelDeletionRequest.dict())
+    models = client.get(endpoint).json()
+    assert "models" in models
+    testModelID = models["models"][0]
+    mdr = ModelDeletionRequest(modelID=testModelID)
+    response = client.delete(endpoint + str(mdr.modelID))
     assert response.status_code == 200
-    createdModelID = response.json()["data"]
-    assert "done" in response.headers
-
-
-#   update
-
-def test_model_update(
-    client: Generator, endpoint: str, modelUpdateRequest: ModelUpdateRequest
-) -> None:
-    """Test for successfull model update
-
-    Arguments:
-        client (TestClient): The current test client
-        endpoint (str): Endpoint to query
-        modelUpdateRequest (ModelUpdateRequest): A correct ModelUpdateRequest
-    """
-    response = client.patch(endpoint, json=modelUpdateRequest.dict())
-    assert response.status_code == 201
-    createdModelID = response.json()["modelID"]
-    assert "modelID" in response.headers
-
-
-# Model/function/args
-#   post
-
-def test_model_function(
-    client: Generator, endpoint: str, modelFunctionRequest: ModelFunctionRequest
-) -> None:
-    """Test for successfull model update
-
-    Arguments:
-        client (TestClient): The current test client
-        endpoint (str): Endpoint to query
-        modelFunctionRequest (ModelFunctionRequest): A correct ModelFunctionRequest
-    """
-    response = client.post(endpoint, json=modelFunctionRequest.dict())
-    assert response.status_code == 200
-    createdModelID = response.json()["output_model"]
-    assert "output_model" in response.headers
+    deletedModelID = response.json()["modelID"]
+    assert deletedModelID == mdr.modelID
+    failing_response = client.delete(endpoint + "thisWillNeverEverExist")
+    assert failing_response.status_code == 404

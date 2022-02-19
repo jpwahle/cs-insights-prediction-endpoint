@@ -5,9 +5,9 @@ from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import BaseModel
 
 from nlp_land_prediction_endpoint import __version__
+from nlp_land_prediction_endpoint.models.generic_model import GenericOutputModel
 from nlp_land_prediction_endpoint.models.lda_model import LDAModel
 from nlp_land_prediction_endpoint.utils.storage_controller import storage
-from nlp_land_prediction_endpoint.models.generic_model import GenericOutputModel
 
 router: APIRouter = APIRouter()
 
@@ -20,10 +20,16 @@ class StorageControllerListReponse(BaseModel):
     """
 
     models: List[str]
-    functionCalls: List[str]
     # error: str
 
 
+class ModelSpecificFunctionCallResponse(BaseModel):
+    """Response model for model specific function calls"""
+
+    functionCalls: List[str]
+
+
+# XXX-TN Do we need this?
 class ErrorModel(BaseModel):
     """Response Model for an err0r"""
 
@@ -31,13 +37,63 @@ class ErrorModel(BaseModel):
 
 
 class ModelCreationResponse(BaseModel):
+    """Response Model for the successfull deletion of a model"""
+
+    modelID: str
+
+
+# TODO-AT check if annotation is correct
+class ModelDeletionResponse(BaseModel):
     """Response Model for the successfull creation of a model"""
 
     modelID: str
 
 
+# TODO-AT check if Annotation is correct
 class ModelOutputResponse(BaseModel):
-    output_model: GenericOutputModel
+    """Response Model for a successfull of function of a model"""
+
+    # XXX-TN This needs some more explaing
+    # output_model: GenericOutputModel
+    # For now i changed it to a simple string output
+    output: str
+
+
+# TODO-AT TN: I just copied the ModelCreationRequest,
+#         since this class was used but i could not find it
+#         please change
+class ModelDeletionRequest(BaseModel):
+    """Response model for creating a Model
+    This contains the modelType (e.g., lda) and the model specification
+    which should be parsable to the modelTypes pydentic schema.
+    """
+
+    modelID: str
+
+
+# TODO-AT TN: I just copied the ModelCreationRequest,
+#         since this class was used but i could not find it
+#         please change
+class ModelFunctionRequest(BaseModel):
+    """Response model for creating a Model
+    This contains the modelType (e.g., lda) and the model specification
+    which should be parsable to the modelTypes pydentic schema.
+    """
+
+    modelID: str
+
+
+# TODO-AT TN: I just copied the ModelCreationRequest,
+#         since this class was used but i could not find it
+#         please change
+class ModelUpdateRequest(BaseModel):
+    """Response model for creating a Model
+    This contains the modelType (e.g., lda) and the model specification
+    which should be parsable to the modelTypes pydentic schema.
+    """
+
+    modelID: str
+    modelSpecification: dict
 
 
 class ModelCreationRequest(BaseModel):
@@ -55,9 +111,20 @@ class ModelCreationRequest(BaseModel):
 
 
 @router.get(
+    "/implemented",
+    response_description="Lists all currently available(implemented) models",
+    response_model=StorageControllerListReponse,
+    status_code=status.HTTP_200_OK,
+)
+def list_all_implemented_models() -> StorageControllerListReponse:
+    """Endpoint for getting a list of all implemented models"""
+    return StorageControllerListReponse(models=["lda"])
+
+
+@router.get(
     "/{current_modelID}",
     response_description="Lists all function calls of the current model",
-    response_model=BaseModel,
+    response_model=ModelSpecificFunctionCallResponse,
     status_code=status.HTTP_200_OK,
 )
 def list_all_function_calls(current_modelID: str) -> BaseModel:
@@ -66,20 +133,20 @@ def list_all_function_calls(current_modelID: str) -> BaseModel:
     currentModel = storage.getModel(current_modelID)
     if currentModel is None:
         # error not found
-        return ErrorModel(error="NotFound")
+        raise HTTPException(status_code=404, detail="Model not found")
 
     # get fun calls
     cMFCalls = currentModel.getFunctionCalls()  # current model functioncalls list
-    return StorageControllerListReponse(functionCalls=[cMFCalls])
+    return ModelSpecificFunctionCallResponse(functionCalls=cMFCalls)
 
 
 @router.delete(
     "/{current_modelID}",
     response_description="Delete the current model",
-    response_model=StorageControllerListReponse,  # still applicable?
+    response_model=ModelDeletionResponse,
     status_code=status.HTTP_200_OK,
 )
-def deleteModel(current_modelID: str) -> BaseModel:
+def deleteModel(current_modelID: str) -> ModelDeletionResponse:
     """Endpoint for deleting a model"""
     # validate id
     currentModel = storage.getModel(current_modelID)
@@ -89,38 +156,31 @@ def deleteModel(current_modelID: str) -> BaseModel:
 
     # delete it
     storage.delModel(currentModel.getId())
-    return BaseModel(data="done")
+    return ModelDeletionResponse(modelID=current_modelID)
 
 
-@router.patch(
-    "/{current_modelID}",
-    response_description="Update the current model",
-    response_model=ModelCreationResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-def updateModel(modelCreationRequest: ModelCreationRequest, response: Response, current_modelID: str) -> BaseModel:
-    """Endpoint for updating a model"""
-    # validate id
-    currentModel = storage.getModel(current_modelID)
-    if currentModel is None:
-        # error not found
-        raise HTTPException(status_code=404, detail="Model not implemented")
-
-    # create new, delete old
-    newID = create_model(modelCreationRequest, response)
-    storage.delModel(currentModel.getId())
-    return ModelCreationResponse(modelID=newID)
-
-
-@router.get(
-    "/implemented",
-    response_description="Lists all currently available(implemented) models",
-    response_model=StorageControllerListReponse,
-    status_code=status.HTTP_200_OK,
-)
-def list_all_implemented_models() -> StorageControllerListReponse:
-    """Endpoint for getting a list of all implemented models"""
-    return StorageControllerListReponse(models=["lda"])
+# TODO-AT I could not get this to work/don't understand what needs to be done
+#         and i think we should not be calling other endpoint functions
+# @router.patch(
+#     "/{current_modelID}",
+#     response_description="Update the current model",
+#     response_model=ModelCreationResponse,
+#     status_code=status.HTTP_201_CREATED,
+# )
+# def updateModel(
+#     modelCreationRequest: ModelCreationRequest, response: Response, current_modelID: str
+# ) -> BaseModel:
+#     """Endpoint for updating a model"""
+#     # validate id
+#     currentModel = storage.getModel(current_modelID)
+#     if currentModel is None:
+#         # error not found
+#         raise HTTPException(status_code=404, detail="Model not implemented")
+#
+#     # create new, delete old
+#     newID = create_model(modelCreationRequest, response)
+#     storage.delModel(currentModel.getId())
+#     return ModelCreationResponse(modelID=newID)
 
 
 @router.get(
@@ -164,6 +224,9 @@ def create_model(
     return ModelCreationResponse(modelID=model.id)
 
 
+# XXX-TN I think we should consider putting req_function and data_input as post parameters
+#        rather than using them as query parameters. Especially for data_input this makes
+#        much more sense
 @router.post(
     "/{current_modelID}/{req_function}/{data_input}",
     response_description="Runs a function",
@@ -171,21 +234,12 @@ def create_model(
     status_code=status.HTTP_200_OK,
 )
 def run_function(current_modelID: str, req_function: str, data_input: str) -> BaseModel:
+    """Runs a given function of a given model"""
     # validate id
     currentModel = storage.getModel(current_modelID)
     if currentModel is None:
         # error not found
         raise HTTPException(status_code=404, detail="Model not implemented")
-
-    # validate function call
-    function = ""
-    for i in currentModel.getFunctionCalls():
-        if (i == req_function):
-            function = currentModel.getFunctionCalls()[i]
-            break
-
-    if (function == ""):
-        raise HTTPException(status_code=404, detail="Function of model not implemented")
 
     # select right function
     # Something like:
@@ -193,13 +247,16 @@ def run_function(current_modelID: str, req_function: str, data_input: str) -> Ba
 
     # Find function, it will be stored in myFun
     try:
-        myFun = getattr(currentModel, function)
+        myFun = getattr(currentModel, req_function)
     except AttributeError:
         raise HTTPException(status_code=404, detail="Function not implemented")
 
     # Call the function with input
-    output = myFun(data_input)
-    outModelResp = ModelOutputResponse(output_model=output)
+    # output = myFun(data_input)
+    # XXX-TN The above call will almost never work due to data_input being a string.
+    #        I think a good solution would be to define data_input as dict and upack it here
+    output = myFun()  # Temporary see above
+    outModelResp = ModelOutputResponse(output=str(output))
 
     # return
     return outModelResp
