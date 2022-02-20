@@ -1,7 +1,7 @@
 """This module implements the endpoint logic for models."""
 from typing import List
 
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
 
 from nlp_land_prediction_endpoint import __version__
@@ -30,32 +30,32 @@ class ModelSpecificFunctionCallResponse(BaseModel):
 
 
 # XXX-TN Do we need this?
-class ErrorModel(BaseModel):
-    """Response Model for an err0r"""
-
-    error: str
+# XXX-AT We can just output every error with status-codes, but they are not precise
+#class ErrorModel(BaseModel):
+#    """Response Model for an error"""
+#
+#    error: str
 
 
 class ModelCreationResponse(BaseModel):
-    """Response Model for the successfull deletion of a model"""
-
-    modelID: str
-
-
-# TODO-AT check if annotation is correct
-class ModelDeletionResponse(BaseModel):
     """Response Model for the successfull creation of a model"""
 
     modelID: str
 
 
-# TODO-AT check if Annotation is correct
+class ModelDeletionResponse(BaseModel):
+    """Response Model for the successfull deletion of a model"""
+
+    modelID: str
+
+
 class ModelOutputResponse(BaseModel):
-    """Response Model for a successfull of function of a model"""
+    """Response Model for an output of function of a model"""
 
     # XXX-TN This needs some more explaing
     # output_model: GenericOutputModel
     # For now i changed it to a simple string output
+    # XXX-AT if we have as Output something like a list, a model would be more gerneral, but str is fine
     output: str
 
 
@@ -161,6 +161,9 @@ def deleteModel(current_modelID: str) -> ModelDeletionResponse:
 
 # TODO-AT I could not get this to work/don't understand what needs to be done
 #         and i think we should not be calling other endpoint functions
+# XXX-AT Some do it like that, but with "FastAPI" and some use just "get" for it.
+#        Other question would be, if we actually need this, if we have delete and put.
+#        Is there a reason, why we use "API-Router" and not "FastAPI"?
 # @router.patch(
 #     "/{current_modelID}",
 #     response_description="Update the current model",
@@ -227,12 +230,21 @@ def create_model(
 # XXX-TN I think we should consider putting req_function and data_input as post parameters
 #        rather than using them as query parameters. Especially for data_input this makes
 #        much more sense
+# XXX-AT Makes sense
 @router.post(
-    "/{current_modelID}/{req_function}/{data_input}",
+    "/{current_modelID}",
     response_description="Runs a function",
     response_model=GenericOutputModel,
     status_code=status.HTTP_200_OK,
 )
+async def getInformation(current_modelID: str, info : Request) -> BaseModel:
+    """gets info out of post data"""
+    req_info = await info.json()
+    req_function = req_info["function"]
+    data_input = req_info["data"] 
+    return run_function(current_modelID, req_function, data_input)
+    
+
 def run_function(current_modelID: str, req_function: str, data_input: str) -> BaseModel:
     """Runs a given function of a given model"""
     # validate id
@@ -242,7 +254,7 @@ def run_function(current_modelID: str, req_function: str, data_input: str) -> Ba
         raise HTTPException(status_code=404, detail="Model not implemented")
 
     # select right function
-    # Something like:
+    # something like:
     #   currentmodel.{function}()
 
     # Find function, it will be stored in myFun
@@ -255,6 +267,7 @@ def run_function(current_modelID: str, req_function: str, data_input: str) -> Ba
     # output = myFun(data_input)
     # XXX-TN The above call will almost never work due to data_input being a string.
     #        I think a good solution would be to define data_input as dict and upack it here
+    # XXX-AT Now with info from request working?
     output = myFun()  # Temporary see above
     outModelResp = ModelOutputResponse(output=str(output))
 
