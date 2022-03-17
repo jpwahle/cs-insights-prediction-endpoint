@@ -1,7 +1,7 @@
 """This modulew implements the generic-model"""
 import random
 from datetime import datetime
-from typing import Any, Optional, Set, TypeVar
+from typing import Any, Dict, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -80,11 +80,11 @@ class GenericInputModel(BaseModel):
     # Other input for BOW's: Set[tuple]
     # Other input for plainText: Set[str] (if we wan't to test one string outide of DB)
 
-    paperIds: Set[str] = Field(...)
+    inputData: Dict = Field(...)
     functionCall: str = Field(...)
 
 
 class GenericOutputModel(BaseModel):
     """Output for a generic model"""
 
-    pass
+    outputData: Dict = Field(...)

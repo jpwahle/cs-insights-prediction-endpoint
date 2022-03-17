@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from nlp_land_prediction_endpoint import __version__
 from nlp_land_prediction_endpoint.app import app
+from nlp_land_prediction_endpoint.models.generic_model import GenericInputModel
 from nlp_land_prediction_endpoint.routes.route_model import (
     ModelCreationRequest,
     ModelDeletionRequest,
@@ -95,6 +96,16 @@ def failingModelCreationRequest() -> ModelCreationRequest:
     )
 
 
+@pytest.fixture
+def modelFunctionCallRequest() -> GenericInputModel:
+    """Get a correct GenericInput model used for testing the function call endpoint
+
+    Returns:
+        GenericInputModel: A GenericModelInput with a function call and empty data
+    """
+    return GenericInputModel(functionCall="getTopics", inputData={})
+
+
 def test_model_create(
     client: Generator, endpoint: str, modelCreationRequest: ModelCreationRequest
 ) -> None:
@@ -182,23 +193,32 @@ def test_model_create_fail(
 #     assert "modelID" in response.headers
 
 
-def test_model_function(client: Generator, endpoint: str) -> None:
+def test_model_function(
+    client: Generator, endpoint: str, modelFunctionCallRequest: GenericInputModel
+) -> None:
     """Test for successfull model update
 
     Arguments:
         client (TestClient): The current test client
         endpoint (str): Endpoint to query
-        modelFunctionRequest (ModelFunctionRequest): A correct ModelFunctionRequest
+        modelFunctionCallRequest (GenericInputModel): A GenericInput model holding the
+                                                      function call as well as no data
     """
     models = client.get(endpoint).json()
     assert "models" in models
     testModelID = models["models"][0]
     mfr = ModelFunctionRequest(modelID=testModelID)
-    response = client.post(endpoint + str(mfr.modelID) + "/getTopics/test")  # TODO remove /test
+    response = client.post(
+        endpoint + str(mfr.modelID), json=modelFunctionCallRequest.dict()
+    )  # TODO remove /test
     assert response.status_code == 200
-    failing_response = client.post(endpoint + "thisWill/Never/EverExist")  # TODO
+    failing_response = client.post(
+        endpoint + "nonExistentModel", json={"functionCall": "ThisWillNeverExists", "inputData": {}}
+    )  # TODO make a proper pyfixture
     assert failing_response.status_code == 404
-    failing_response = client.post(endpoint + str(mfr.modelID) + "/thisWillNever/EverExist")  # TODO
+    failing_response = client.post(
+        endpoint + str(mfr.modelID), json={"functionCall": "ThisWillNeverExists", "inputData": {}}
+    )  # TODO make a proper pyfixture
     assert failing_response.status_code == 404
 
 

@@ -1,11 +1,14 @@
 """This module implements the endpoint logic for models."""
-from typing import List
+from typing import Any, Dict, List
 
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import BaseModel
 
 from nlp_land_prediction_endpoint import __version__
-from nlp_land_prediction_endpoint.models.generic_model import GenericOutputModel
+from nlp_land_prediction_endpoint.models.generic_model import (
+    GenericInputModel,
+    GenericOutputModel,
+)
 from nlp_land_prediction_endpoint.models.lda_model import LDAModel
 from nlp_land_prediction_endpoint.utils.storage_controller import storage
 
@@ -31,7 +34,7 @@ class ModelSpecificFunctionCallResponse(BaseModel):
 
 # XXX-TN Do we need this?
 # XXX-AT We can just output every error with status-codes, but they are not precise
-#class ErrorModel(BaseModel):
+# class ErrorModel(BaseModel):
 #    """Response Model for an error"""
 #
 #    error: str
@@ -47,16 +50,6 @@ class ModelDeletionResponse(BaseModel):
     """Response Model for the successfull deletion of a model"""
 
     modelID: str
-
-
-class ModelOutputResponse(BaseModel):
-    """Response Model for an output of function of a model"""
-
-    # XXX-TN This needs some more explaing
-    # output_model: GenericOutputModel
-    # For now i changed it to a simple string output
-    # XXX-AT if we have as Output something like a list, a model would be more gerneral, but str is fine
-    output: str
 
 
 # TODO-AT TN: I just copied the ModelCreationRequest,
@@ -227,49 +220,39 @@ def create_model(
     return ModelCreationResponse(modelID=model.id)
 
 
-# XXX-TN I think we should consider putting req_function and data_input as post parameters
-#        rather than using them as query parameters. Especially for data_input this makes
-#        much more sense
-# XXX-AT Makes sense
 @router.post(
     "/{current_modelID}",
     response_description="Runs a function",
     response_model=GenericOutputModel,
     status_code=status.HTTP_200_OK,
 )
-async def getInformation(current_modelID: str, info : Request) -> BaseModel:
-    """gets info out of post data"""
-    req_info = await info.json()
-    req_function = req_info["function"]
-    data_input = req_info["data"] 
-    return run_function(current_modelID, req_function, data_input)
-    
+def getInformation(current_modelID: str, genericInput: GenericInputModel) -> BaseModel:
+    """Gets info out of post data"""
+    return run_function(current_modelID, genericInput.functionCall, genericInput.inputData)
 
-def run_function(current_modelID: str, req_function: str, data_input: str) -> BaseModel:
+
+def run_function(current_modelID: str, req_function: str, data_input: Dict[Any, Any]) -> BaseModel:
     """Runs a given function of a given model"""
-    # validate id
+    # Validate id
     currentModel = storage.getModel(current_modelID)
     if currentModel is None:
         # error not found
-        raise HTTPException(status_code=404, detail="Model not implemented")
+        raise HTTPException(status_code=404, detail="Model not found")
 
-    # select right function
-    # something like:
-    #   currentmodel.{function}()
-
-    # Find function, it will be stored in myFun
+    # Check if the function is actually availabe in the requested model
+    # Return an HTTPException if not; Execute the function and return Dict otherwise
     try:
         myFun = getattr(currentModel, req_function)
     except AttributeError:
         raise HTTPException(status_code=404, detail="Function not implemented")
 
-    # Call the function with input
-    # output = myFun(data_input)
-    # XXX-TN The above call will almost never work due to data_input being a string.
-    #        I think a good solution would be to define data_input as dict and upack it here
-    # XXX-AT Now with info from request working?
-    output = myFun()  # Temporary see above
-    outModelResp = ModelOutputResponse(output=str(output))
+    # Run function and parse output dict into actual response model
+    output = myFun(**data_input)
+    # XXX-TN we have to ensure that we return a dict on a function call
+    #        i dont know if the following is the best way to achive this
+    if not type(output) is dict:
+        # raise HTTPException(status_code=500, detail="Model did not return a valid response")
+        output = {req_function: str(output)}  # TODO-TN this is relly hacky
+    outModelResp = GenericOutputModel(outputData=output)
 
-    # return
     return outModelResp
