@@ -14,12 +14,15 @@ if not os.path.exists("./.env"):
     os.environ["JWT_SECRET"] = "super_secret_secret"
     os.environ["JWT_TOKEN_EXPIRATION_MINUTES"] = "30"
     os.environ["JWT_SIGN_ALG"] = "HS256"
+    os.environ["NODE_TYPE"] = "SECONDARY"
 
+print(os.environ)
 
 from decouple import config  # type: ignore
 from fastapi import FastAPI
 
 import nlp_land_prediction_endpoint
+from nlp_land_prediction_endpoint.middleware.forward_middleware import ForwardMiddleware
 from nlp_land_prediction_endpoint.routes.route_auth import router as AuthRouter
 from nlp_land_prediction_endpoint.routes.route_model import router as ModelRouter
 from nlp_land_prediction_endpoint.routes.route_status import router as StatusRouter
@@ -31,6 +34,8 @@ app = FastAPI(title="NLP-Land-prediction-endpoint", docs_url="/api/docs", redoc_
 
 if "{version}" in config("AUTH_BACKEND_URL"):
     get_backend_version()
+
+app.add_middleware(ForwardMiddleware)
 
 # app.add_event_handler("startup", connect_to_third_party_services)
 # app.add_event_handler("shutdown", close_third_party_services)

@@ -32,14 +32,6 @@ class ModelSpecificFunctionCallResponse(BaseModel):
     functionCalls: List[str]
 
 
-# XXX-TN Do we need this?
-# XXX-AT We can just output every error with status-codes, but they are not precise
-# class ErrorModel(BaseModel):
-#    """Response Model for an error"""
-#
-#    error: str
-
-
 class ModelCreationResponse(BaseModel):
     """Response Model for the successfull creation of a model"""
 

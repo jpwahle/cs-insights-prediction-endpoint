@@ -54,3 +54,8 @@ line-length = 100
 
 [package]
 include = ["nlp_land_prediction_endpoint/*.py"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    'ignore:.*scipy.sparse.sparsetools.* is deprecated!'
+]
