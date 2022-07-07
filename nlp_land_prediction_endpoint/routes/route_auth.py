@@ -1,7 +1,6 @@
 """This module implements the authentication endpoint"""
 from datetime import timedelta
 
-from decouple import config  # type: ignore
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from nlp_land_prediction_endpoint.middleware.auth import (
@@ -13,10 +12,12 @@ from nlp_land_prediction_endpoint.models.model_token import TokenModel
 from nlp_land_prediction_endpoint.models.model_token_data import TokenData
 from nlp_land_prediction_endpoint.models.model_user import UserModel
 from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
+from nlp_land_prediction_endpoint.utils.settings import get_settings
 
+settings = get_settings()
 router = APIRouter()
 
-TIME_DELTA = config("JWT_TOKEN_EXPIRATION_MINUTES", cast=int)
+TIME_DELTA = settings.JWT_TOKEN_EXPIRATION_MINUTES
 
 
 @router.post("/login", response_description="Trigger login procedure", response_model=TokenModel)

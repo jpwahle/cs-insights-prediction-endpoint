@@ -5,15 +5,17 @@ from typing import Optional
 import jwt
 import pydantic
 import requests
-from decouple import config  # type: ignore
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from nlp_land_prediction_endpoint.models.model_token_data import TokenData
 from nlp_land_prediction_endpoint.models.model_user import UserModel
 from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
+from nlp_land_prediction_endpoint.utils.settings import get_settings
 
-token_url = config("AUTH_TOKEN_ROUTE")
+settings = get_settings()
+
+token_url = settings.AUTH_TOKEN_ROUTE
 jwt_scheme = OAuth2PasswordBearer(tokenUrl=token_url)
 
 
@@ -25,8 +27,8 @@ def encode_token(data: dict) -> str:
     Returns:
         str: a valid JWT token
     """
-    SECRET = config("JWT_SECRET")
-    ALG = config("JWT_SIGN_ALG")
+    SECRET = settings.JWT_SECRET
+    ALG = settings.JWT_SIGN_ALG
     return str(jwt.encode(data, SECRET, ALG))
 
 
@@ -40,8 +42,8 @@ def decode_token(token: str) -> TokenData:
     Returns:
         TokenData: a TokenData model representing the decoded JWT token
     """
-    SECRET = config("JWT_SECRET")
-    ALG = config("JWT_SIGN_ALG")
+    SECRET = settings.JWT_SECRET
+    ALG = settings.JWT_SIGN_ALG
     return TokenData(**jwt.decode(token, SECRET, [ALG]))
 
 
@@ -79,8 +81,8 @@ def authenticate_user(user: UserLoginModel) -> Optional[UserModel]:
         Optional[UserModel]: If the authentication was successful a UserModel object;
         None otherwise
     """
-    login_provider = config("AUTH_BACKEND_URL")
-    login_route = config("AUTH_BACKEND_LOGIN_ROUTE")
+    login_provider = settings.AUTH_BACKEND_URL
+    login_route = settings.AUTH_BACKEND_LOGIN_ROUTE
     try:
         r = requests.post(
             f"{login_provider}{login_route}",

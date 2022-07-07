@@ -14,9 +14,9 @@ pydantic = "^1.8.2"
 gensim = "^4.1.2"
 requests = "^2.26.0"
 PyJWT = "^2.3.0"
-python-decouple = "^3.5"
 requests-mock = "^1.9.3"
 types-requests = "^2.27.7"
+python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
