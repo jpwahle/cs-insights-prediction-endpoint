@@ -11,9 +11,9 @@ from fastapi.security import OAuth2PasswordBearer
 from nlp_land_prediction_endpoint.models.model_token_data import TokenData
 from nlp_land_prediction_endpoint.models.model_user import UserModel
 from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
-from nlp_land_prediction_endpoint.utils.settings import get_settings
+from nlp_land_prediction_endpoint.utils import settings as Settings
 
-settings = get_settings()
+settings = Settings.get_settings()
 
 token_url = settings.AUTH_TOKEN_ROUTE
 jwt_scheme = OAuth2PasswordBearer(tokenUrl=token_url)

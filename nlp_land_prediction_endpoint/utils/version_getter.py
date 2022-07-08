@@ -2,9 +2,11 @@
 import os
 
 import requests
-from nlp_land_prediction_endpoint.utils.settings import get_settings
 
-settings = get_settings()
+from nlp_land_prediction_endpoint.utils import settings as Settings
+
+settings = Settings.get_settings()
+
 
 def get_backend_version() -> None:
     """Utility function which provides the correct version for the backend"""

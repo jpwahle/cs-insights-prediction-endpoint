@@ -13,4 +13,4 @@ RUN poetry install
 
 COPY test.env /app/.env
 
-ENTRYPOINT ["poetry", "run", "python", "prod.py", "--port", "8000"]
+ENTRYPOINT ["poetry", "run", "python", "prod.py", "--port", "8000", "--workers", "1"]

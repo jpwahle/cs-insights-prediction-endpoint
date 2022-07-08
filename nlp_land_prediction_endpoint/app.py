@@ -1,6 +1,16 @@
 """This module implements the main app."""
-import os
- 
+from fastapi import FastAPI
+
+import nlp_land_prediction_endpoint
+from nlp_land_prediction_endpoint.middleware.forward_middleware import ForwardMiddleware
+from nlp_land_prediction_endpoint.routes.route_auth import router as AuthRouter
+from nlp_land_prediction_endpoint.routes.route_hosts import router as RemoteHostRouter
+from nlp_land_prediction_endpoint.routes.route_model import router as ModelRouter
+from nlp_land_prediction_endpoint.routes.route_status import router as StatusRouter
+from nlp_land_prediction_endpoint.routes.route_topic import router as TopicRouter
+from nlp_land_prediction_endpoint.utils import settings as Settings
+from nlp_land_prediction_endpoint.utils.version_getter import get_backend_version
+
 # if not os.path.exists("./.env"):
 #     print("======== No .env file found ========")
 #     print("= Copy the contents of sample.env  =")
@@ -15,26 +25,14 @@ import os
 #     os.environ["JWT_TOKEN_EXPIRATION_MINUTES"] = "30"
 #     os.environ["JWT_SIGN_ALG"] = "HS256"
 #     os.environ["NODE_TYPE"] = "SECONDARY"
-# 
+#
 # print(os.environ)
 
-from fastapi import FastAPI
-
-import nlp_land_prediction_endpoint
-from nlp_land_prediction_endpoint.middleware.forward_middleware import ForwardMiddleware
-from nlp_land_prediction_endpoint.routes.route_auth import router as AuthRouter
-from nlp_land_prediction_endpoint.routes.route_model import router as ModelRouter
-from nlp_land_prediction_endpoint.routes.route_status import router as StatusRouter
-from nlp_land_prediction_endpoint.routes.route_topic import router as TopicRouter
-from nlp_land_prediction_endpoint.utils.version_getter import get_backend_version
-from nlp_land_prediction_endpoint.utils.settings import Settings
-
-
-settings = Settings()
-print(settings)
 
 app = FastAPI(title="NLP-Land-prediction-endpoint", docs_url="/api/docs", redoc_url="/api/redoc")
 
+
+settings = Settings.get_settings()
 
 if "{version}" in settings.AUTH_BACKEND_URL:
     get_backend_version()
@@ -60,6 +58,12 @@ app.include_router(
     ModelRouter,
     tags=["Model"],
     prefix=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/models",
+)
+
+app.include_router(
+    RemoteHostRouter,
+    tags=["Hosts"],
+    prefix=f"/api/v{nlp_land_prediction_endpoint.__version__.split('.')[0]}/hosts",
 )
 
 app.include_router(

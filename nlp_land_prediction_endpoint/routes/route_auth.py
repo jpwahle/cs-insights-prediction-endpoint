@@ -12,9 +12,9 @@ from nlp_land_prediction_endpoint.models.model_token import TokenModel
 from nlp_land_prediction_endpoint.models.model_token_data import TokenData
 from nlp_land_prediction_endpoint.models.model_user import UserModel
 from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
-from nlp_land_prediction_endpoint.utils.settings import get_settings
+from nlp_land_prediction_endpoint.utils import settings as Settings
 
-settings = get_settings()
+settings = Settings.get_settings()
 router = APIRouter()
 
 TIME_DELTA = settings.JWT_TOKEN_EXPIRATION_MINUTES
