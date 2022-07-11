@@ -1,7 +1,7 @@
 # NLP-Land-prediction-endpoint
 
 <p align="center">
-<a href="https://codecov.io/gh/ag-gipp/NLP-Land-prediction-endpoint"><img src="https://codecov.io/gh/ag-gipp/NLP-Land-prediction-endpoint/branch/main/graph/badge.svg?token=7CL6B5LNKP"/></a>    
+<a href="https://codecov.io/gh/gipplab/NLP-Land-prediction-endpoint"><img src="https://codecov.io/gh/gipplab/NLP-Land-prediction-endpoint/branch/main/graph/badge.svg?token=7CL6B5LNKP"/></a>    
 <a href="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/actions/workflows/release.yml"><img alt="Actions Status" src="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/actions/workflows/release.yml/badge.svg?branch=dev">    
 <a href="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/actions/workflows/main.yml"><img alt="Actions Status" src="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/actions/workflows/main.yml/badge.svg?branch=dev">
 <a href="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/releases"><img alt="Actions Status" src="https://img.shields.io/github/v/release/ag-gipp/NLP-Land-prediction-endpoint"></a>
