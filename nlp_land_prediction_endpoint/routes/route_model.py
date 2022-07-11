@@ -202,9 +202,10 @@ def create_model(
         dict: Either an error or the created model id
     """
     model = None
+    # TODO-TN We need to have a list with all implemented models
     if modelCreationRequest.modelType == "lda":
-        model = LDAModel(**modelCreationRequest.modelSpecification)
-    if model is None:
+        model = LDAModel(**(modelCreationRequest.modelSpecification))
+    else:
         raise HTTPException(status_code=404, detail="Model not implemented")
     storage.addModel(model)
     response.headers["location"] = f"/api/v{__version__.split('.')[0]}/models/{model.id}"

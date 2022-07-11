@@ -24,8 +24,6 @@ def client() -> Generator:
     with TestClient(app) as tc:
         yield tc
 
-    Settings.get_settings().NODE_TYPE = "SECONDARY"
-
 
 @pytest.fixture
 def endpoint() -> str:
@@ -59,9 +57,13 @@ def mock_forward_request(monkeypatch: Any) -> None:
 def test_forward_middleware(client: TestClient, endpoint: str, mock_forward_request: Any) -> None:
     Settings.get_settings().NODE_TYPE = "MAIN"
     response = client.get(endpoint)
-    # assert response.status_code == 200
-    # response = client.post(endpoint, json={"modelType": "None", "modelSpecification" : {}})
     assert response.status_code == 200
+    # XXX-TN this request will somehow deadlock the tests, i dont know why
+    #        It does not make sense cause the same request with modelType="lda" works..
+    # response = client.post(
+    #     endpoint, json={"modelType": "wow", "modelSpecification": {"test": "a"}}
+    # )
+    # assert response.status_code == 404
     response = client.post(endpoint, json={"modelType": "lda"})
     assert response.status_code == 200
     response = client.get(endpoint + "123456789")
