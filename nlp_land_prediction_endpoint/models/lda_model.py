@@ -1,7 +1,15 @@
 """This module implements the LDA-Model"""
-from typing import Any, List, Optional, Tuple, TypeVar
+import json
+from typing import Any, Dict, List, Optional, Tuple, TypeVar
 
+import pyLDAvis  # type: ignore
+import pyLDAvis.gensim_models  # type: ignore
+from gensim.corpora.dictionary import Dictionary  # type: ignore
 from gensim.models.ldamodel import LdaModel  # type: ignore
+from gensim.parsing.preprocessing import (  # type: ignore
+    preprocess_string,
+    remove_stopwords,
+)
 from gensim.test.utils import common_corpus  # type: ignore
 
 from nlp_land_prediction_endpoint.models.generic_model import GenericInputModel
@@ -36,6 +44,7 @@ class LDAModel(myGeneric_Model):
             "getNumTopics": self.getNumTopics,
             "getK": self.getK,
             "getTopics": self.getTopics,
+            "getLDAvis": self.getLDAvis,
             "train": self.train,
             "predict": self.predict,
         }
@@ -100,6 +109,35 @@ class LDAModel(myGeneric_Model):
             Any: A dictionary containing the topics
         """
         return self.getK()
+
+    def getLDAvis(self: T, data: List[Dict[str, str]], num_topics: int = 20) -> Any:
+        """Returns the json output of the LDAvis library, which then gets processed by the frontend
+
+        Args:
+            data (Dict[str,str]): A dictionary containing the title and abstract texts of papers
+
+        Returns:
+            Dict[str, any]: The json output of the LDAvis library. Consider reading
+                            https://pyldavis.readthedocs.io/en/latest/readme.html
+        """
+        docs = list([preprocess_string(remove_stopwords(i["title"])) for i in data])
+        docs = docs + (list([preprocess_string(remove_stopwords(i["abstractText"])) for i in data]))
+
+        dictionary = Dictionary(docs)
+        bow_corpus = [dictionary.doc2bow(doc) for doc in docs]
+
+        self.processingModel = LdaModel(
+            bow_corpus, num_topics=num_topics, passes=10, random_state=0xBEEF
+        )
+
+        vis = pyLDAvis.gensim_models.prepare(self.processingModel, bow_corpus, dictionary)
+        pyLDAvis.save_html(vis, "output/vis_lda_output.html")  # TODO Remove after Testing
+        pyLDAvis.save_json(vis, "output/vis_json_output.json")
+
+        with open("output/vis_json_output.json") as f:
+            out = json.load(f)
+
+        return out
 
     def train(self: T, inputObject: dict) -> None:
         """Trains the LDAModel given a inputObject.

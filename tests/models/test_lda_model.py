@@ -115,6 +115,21 @@ def test_lda_model_initial_values(
     test_training = list(dummy_lda_instance.get_document_topics(common_corpus))
     assert dummy_lda_model.predict({"bow": common_corpus}) == test_training
 
+    assert (
+        isinstance(
+            dummy_lda_model.getLDAvis(
+                [
+                    {"title": "Test1", "abstractText": "Test1"},
+                    {"title": "Test2", "abstractText": "Test2"},
+                    {"title": "Test3", "abstractText": "Test3"},
+                ],
+                num_topics=3,
+            ),
+            dict,
+        )
+        is True
+    )
+
 
 def test_lda_model_initial_values_no_creation_paramers(
     dummy_lda_model_no_creation_parameters: LDAModel, dummy_lda_instance: LdaModel

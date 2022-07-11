@@ -12,6 +12,7 @@ from nlp_land_prediction_endpoint.routes.route_model import (
     ModelFunctionRequest,
     ModelUpdateRequest,
 )
+from nlp_land_prediction_endpoint.utils.storage_controller import storage
 
 
 @pytest.fixture
@@ -142,7 +143,7 @@ def test_model_list_functionCalls(client: Generator, endpoint: str) -> None:
     assert response.status_code == 200
     response_json = response.json()
     assert "functionCalls" in response_json
-    assert len(response_json["functionCalls"]) == 10
+    assert len(response_json["functionCalls"]) == len(storage.getModel(testModelID).functionCalls)
     failing_response = client.get(endpoint + "thisWillNeverEverExist")
     assert failing_response.status_code == 404
 

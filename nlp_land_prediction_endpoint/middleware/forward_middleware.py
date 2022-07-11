@@ -45,7 +45,6 @@ class ForwardMiddleware(BaseHTTPMiddleware):
             else:
                 host = get_host(request.url.path)
             # We don't have a model nor a creation request
-            print(host)
             if host is None:
                 response = await call_next(request)
                 return response
