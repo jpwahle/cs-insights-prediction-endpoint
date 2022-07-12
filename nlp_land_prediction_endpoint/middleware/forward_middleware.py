@@ -44,6 +44,8 @@ class ForwardMiddleware(BaseHTTPMiddleware):
                 host = remote_storage_controller.find_model_in_remote_hosts(body["modelType"])
             else:
                 host = get_host(request.url.path)
+            if "force_host" in request.query_params:
+                host = request.query_params["force_host"]
             # We don't have a model nor a creation request
             if host is None:
                 response = await call_next(request)

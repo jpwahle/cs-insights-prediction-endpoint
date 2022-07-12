@@ -64,6 +64,7 @@ def test_forward_middleware(client: TestClient, endpoint: str, mock_forward_requ
     #     endpoint, json={"modelType": "wow", "modelSpecification": {"test": "a"}}
     # )
     # assert response.status_code == 404
+    response = client.get(endpoint + "?force_host=127.0.0.1")
     response = client.post(endpoint, json={"modelType": "lda"})
     assert response.status_code == 200
     response = client.get(endpoint + "123456789")

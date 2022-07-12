@@ -110,7 +110,13 @@ class LDAModel(myGeneric_Model):
         """
         return self.getK()
 
-    def getLDAvis(self: T, data: List[Dict[str, str]], num_topics: int = 20) -> Any:
+    def getLDAvis(
+        self: T,
+        data: List[Dict[str, str]],
+        num_topics: int = 20,
+        passes: int = 3,
+        random_state: int = 0xBEEF,
+    ) -> Any:
         """Returns the json output of the LDAvis library, which then gets processed by the frontend
 
         Args:
@@ -121,23 +127,26 @@ class LDAModel(myGeneric_Model):
                             https://pyldavis.readthedocs.io/en/latest/readme.html
         """
         docs = list([preprocess_string(remove_stopwords(i["title"])) for i in data])
-        docs = docs + (list([preprocess_string(remove_stopwords(i["abstractText"])) for i in data]))
+        docs = docs + (
+            list(
+                [
+                    preprocess_string(remove_stopwords(i["abstractText"]))
+                    for i in data
+                    if i["abstractText"] is not None
+                ]
+            )
+        )
 
         dictionary = Dictionary(docs)
         bow_corpus = [dictionary.doc2bow(doc) for doc in docs]
 
         self.processingModel = LdaModel(
-            bow_corpus, num_topics=num_topics, passes=10, random_state=0xBEEF
+            bow_corpus, num_topics=num_topics, passes=passes, random_state=random_state
         )
 
         vis = pyLDAvis.gensim_models.prepare(self.processingModel, bow_corpus, dictionary)
-        pyLDAvis.save_html(vis, "output/vis_lda_output.html")  # TODO Remove after Testing
-        pyLDAvis.save_json(vis, "output/vis_json_output.json")
 
-        with open("output/vis_json_output.json") as f:
-            out = json.load(f)
-
-        return out
+        return json.loads(vis.to_json())
 
     def train(self: T, inputObject: dict) -> None:
         """Trains the LDAModel given a inputObject.

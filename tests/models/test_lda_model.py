@@ -124,6 +124,7 @@ def test_lda_model_initial_values(
                     {"title": "Test3", "abstractText": "Test3"},
                 ],
                 num_topics=3,
+                passes=1,
             ),
             dict,
         )
