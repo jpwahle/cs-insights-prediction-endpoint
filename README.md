@@ -1,12 +1,12 @@
 # cs-insights-prediction-endpoint
 
 <p align="center">
-<a href="https://codecov.io/gh/gipplab/NLP-Land-prediction-endpoint"><img src="https://codecov.io/gh/gipplab/NLP-Land-prediction-endpoint/branch/main/graph/badge.svg?token=7CL6B5LNKP"/></a>    
-<a href="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/actions/workflows/release.yml"><img alt="Actions Status" src="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/actions/workflows/release.yml/badge.svg?branch=dev">    
-<a href="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/actions/workflows/main.yml"><img alt="Actions Status" src="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/actions/workflows/main.yml/badge.svg?branch=dev">
-<a href="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/releases"><img alt="Actions Status" src="https://img.shields.io/github/v/release/ag-gipp/NLP-Land-prediction-endpoint"></a>
-<a href="https://ag-gipp.github.io/NLP-Land-prediction-endpoint/"><img alt="Docs" src="https://img.shields.io/badge/Docs-gh--pages-blue"></a>
-<a href="https://github.com/ag-gipp/NLP-Land-prediction-endpoint/blob/master/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
+<a href="https://codecov.io/gh/gipplab/cs-insights-prediction-endpoint"><img src="https://codecov.io/gh/gipplab/cs-insights-prediction-endpoint/branch/main/graph/badge.svg?token=7CL6B5LNKP"/></a>    
+<a href="https://github.com/gipplab/cs-insights-prediction-endpoint/actions/workflows/release.yml"><img alt="Actions Status" src="https://github.com/gipplab/cs-insights-prediction-endpoint/actions/workflows/release.yml/badge.svg?branch=dev">    
+<a href="https://github.com/gipplab/cs-insights-prediction-endpoint/actions/workflows/main.yml"><img alt="Actions Status" src="https://github.com/gipplab/cs-insights-prediction-endpoint/actions/workflows/main.yml/badge.svg?branch=dev">
+<a href="https://github.com/gipplab/cs-insights-prediction-endpoint/releases"><img alt="Actions Status" src="https://img.shields.io/github/v/release/gipplab/cs-insights-prediction-endpoint"></a>
+<a href="https://gipplab.github.io/cs-insights-prediction-endpoint/"><img alt="Docs" src="https://img.shields.io/badge/Docs-gh--pages-blue"></a>
+<a href="https://github.com/gipplab/cs-insights-prediction-endpoint/blob/master/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
@@ -101,7 +101,7 @@ Each feature request, bug, enhancement, etc. has to be related to an issue. We h
 An issue should be a closed component that can be implemented by one developer in 1 day. If the issue is larger than that, split it into smaller components.
 
 We group issues using a task list in another issue that has the `Epic` label. These issues are larger components that need to be developed.
-Each issue with the `Epic` label has a task list with each element of the task list being a issue (e.g., this one [#47](https://github.com/ag-gipp/NLPLand/issues/47)).
+Each issue with the `Epic` label has a task list with each element of the task list being a issue (e.g., this one [#47](https://github.com/gipplab/cs-insights-crawler/issues/47)).
 Whenever a pull request with the above convention gets merged, the corresponding issue gets closed, and the task in the Epic gets checked.
 
 When a branch is assigned to you, a new issue will be created from the `dev` branch including the issue number.
@@ -116,11 +116,20 @@ To build changelogs, each pull-request needs one of the labels "fix", "feature",
 Fork the repo, make changes and send a PR. We'll review it together!
 
 ## License
-
 This project is licensed under the terms of MIT license. For more information, please see the [LICENSE](LICENSE) file.
 
 ## Citation
-
 If you use this repository, or use our tool for analysis, please cite our work:
 
-TODO: Add citation here and as CITATION.cff file when paper is out.
+```bib
+@inproceedings{Wahle2022c,
+  title        = {D3: A Massive Dataset of Scholarly Metadata for Analyzing the State of Computer Science Research},
+  author       = {Wahle, Jan Philip and Ruas, Terry and Mohammad, Saif M. and Gipp, Bela},
+  year         = {2022},
+  month        = {July},
+  booktitle    = {Proceedings of The 13th Language Resources and Evaluation Conference},
+  publisher    = {European Language Resources Association},
+  address      = {Marseille, France},
+  doi          = {},
+}
+```
