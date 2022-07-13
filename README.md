@@ -1,4 +1,4 @@
-# NLP-Land-prediction-endpoint
+# cs-insights-prediction-endpoint
 
 <p align="center">
 <a href="https://codecov.io/gh/gipplab/NLP-Land-prediction-endpoint"><img src="https://codecov.io/gh/gipplab/NLP-Land-prediction-endpoint/branch/main/graph/badge.svg?token=7CL6B5LNKP"/></a>    
