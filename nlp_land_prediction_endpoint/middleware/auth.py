@@ -11,18 +11,17 @@ from fastapi.security import OAuth2PasswordBearer
 from nlp_land_prediction_endpoint.models.model_token_data import TokenData
 from nlp_land_prediction_endpoint.models.model_user import UserModel
 from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
-from nlp_land_prediction_endpoint.utils import settings as Settings
+from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
 
-settings = Settings.get_settings()
-
-token_url = settings.AUTH_TOKEN_ROUTE
+token_url = get_settings().AUTH_TOKEN_ROUTE
 jwt_scheme = OAuth2PasswordBearer(tokenUrl=token_url)
 
 
-def encode_token(data: dict) -> str:
+def encode_token(data: dict, settings: Settings) -> str:
     """Encodes supplied data into an JWT
     Arguments:
         data (dict): Dictionary containing some data (e.g., a UserModel dict)
+        settings (Settings): Settings object; populated by .env file
 
     Returns:
         str: a valid JWT token
@@ -32,12 +31,13 @@ def encode_token(data: dict) -> str:
     return str(jwt.encode(data, SECRET, ALG))
 
 
-def decode_token(token: str) -> TokenData:
+def decode_token(token: str, settings: Settings) -> TokenData:
     """Decodes a supplied JWT into a TokenData model
     (decoding exception should be catched on function call)
 
     Arguments:
         token (str): a (possibly invalid) JWT token
+        settings (Settings): Settings object; populated by .env file
 
     Returns:
         TokenData: a TokenData model representing the decoded JWT token
@@ -47,7 +47,7 @@ def decode_token(token: str) -> TokenData:
     return TokenData(**jwt.decode(token, SECRET, [ALG]))
 
 
-def create_token(user: UserModel, expires_delta: timedelta = None) -> str:
+def create_token(user: UserModel, settings: Settings, expires_delta: timedelta = None) -> str:
     """Creates a JWT given a user as TokenData.
     This will use the JWT_SECRET and JWT_SIGN_ALG as defined in the .env variable.
 
@@ -65,17 +65,18 @@ def create_token(user: UserModel, expires_delta: timedelta = None) -> str:
         expires = datetime.utcnow() + timedelta(minutes=30)
     data.update({"sub": user.email})
     data.update({"exp": expires})
-    token = encode_token(data)
+    token = encode_token(data, settings)
     return token
 
 
-def authenticate_user(user: UserLoginModel) -> Optional[UserModel]:
+def authenticate_user(user: UserLoginModel, settings: Settings) -> Optional[UserModel]:
     """Checks whether the supplied UserModel contains valid
     credentials. This is done by going through the authorization
     endpoint specified in AUTH_LOGIN_ROUTE at the host AUTH_LOGIN_PROVIDER.
 
     Arguments:
         user (UserModel): a user model to authenticate
+        settings (Settings): Settings object; populated by .env file
 
     Returns:
         Optional[UserModel]: If the authentication was successful a UserModel object;
@@ -97,7 +98,9 @@ def authenticate_user(user: UserLoginModel) -> Optional[UserModel]:
         return None
 
 
-async def get_current_user(token: str = Depends(jwt_scheme)) -> UserModel:
+async def get_current_user(
+    token: str = Depends(jwt_scheme), settings: Settings = Depends(get_settings)
+) -> UserModel:
     """Returns the current user given a valid JWT
 
     Arguments:
@@ -113,7 +116,7 @@ async def get_current_user(token: str = Depends(jwt_scheme)) -> UserModel:
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        decoded_token = decode_token(token)
+        decoded_token = decode_token(token, settings)
         user = UserModel(**decoded_token.dict())
     except (jwt.exceptions.InvalidTokenError, pydantic.ValidationError):
         raise credentials_exception

@@ -8,6 +8,7 @@ from nlp_land_prediction_endpoint.utils import settings as Settings
 settings = Settings.get_settings()
 
 
+# XXX-TN Maybe pass settings object instead of using Settings.get_settings()
 def get_backend_version() -> None:
     """Utility function which provides the correct version for the backend"""
     if settings.AUTH_BACKEND_VERSION is None:

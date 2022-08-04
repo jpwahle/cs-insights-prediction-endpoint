@@ -1,6 +1,6 @@
 """This module implements a remote storage controller for the endpoint management"""
 
-from typing import Optional, Set, TypeVar
+from typing import List, Optional, Set, TypeVar
 
 from nlp_land_prediction_endpoint.models.model_hosts import RemoteHost
 
@@ -22,6 +22,30 @@ class RemoteStorageController:
             )
         ]
     )
+
+    def get_all_models(self: RS) -> List[str]:
+        """Returns all implemented models from every host
+
+        Returns:
+            List[str]: The list of all currently active models
+        """
+        all_models = []
+        for host in self.remote_host_list:
+            for model in host.models:
+                all_models.append(model)
+        return all_models
+
+    def get_all_active_models(self: RS) -> List[str]:
+        """Returns all currently active models from every host
+
+        Returns:
+            List[str]: The list of all currently active models
+        """
+        all_active_models = []
+        for host in self.remote_host_list:
+            for model in host.active_models:
+                all_active_models.append(model)
+        return all_active_models
 
     def get_all_remote_hosts(self: RS) -> Set[RemoteHost]:
         """Returns all remote hosts currently in the remote_host_list

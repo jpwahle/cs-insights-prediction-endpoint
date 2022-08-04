@@ -8,7 +8,7 @@ from nlp_land_prediction_endpoint.routes.route_hosts import router as RemoteHost
 from nlp_land_prediction_endpoint.routes.route_model import router as ModelRouter
 from nlp_land_prediction_endpoint.routes.route_status import router as StatusRouter
 from nlp_land_prediction_endpoint.routes.route_topic import router as TopicRouter
-from nlp_land_prediction_endpoint.utils import settings as Settings
+from nlp_land_prediction_endpoint.utils.settings import get_settings
 from nlp_land_prediction_endpoint.utils.version_getter import get_backend_version
 
 # if not os.path.exists("./.env"):
@@ -32,7 +32,7 @@ from nlp_land_prediction_endpoint.utils.version_getter import get_backend_versio
 app = FastAPI(title="NLP-Land-prediction-endpoint", docs_url="/api/docs", redoc_url="/api/redoc")
 
 
-settings = Settings.get_settings()
+settings = get_settings()
 
 if "{version}" in settings.AUTH_BACKEND_URL:
     get_backend_version()

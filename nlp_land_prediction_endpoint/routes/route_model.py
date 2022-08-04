@@ -1,7 +1,8 @@
 """This module implements the endpoint logic for models."""
+from importlib import import_module
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel
 
 from nlp_land_prediction_endpoint import __version__
@@ -9,7 +10,12 @@ from nlp_land_prediction_endpoint.models.generic_model import (
     GenericInputModel,
     GenericOutputModel,
 )
-from nlp_land_prediction_endpoint.models.lda_model import LDAModel
+from nlp_land_prediction_endpoint.utils.remote_storage_controller import (
+    remote_storage_controller,
+)
+
+# from nlp_land_prediction_endpoint.models.lda_model import LDAModel
+from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
 from nlp_land_prediction_endpoint.utils.storage_controller import storage
 
 router: APIRouter = APIRouter()
@@ -101,9 +107,17 @@ class ModelCreationRequest(BaseModel):
     response_model=StorageControllerListReponse,
     status_code=status.HTTP_200_OK,
 )
-def list_all_implemented_models() -> StorageControllerListReponse:
+def list_all_implemented_models(
+    settings: Settings = Depends(get_settings),
+) -> StorageControllerListReponse:
     """Endpoint for getting a list of all implemented models"""
-    return StorageControllerListReponse(models=["lda"])
+    if settings.NODE_TYPE == "MAIN":
+        return StorageControllerListReponse(models=remote_storage_controller.get_all_models())
+    models = []
+    for implemented_models in settings.IMPLEMENTED_MODELS:
+        for implemented_model in implemented_models.keys():
+            models.append(implemented_model)
+    return StorageControllerListReponse(models=models)
 
 
 @router.get(
@@ -177,9 +191,14 @@ def deleteModel(current_modelID: str) -> ModelDeletionResponse:
     response_model=StorageControllerListReponse,
     status_code=status.HTTP_200_OK,
 )
-def list_all_created_models() -> StorageControllerListReponse:
+def list_all_created_models(
+    settings: Settings = Depends(get_settings),
+) -> StorageControllerListReponse:
     """Endpoint for getting a list of all created models"""
-    all_models = list([str(i) for i in storage.getAllModels()])
+    if settings.NODE_TYPE == "MAIN":
+        all_models = remote_storage_controller.get_all_active_models()
+    else:
+        all_models = list([str(i) for i in storage.getAllModels()])
     return StorageControllerListReponse(models=all_models)
 
 
@@ -190,7 +209,9 @@ def list_all_created_models() -> StorageControllerListReponse:
     status_code=status.HTTP_201_CREATED,
 )
 def create_model(
-    modelCreationRequest: ModelCreationRequest, response: Response
+    modelCreationRequest: ModelCreationRequest,
+    response: Response,
+    settings: Settings = Depends(get_settings),
 ) -> ModelCreationResponse:
     """Endpoint for creating a model
 
@@ -203,9 +224,13 @@ def create_model(
     """
     model = None
     # TODO-TN We need to have a list with all implemented models
-    if modelCreationRequest.modelType == "lda":
-        model = LDAModel(**(modelCreationRequest.modelSpecification))
-    else:
+    for implemented_models in settings.IMPLEMENTED_MODELS:
+        if modelCreationRequest.modelType in implemented_models:
+            model_specs = implemented_models[modelCreationRequest.modelType]
+            model_module = import_module(model_specs[0])  # TODO Use proper model
+            model_class = model_specs[1]
+            model = getattr(model_module, model_class)(**(modelCreationRequest.modelSpecification))
+    if model is None:
         raise HTTPException(status_code=404, detail="Model not implemented")
     storage.addModel(model)
     response.headers["location"] = f"/api/v{__version__.split('.')[0]}/models/{model.id}"
