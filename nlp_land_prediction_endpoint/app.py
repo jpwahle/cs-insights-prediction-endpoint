@@ -1,5 +1,5 @@
 """This module implements the main app."""
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 
 import nlp_land_prediction_endpoint
 from nlp_land_prediction_endpoint.middleware.forward_middleware import ForwardMiddleware
@@ -10,23 +10,6 @@ from nlp_land_prediction_endpoint.routes.route_status import router as StatusRou
 from nlp_land_prediction_endpoint.routes.route_topic import router as TopicRouter
 from nlp_land_prediction_endpoint.utils.settings import get_settings
 from nlp_land_prediction_endpoint.utils.version_getter import get_backend_version
-
-# if not os.path.exists("./.env"):
-#     print("======== No .env file found ========")
-#     print("= Copy the contents of sample.env  =")
-#     print("= to .env in the root directory    =")
-#     print("= and change the contents!         =")
-#     print("====================================")
-#     os.environ["AUTH_BACKEND_VERSION"] = "v0"
-#     os.environ["AUTH_BACKEND_URL"] = "http://127.0.0.1/api/{version}"
-#     os.environ["AUTH_BACKEND_LOGIN_ROUTE"] = "/auth/login/service"
-#     os.environ["AUTH_TOKEN_ROUTE"] = "/auth/service"
-#     os.environ["JWT_SECRET"] = "super_secret_secret"
-#     os.environ["JWT_TOKEN_EXPIRATION_MINUTES"] = "30"
-#     os.environ["JWT_SIGN_ALG"] = "HS256"
-#     os.environ["NODE_TYPE"] = "SECONDARY"
-#
-# print(os.environ)
 
 
 app = FastAPI(title="NLP-Land-prediction-endpoint", docs_url="/api/docs", redoc_url="/api/redoc")

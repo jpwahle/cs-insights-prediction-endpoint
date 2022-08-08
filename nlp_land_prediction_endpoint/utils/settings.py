@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     ]
     NODE_TYPE: str = "SECONDARY"
 
+    REMOTE_HOST_DB_URL: str = "mongodb://localhost:27017"
+    REMOTE_HOST_DB_NAME: str = "remote_hosts"
+    MODEL_DB_URL: str = "mongodb://localhost:27017"
+    MODEL_DB_NAME: str = "models"
+
     class Config:
         """Configuration for settings"""
 

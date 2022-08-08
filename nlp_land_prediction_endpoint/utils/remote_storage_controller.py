@@ -3,6 +3,8 @@
 from typing import List, Optional, Set, TypeVar
 
 from nlp_land_prediction_endpoint.models.model_hosts import RemoteHost
+from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
+import motor.motor_asyncio
 
 RS = TypeVar("RS", bound="RemoteStorageController")
 
@@ -10,6 +12,8 @@ RS = TypeVar("RS", bound="RemoteStorageController")
 class RemoteStorageController:
     """StorageController for stroing remote hosts"""
 
+    remote_host_client = None
+    remote_host_db = None
     remote_host_list: Set[RemoteHost] = set(
         [
             RemoteHost(
@@ -22,6 +26,11 @@ class RemoteStorageController:
             )
         ]
     )
+
+    def __init__(self: RS, settings: Settings):
+        self.remote_host_client = motor.motor_asyncio.AsyncIOMotorClient(settings.REMOTE_HOST_DB_URL)
+        self.remote_host_db = self.remote_host_client[settings.REMOTE_HOST_DB_NAME][settings.REMOTE_HOST_DB_NAME]
+        print(f"Successful connection to {settings.REMOTE_HOST_DB_URL}")
 
     def get_all_models(self: RS) -> List[str]:
         """Returns all implemented models from every host
@@ -119,5 +128,7 @@ class RemoteStorageController:
                 return True
         return False
 
+remote_storage_controller: RemoteStorageController = RemoteStorageController(get_settings())
 
-remote_storage_controller: RemoteStorageController = RemoteStorageController()
+def get_remote_storage_controller():
+    return remote_storage_controller

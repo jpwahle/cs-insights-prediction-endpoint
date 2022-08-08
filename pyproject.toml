@@ -18,6 +18,8 @@ requests-mock = "^1.9.3"
 types-requests = "^2.27.7"
 python-dotenv = "^0.20.0"
 pyLDAvis = "^3.3.1"
+pymongo = "^4.2.0"
+motor = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

@@ -16,7 +16,7 @@ from nlp_land_prediction_endpoint.utils.remote_storage_controller import (
 
 # from nlp_land_prediction_endpoint.models.lda_model import LDAModel
 from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
-from nlp_land_prediction_endpoint.utils.storage_controller import storage
+from nlp_land_prediction_endpoint.utils.storage_controller import storage_controller
 
 router: APIRouter = APIRouter()
 

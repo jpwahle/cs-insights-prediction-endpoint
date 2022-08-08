@@ -3,6 +3,8 @@
 from typing import Optional, Set, TypeVar
 
 from nlp_land_prediction_endpoint.models.generic_model import GenericModel
+from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
+import motor.motor_asyncio
 
 T = TypeVar("T", bound="StorageController")
 
@@ -13,10 +15,16 @@ class StorageController:
     """Storage Controller class to enable access to currently created Models"""
 
     models: Set[GenericModel] = set([])
+    model_client = None
+    model_db = None
 
     def __init__(self: T) -> None:
         """Constructor for the storage controller"""
+    def __init__(self: T, settings: Settings):
+        self.model_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MODEL_DB_URL)
+        self.model_db = self.model_client[settings.REMOTE_HOST_DB_NAME][settings.MODEL_DB_NAME]
         self.models = set([])
+        print(f"Successful connection to {settings.MODEL_DB_URL}")
 
     def getModel(self: T, id: str) -> Optional[GenericModel]:
         """Returns the model with id"""
@@ -43,4 +51,6 @@ class StorageController:
             self.models.remove(model)
 
 
-storage: StorageController = StorageController()
+storage_controller: StorageController = StorageController(get_settings())
+def get_storage_controller():
+    return storage_controller
