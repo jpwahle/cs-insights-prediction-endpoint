@@ -1,19 +1,22 @@
 """This module implements a remote storage controller for the endpoint management"""
 
-from typing import List, Optional, Set, TypeVar
+from typing import Any, List, Optional, Set, TypeVar
+
+from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from nlp_land_prediction_endpoint.models.model_hosts import RemoteHost
 from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
-import motor.motor_asyncio
 
 RS = TypeVar("RS", bound="RemoteStorageController")
+
+# Attributes to exclude when saving pydentic models to the database
+exclude_attributes: Any = {}
 
 
 class RemoteStorageController:
     """StorageController for stroing remote hosts"""
 
-    remote_host_client = None
-    remote_host_db = None
     remote_host_list: Set[RemoteHost] = set(
         [
             RemoteHost(
@@ -27,9 +30,16 @@ class RemoteStorageController:
         ]
     )
 
-    def __init__(self: RS, settings: Settings):
-        self.remote_host_client = motor.motor_asyncio.AsyncIOMotorClient(settings.REMOTE_HOST_DB_URL)
-        self.remote_host_db = self.remote_host_client[settings.REMOTE_HOST_DB_NAME][settings.REMOTE_HOST_DB_NAME]
+    def __init__(self: RS, settings: Settings) -> None:
+        """Constructor for the remote storage controller
+
+        Args:
+            settings (Settings): Settings object used for information on the databse
+        """
+        self.remote_host_client: MongoClient = MongoClient(settings.REMOTE_HOST_DB_URL)
+        self.remote_host_db: Collection = self.remote_host_client[settings.REMOTE_HOST_DB_NAME][
+            settings.REMOTE_HOST_DB_NAME
+        ]
         print(f"Successful connection to {settings.REMOTE_HOST_DB_URL}")
 
     def get_all_models(self: RS) -> List[str]:
@@ -111,7 +121,8 @@ class RemoteStorageController:
         Returns:
             RemoteHost: The host that was added; or None on failure
         """
-        self.remote_host_list.add(to_add)
+        self.remote_host_db.insert_one(to_add.dict(exclude=exclude_attributes))
+        self.remote_host_list.add(to_add)  # TODO Check if actually added
         return to_add
 
     def remove_remote_host(self: RS, ip: str) -> bool:
@@ -124,11 +135,15 @@ class RemoteStorageController:
         """
         for i, host in enumerate(self.remote_host_list):
             if host.ip == ip:
+                self.remote_host_db.delete_one({"ip": ip})  # TODO check if actually deleted
                 self.remote_host_list.remove(host)
                 return True
         return False
 
+
 remote_storage_controller: RemoteStorageController = RemoteStorageController(get_settings())
 
-def get_remote_storage_controller():
+
+def get_remote_storage_controller() -> RemoteStorageController:
+    """Return the remote_storage_controller instance"""
     return remote_storage_controller

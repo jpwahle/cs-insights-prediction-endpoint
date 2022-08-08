@@ -11,12 +11,16 @@ from nlp_land_prediction_endpoint.models.generic_model import (
     GenericOutputModel,
 )
 from nlp_land_prediction_endpoint.utils.remote_storage_controller import (
-    remote_storage_controller,
+    RemoteStorageController,
+    get_remote_storage_controller,
 )
 
 # from nlp_land_prediction_endpoint.models.lda_model import LDAModel
 from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
-from nlp_land_prediction_endpoint.utils.storage_controller import storage_controller
+from nlp_land_prediction_endpoint.utils.storage_controller import (
+    StorageController,
+    get_storage_controller,
+)
 
 router: APIRouter = APIRouter()
 
@@ -109,10 +113,11 @@ class ModelCreationRequest(BaseModel):
 )
 def list_all_implemented_models(
     settings: Settings = Depends(get_settings),
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> StorageControllerListReponse:
     """Endpoint for getting a list of all implemented models"""
     if settings.NODE_TYPE == "MAIN":
-        return StorageControllerListReponse(models=remote_storage_controller.get_all_models())
+        return StorageControllerListReponse(models=rsc.get_all_models())
     models = []
     for implemented_models in settings.IMPLEMENTED_MODELS:
         for implemented_model in implemented_models.keys():
@@ -126,10 +131,12 @@ def list_all_implemented_models(
     response_model=ModelSpecificFunctionCallResponse,
     status_code=status.HTTP_200_OK,
 )
-def list_all_function_calls(current_modelID: str) -> BaseModel:
+def list_all_function_calls(
+    current_modelID: str, sc: StorageController = Depends(get_storage_controller)
+) -> BaseModel:
     """Endpoint for getting a list of all implemented function calls"""
     # validate id
-    currentModel = storage.getModel(current_modelID)
+    currentModel = sc.getModel(current_modelID)
     if currentModel is None:
         # error not found
         raise HTTPException(status_code=404, detail="Model not found")
@@ -145,16 +152,18 @@ def list_all_function_calls(current_modelID: str) -> BaseModel:
     response_model=ModelDeletionResponse,
     status_code=status.HTTP_200_OK,
 )
-def deleteModel(current_modelID: str) -> ModelDeletionResponse:
+def deleteModel(
+    current_modelID: str, sc: StorageController = Depends(get_storage_controller)
+) -> ModelDeletionResponse:
     """Endpoint for deleting a model"""
     # validate id
-    currentModel = storage.getModel(current_modelID)
+    currentModel = sc.getModel(current_modelID)
     if currentModel is None:
         # error not found
         raise HTTPException(status_code=404, detail="Model not implemented")
 
     # delete it
-    storage.delModel(currentModel.getId())
+    sc.delModel(currentModel.getId())
     return ModelDeletionResponse(modelID=current_modelID)
 
 
@@ -193,12 +202,14 @@ def deleteModel(current_modelID: str) -> ModelDeletionResponse:
 )
 def list_all_created_models(
     settings: Settings = Depends(get_settings),
+    sc: StorageController = Depends(get_storage_controller),
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> StorageControllerListReponse:
     """Endpoint for getting a list of all created models"""
     if settings.NODE_TYPE == "MAIN":
-        all_models = remote_storage_controller.get_all_active_models()
+        all_models = rsc.get_all_active_models()
     else:
-        all_models = list([str(i) for i in storage.getAllModels()])
+        all_models = list([str(i) for i in sc.getAllModels()])
     return StorageControllerListReponse(models=all_models)
 
 
@@ -212,6 +223,7 @@ def create_model(
     modelCreationRequest: ModelCreationRequest,
     response: Response,
     settings: Settings = Depends(get_settings),
+    sc: StorageController = Depends(get_storage_controller),
 ) -> ModelCreationResponse:
     """Endpoint for creating a model
 
@@ -232,7 +244,7 @@ def create_model(
             model = getattr(model_module, model_class)(**(modelCreationRequest.modelSpecification))
     if model is None:
         raise HTTPException(status_code=404, detail="Model not implemented")
-    storage.addModel(model)
+    sc.addModel(model)
     response.headers["location"] = f"/api/v{__version__.split('.')[0]}/models/{model.id}"
 
     return ModelCreationResponse(modelID=model.id)
@@ -249,10 +261,15 @@ def getInformation(current_modelID: str, genericInput: GenericInputModel) -> Bas
     return run_function(current_modelID, genericInput.functionCall, genericInput.inputData)
 
 
-def run_function(current_modelID: str, req_function: str, data_input: Dict[Any, Any]) -> BaseModel:
+def run_function(
+    current_modelID: str,
+    req_function: str,
+    data_input: Dict[Any, Any],
+    sc: StorageController = Depends(get_storage_controller),
+) -> BaseModel:
     """Runs a given function of a given model"""
     # Validate id
-    currentModel = storage.getModel(current_modelID)
+    currentModel = sc.getModel(current_modelID)
     if currentModel is None:
         # error not found
         raise HTTPException(status_code=404, detail="Model not found")

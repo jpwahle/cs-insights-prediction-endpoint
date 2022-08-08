@@ -1,15 +1,14 @@
 """This module implements the hosts managment"""
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
 from nlp_land_prediction_endpoint.models.model_hosts import RemoteHost
 from nlp_land_prediction_endpoint.utils.remote_storage_controller import (
-        RemoteStorageController,
-        get_remote_storage_controller
+    RemoteStorageController,
+    get_remote_storage_controller,
 )
-
 
 router: APIRouter = APIRouter()
 
@@ -32,7 +31,9 @@ class RemoteHostListResponse(BaseModel):
     response_model=RemoteHostListResponse,
     status_code=status.HTTP_200_OK,
 )
-async def list_all_remote_hosts(rsc = Depends(get_remote_storage_controller)) -> RemoteHostListResponse:
+def list_all_remote_hosts(
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
+) -> RemoteHostListResponse:
     """List all remote hosts
 
     Returns:
@@ -47,7 +48,9 @@ async def list_all_remote_hosts(rsc = Depends(get_remote_storage_controller)) ->
     response_model=RemoteHost,
     status_code=status.HTTP_200_OK,
 )
-def add_remote_host(remote_host: RemoteHost, rsc = Depends(get_remote_storage_controller)) -> RemoteHost:
+def add_remote_host(
+    remote_host: RemoteHost, rsc: RemoteStorageController = Depends(get_remote_storage_controller)
+) -> RemoteHost:
     """Add a remote host to the remote host list
 
     Args:
@@ -56,7 +59,7 @@ def add_remote_host(remote_host: RemoteHost, rsc = Depends(get_remote_storage_co
     Returns:
         RemoteHost: The added remote host
     """
-    rsc.add_remote_host(remote_host, remote_host_db)
+    rsc.add_remote_host(remote_host)
     return remote_host
 
 
@@ -66,7 +69,10 @@ def add_remote_host(remote_host: RemoteHost, rsc = Depends(get_remote_storage_co
     response_model=RemoteHostDeleteRequest,
     status_code=status.HTTP_200_OK,
 )
-def delete_remote_host(to_delete: RemoteHostDeleteRequest, rsc = Depends(get_remote_storage_controller)) -> RemoteHostDeleteRequest:
+def delete_remote_host(
+    to_delete: RemoteHostDeleteRequest,
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
+) -> RemoteHostDeleteRequest:
     """Delete a remote host from the remote host list
 
     Args:

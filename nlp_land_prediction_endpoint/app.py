@@ -1,5 +1,5 @@
 """This module implements the main app."""
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 
 import nlp_land_prediction_endpoint
 from nlp_land_prediction_endpoint.middleware.forward_middleware import ForwardMiddleware
@@ -10,7 +10,6 @@ from nlp_land_prediction_endpoint.routes.route_status import router as StatusRou
 from nlp_land_prediction_endpoint.routes.route_topic import router as TopicRouter
 from nlp_land_prediction_endpoint.utils.settings import get_settings
 from nlp_land_prediction_endpoint.utils.version_getter import get_backend_version
-
 
 app = FastAPI(title="NLP-Land-prediction-endpoint", docs_url="/api/docs", redoc_url="/api/redoc")
 
