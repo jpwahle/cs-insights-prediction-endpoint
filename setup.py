@@ -20,18 +20,18 @@ install_requires = [
 ]
 
 setup_kwargs = {
-    "name": "nlp-land-prediction-endpoint",
+    "name": "cs-insights-prediction-endpoint",
     "version": "0.1.0",
     "description": (
         "This repository implements the processing of machine-learning methods for"
-        " NLP-Land-backend."
+        " cs-insights-backend."
     ),
     "long_description": None,
     "author": "Jan Philip Wahle",
     "author_email": "wahle@uni-wuppertal.de",
     "maintainer": "Jan Philip Wahle",
     "maintainer_email": "wahle@uni-wuppertal.de",
-    "url": "https://github.com/ag-gipp/NLP-Land-prediction-endpoint",
+    "url": "https://github.com/ag-gipp/cs-insights-prediction-endpoint",
     "packages": packages,
     "package_data": package_data,
     "install_requires": install_requires,
