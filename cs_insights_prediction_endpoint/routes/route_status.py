@@ -3,7 +3,7 @@ from typing import Dict
 
 from fastapi import APIRouter
 
-import nlp_land_prediction_endpoint
+import cs_insights_prediction_endpoint
 
 router = APIRouter()
 
@@ -18,6 +18,6 @@ async def read_root() -> Dict[str, str]:
     return {
         "message": (
             "NLP-Land-prediction-endpoint online at version "
-            f"{nlp_land_prediction_endpoint.__version__}."
+            f"{cs_insights_prediction_endpoint.__version__}."
         )
     }

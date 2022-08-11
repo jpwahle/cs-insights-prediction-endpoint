@@ -3,10 +3,10 @@
 from setuptools import setup  # type: ignore
 
 packages = [
-    "nlp_land_prediction_endpoint",
-    "nlp_land_prediction_endpoint.enums",
-    "nlp_land_prediction_endpoint.models",
-    "nlp_land_prediction_endpoint.routes",
+    "cs_insights_prediction_endpoint",
+    "cs_insights_prediction_endpoint.enums",
+    "cs_insights_prediction_endpoint.models",
+    "cs_insights_prediction_endpoint.routes",
 ]
 
 package_data = {"": ["*"]}
@@ -35,7 +35,7 @@ setup_kwargs = {
     "packages": packages,
     "package_data": package_data,
     "install_requires": install_requires,
-    "python_requires": ">=3.8,<3.10",
+    "python_requires": ">=3.8,<=3.11",
 }
 
 

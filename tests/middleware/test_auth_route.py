@@ -9,13 +9,14 @@ import requests
 from fastapi.testclient import TestClient
 from requests.models import Response
 
-from nlp_land_prediction_endpoint import __version__
-from nlp_land_prediction_endpoint.app import app
-from nlp_land_prediction_endpoint.middleware.auth import create_token, decode_token
-from nlp_land_prediction_endpoint.models.model_token import TokenModel
-from nlp_land_prediction_endpoint.models.model_token_data import TokenData
-from nlp_land_prediction_endpoint.models.model_user import UserModel
-from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
+from cs_insights_prediction_endpoint import __version__
+from cs_insights_prediction_endpoint.app import app
+from cs_insights_prediction_endpoint.middleware.auth import create_token, decode_token
+from cs_insights_prediction_endpoint.models.model_token import TokenModel
+from cs_insights_prediction_endpoint.models.model_token_data import TokenData
+from cs_insights_prediction_endpoint.models.model_user import UserModel
+from cs_insights_prediction_endpoint.models.model_user_login import UserLoginModel
+from cs_insights_prediction_endpoint.utils.settings import get_settings
 
 
 @pytest.fixture
@@ -80,7 +81,7 @@ def dummy_token() -> str:
     """
     example = UserModel.Config.schema_extra.get("example")
     user = TokenData(**example)
-    token = create_token(user)
+    token = create_token(user, get_settings())
     return token
 
 
@@ -159,7 +160,7 @@ def test_simulated_existing_auth_success(
     response = client.post(login_endpoint, json=dummy_login.dict())
     assert response.status_code == 200
     token = TokenModel(**response.json())
-    decoded_token = decode_token(token.access_token)
+    decoded_token = decode_token(token.access_token, get_settings())
     assert decoded_token is not None
 
 
@@ -202,8 +203,8 @@ def test_refresh(client: TestClient, refresh_endpoint: str, dummy_token: str) ->
     response = client.post(refresh_endpoint, headers={"Authorization": f"Bearer {dummy_token}"})
     assert response.status_code == 200
     refresh_token = TokenModel(**response.json())
-    decoded_refresh = decode_token(refresh_token.access_token)
-    decoded_dummy = decode_token(dummy_token)
+    decoded_refresh = decode_token(refresh_token.access_token, get_settings())
+    decoded_dummy = decode_token(dummy_token, get_settings())
     assert datetime.fromtimestamp(int(decoded_refresh.exp)) > datetime.fromtimestamp(
         int(decoded_dummy.exp)
     )

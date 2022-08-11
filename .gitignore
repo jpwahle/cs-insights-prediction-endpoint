@@ -132,7 +132,6 @@ dmypy.json
 .vercel
 .DS_Store
 docs/oas.json
-poetry.lock
 
 # vim specific swap files
 *.swp
