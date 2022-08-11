@@ -116,8 +116,6 @@ def list_all_implemented_models(
     rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> StorageControllerListReponse:
     """Endpoint for getting a list of all implemented models"""
-    if settings.NODE_TYPE == "MAIN":
-        return StorageControllerListReponse(models=rsc.get_all_models())
     models = []
     for implemented_models in settings.IMPLEMENTED_MODELS:
         for implemented_model in implemented_models.keys():
@@ -203,13 +201,9 @@ def deleteModel(
 def list_all_created_models(
     settings: Settings = Depends(get_settings),
     sc: StorageController = Depends(get_storage_controller),
-    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> StorageControllerListReponse:
     """Endpoint for getting a list of all created models"""
-    if settings.NODE_TYPE == "MAIN":
-        all_models = rsc.get_all_active_models()
-    else:
-        all_models = list([str(i) for i in sc.getAllModels()])
+    all_models = list([str(i) for i in sc.getAllModels()])
     return StorageControllerListReponse(models=all_models)
 
 
@@ -256,16 +250,17 @@ def create_model(
     response_model=GenericOutputModel,
     status_code=status.HTTP_200_OK,
 )
-def getInformation(current_modelID: str, genericInput: GenericInputModel) -> BaseModel:
+def getInformation(
+    current_modelID: str,
+    genericInput: GenericInputModel,
+    sc: StorageController = Depends(get_storage_controller),
+) -> BaseModel:
     """Gets info out of post data"""
-    return run_function(current_modelID, genericInput.functionCall, genericInput.inputData)
+    return run_function(current_modelID, genericInput.functionCall, genericInput.inputData, sc)
 
 
 def run_function(
-    current_modelID: str,
-    req_function: str,
-    data_input: Dict[Any, Any],
-    sc: StorageController = Depends(get_storage_controller),
+    current_modelID: str, req_function: str, data_input: Dict[Any, Any], sc: StorageController
 ) -> BaseModel:
     """Runs a given function of a given model"""
     # Validate id

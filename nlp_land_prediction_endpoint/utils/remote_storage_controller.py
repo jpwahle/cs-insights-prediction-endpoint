@@ -1,6 +1,7 @@
 """This module implements a remote storage controller for the endpoint management"""
 
-from typing import Any, List, Optional, Set, TypeVar
+from functools import lru_cache
+from typing import Any, List, Optional, TypeVar
 
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -17,18 +18,16 @@ exclude_attributes: Any = {}
 class RemoteStorageController:
     """StorageController for stroing remote hosts"""
 
-    remote_host_list: Set[RemoteHost] = set(
-        [
-            RemoteHost(
-                **{  # TODO Remove after testing
-                    "ip": "127.0.0.1",
-                    "port": "8001",
-                    "models": ["lda"],
-                    "active_models": ["1234"],
-                }
-            )
-        ]
-    )
+    remote_host_list: List[RemoteHost] = [
+        # RemoteHost(
+        #     **{  # TODO Remove after testing
+        #         "ip": "127.0.0.1",
+        #         "port": "8001",
+        #         "models": ["lda"],
+        #         "created_models": ["1234"],
+        #     }
+        # )
+    ]
 
     def __init__(self: RS, settings: Settings) -> None:
         """Constructor for the remote storage controller
@@ -40,13 +39,13 @@ class RemoteStorageController:
         self.remote_host_db: Collection = self.remote_host_client[settings.REMOTE_HOST_DB_NAME][
             settings.REMOTE_HOST_DB_NAME
         ]
-        print(f"Successful connection to {settings.REMOTE_HOST_DB_URL}")
+        # print(f"Successful connection to {settings.REMOTE_HOST_DB_URL}")
 
     def get_all_models(self: RS) -> List[str]:
         """Returns all implemented models from every host
 
         Returns:
-            List[str]: The list of all currently active models
+            List[str]: The list of all currently created models
         """
         all_models = []
         for host in self.remote_host_list:
@@ -54,19 +53,19 @@ class RemoteStorageController:
                 all_models.append(model)
         return all_models
 
-    def get_all_active_models(self: RS) -> List[str]:
-        """Returns all currently active models from every host
+    def get_all_created_models(self: RS) -> List[str]:
+        """Returns all currently created models from every host
 
         Returns:
-            List[str]: The list of all currently active models
+            List[str]: The list of all currently created models
         """
-        all_active_models = []
+        all_created_models = []
         for host in self.remote_host_list:
-            for model in host.active_models:
-                all_active_models.append(model)
-        return all_active_models
+            for model in host.created_models:
+                all_created_models.append(model)
+        return all_created_models
 
-    def get_all_remote_hosts(self: RS) -> Set[RemoteHost]:
+    def get_all_remote_hosts(self: RS) -> List[RemoteHost]:
         """Returns all remote hosts currently in the remote_host_list
 
         Returns:
@@ -86,16 +85,30 @@ class RemoteStorageController:
                 return host
         return None
 
-    def find_active_model_in_remote_hosts(self: RS, to_search: str) -> Optional[str]:
-        """Returns the ip of the remote hosts containing the active_model 'to_search'
+    def add_model_to_created_model_list(self: RS, ip: str, model_id: str) -> None:
+        """Adds a newly created model to the list of remote models"""
+        r_host: Optional[RemoteHost] = self.get_remote_host(ip)
+        if r_host is not None:
+            r_host.created_models.append(model_id)
+            self.remote_host_db.update_one({"ip": ip}, {"$set": r_host.dict()})
+
+    def remove_model_from_created_model_list(self: RS, ip: str, model_id: str) -> None:
+        """Removes a created model from the list of remote models"""
+        r_host: Optional[RemoteHost] = self.get_remote_host(ip)
+        if r_host is not None:
+            r_host.created_models.remove(model_id)
+            self.remote_host_db.update_one({"ip": ip}, {"$set": r_host.dict()})
+
+    def find_created_model_in_remote_hosts(self: RS, to_search: str) -> Optional[str]:
+        """Returns the ip of the remote hosts containing the created_model 'to_search'
 
         Args:
-            to_search (str): An active model id
+            to_search (str): An created model id
         Returns:
             Optional[str]: The ip of the host if it was found; None otherwise
         """
         for host in self.remote_host_list:
-            if to_search in host.active_models:
+            if to_search in host.created_models:
                 return f"{host.ip}:{host.port}"
         return None
 
@@ -103,7 +116,7 @@ class RemoteStorageController:
         """Returns the ip of the remote hosts containing the model 'to_search'
 
         Args:
-            to_search (str): An active model id
+            to_search (str): A model string
         Returns:
             Optional[str]: The ip of the host if it was found; None otherwise
         """
@@ -122,7 +135,7 @@ class RemoteStorageController:
             RemoteHost: The host that was added; or None on failure
         """
         self.remote_host_db.insert_one(to_add.dict(exclude=exclude_attributes))
-        self.remote_host_list.add(to_add)  # TODO Check if actually added
+        self.remote_host_list.append(to_add)  # TODO Check if actually added
         return to_add
 
     def remove_remote_host(self: RS, ip: str) -> bool:
@@ -141,9 +154,11 @@ class RemoteStorageController:
         return False
 
 
-remote_storage_controller: RemoteStorageController = RemoteStorageController(get_settings())
+# remote_storage_controller: RemoteStorageController = RemoteStorageController(get_settings())
 
 
+@lru_cache()
 def get_remote_storage_controller() -> RemoteStorageController:
     """Return the remote_storage_controller instance"""
-    return remote_storage_controller
+    return RemoteStorageController(get_settings())
+    # return remote_storage_controller

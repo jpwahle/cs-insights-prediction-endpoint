@@ -78,7 +78,7 @@ class LDAModel(myGeneric_Model):
         probability = 0.223
         return probability
 
-    def getk(self: T) -> Any:
+    def getk(self: T) -> int:
         """Returns and computes k (Number of topics)
 
         Returns:
@@ -86,7 +86,7 @@ class LDAModel(myGeneric_Model):
         """
         return len(self.getK())
 
-    def getNumTopics(self: T) -> Any:
+    def getNumTopics(self: T) -> int:
         """Returns and computes Number of topics
 
         Returns:

@@ -3,6 +3,7 @@
 import pytest
 
 from nlp_land_prediction_endpoint.models.generic_model import GenericModel
+from nlp_land_prediction_endpoint.utils.settings import get_settings
 from nlp_land_prediction_endpoint.utils.storage_controller import StorageController
 
 
@@ -13,7 +14,7 @@ def dummyStorageController() -> StorageController:
     Returns:
         StorageController: empty
     """
-    return StorageController()
+    return StorageController(get_settings())
 
 
 @pytest.fixture
@@ -48,7 +49,7 @@ def testDeleteModel(
     dummyStorageController.addModel(dummyGenericModel)
     # delete
     dummyStorageController.delModel(dummyGenericModel.id)
-    assert dummyStorageController.getAllModels() == set([])
+    assert dummyStorageController.getAllModels() == list([])
     assert dummyStorageController.getModel(dummyGenericModel.id) is None
 
     # Try to delete no existent Model
@@ -67,5 +68,5 @@ def testAddModel(
     """
     dummyStorageController.addModel(dummyGenericModel)
 
-    assert dummyStorageController.getAllModels() == set([dummyGenericModel])
+    assert dummyStorageController.getAllModels() == list([dummyGenericModel])
     assert dummyStorageController.getModel(dummyGenericModel.id) == dummyGenericModel

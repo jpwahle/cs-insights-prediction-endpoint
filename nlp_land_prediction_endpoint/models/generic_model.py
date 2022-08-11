@@ -29,10 +29,6 @@ class GenericModel(BaseModel):
         data["id"] = "Model-" + data["name"] + "-" + str(data["createdAt"] * random.random())
         super().__init__(**data)
 
-    def __hash__(self: T) -> int:
-        """Compute the hash of this object via the id"""
-        return hash(self.id)
-
     def __str__(self: T) -> str:
         """Returns the String-representation of this GenericModel instance
 

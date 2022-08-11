@@ -1,6 +1,7 @@
 """This module implements a storage controller for the endpoint management"""
 
-from typing import Any, Optional, Set, TypeVar
+from functools import lru_cache
+from typing import Any, List, Optional, TypeVar
 
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -17,7 +18,7 @@ exclude_attributes: Any = {"functionCalls": True, "processingModel": True}
 class StorageController:
     """Storage Controller class to enable access to currently created Models"""
 
-    models: Set[GenericModel] = set([])
+    models: List[GenericModel] = list([])
 
     def __init__(self: T, settings: Settings) -> None:
         """Constructor for the storage controller
@@ -28,8 +29,8 @@ class StorageController:
         self.model_db: Collection = self.model_client[settings.MODEL_DB_NAME][
             settings.MODEL_DB_NAME
         ]
-        self.models = set([])
-        print(f"Successful connection to {settings.MODEL_DB_URL}")
+        self.models = list([])
+        # print(f"Successful connection to {settings.MODEL_DB_URL}")
 
     def getModel(self: T, id: str) -> Optional[GenericModel]:
         """Returns the model with id"""
@@ -38,14 +39,14 @@ class StorageController:
                 return model
         return None
 
-    def getAllModels(self: T) -> Set[GenericModel]:
+    def getAllModels(self: T) -> List[GenericModel]:
         """Returns all models"""
         return self.models
 
     def addModel(self: T, model: GenericModel) -> str:
         """Adds model to models"""
         self.model_db.insert_one(model.dict(exclude=exclude_attributes))
-        self.models.add(model)  # TODO check if actually added
+        self.models.append(model)  # TODO check if actually added
         return model.id
 
     # TODO For consitency maybe return bool or switch
@@ -60,9 +61,11 @@ class StorageController:
             self.models.remove(model)
 
 
-storage_controller: StorageController = StorageController(get_settings())
+# storage_controller: StorageController = StorageController(get_settings())
 
 
+@lru_cache()
 def get_storage_controller() -> StorageController:
     """Return the storage_controller instance"""
-    return storage_controller
+    return StorageController(get_settings())
+    # return storage_controller

@@ -37,7 +37,12 @@ def remote_host_creation_request() -> RemoteHost:
     Returns:
         ModelCreationRequest: An correct modelcreation request
     """
-    dummy_remote_host = {"ip": "localhost", "port": "666", "models": ["test"], "active_models": []}
+    dummy_remote_host = {
+        "ip": "192.168.0.100",
+        "port": "666",
+        "models": ["test"],
+        "created_models": [],
+    }
     return RemoteHost(**dummy_remote_host)
 
 
@@ -48,7 +53,7 @@ def remote_host_deletion_request() -> RemoteHostDeleteRequest:
     Returns:
         ModelCreationRequest: An correct model deletion request
     """
-    return RemoteHostDeleteRequest(ip="localhost")
+    return RemoteHostDeleteRequest(ip="192.168.0.100")
 
 
 @pytest.fixture

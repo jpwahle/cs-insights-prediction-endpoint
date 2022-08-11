@@ -5,7 +5,6 @@ RUN apt-get update &&\
 
 WORKDIR /app
 ADD pyproject.toml /app/pyproject.toml
-
 COPY . /app
 
 RUN pip install poetry
