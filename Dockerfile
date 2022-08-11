@@ -6,6 +6,9 @@ RUN pip install poetry
 
 WORKDIR /cs-insights-prediction-endpoint
 COPY test.env /cs-insights-prediction-endpoint/.env
-COPY . /cs-insights-prediction-endpoint
+COPY pyproject.toml /cs-insights-prediction-endpoint/pyproject.toml
+COPY poetry.lock /cs-insights-prediction-endpoint/poetry.lock
 
 RUN poetry install --no-dev
+
+COPY . /cs-insights-prediction-endpoint
