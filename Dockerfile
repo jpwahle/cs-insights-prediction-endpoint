@@ -1,15 +1,11 @@
-FROM python:3.9
+FROM python:3.8
 
 RUN apt-get update &&\
     apt-get install liblapack-dev libblas-dev gfortran -y
-
-WORKDIR /app
-ADD pyproject.toml /app/pyproject.toml
-COPY . /app
-
 RUN pip install poetry
-RUN poetry install
 
-COPY test.env /app/.env
+WORKDIR /cs-insights-prediction-endpoint
+COPY test.env /cs-insights-prediction-endpoint/.env
+COPY . /cs-insights-prediction-endpoint
 
-ENTRYPOINT ["poetry", "run", "python", "prod.py", "--port", "8000", "--workers", "1"]
+RUN poetry install --no-dev
