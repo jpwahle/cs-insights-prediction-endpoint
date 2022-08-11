@@ -1,27 +1,27 @@
 [tool.poetry]
-name = "NLP-Land-prediction-endpoint"
+name = "cs-insights-prediction-endpoint"
 version = "v0.3.0"
 description = "This repository implements the processing of machine-learning methods for NLP-Land-backend."
 authors = ["Jan Philip Wahle <wahle@uni-wuppertal.de>", "Terry Ruas <ruas@uni-wuppertal.de>", "Alexander von Tottleben <alexander@vontottleben.de>", ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
+python = ">=3.8,<3.11"
+requests = "^2.26.0"
 bcrypt = "^3.2.0"
 fastapi = "^0.70.0"
 uvicorn = "^0.15.0"
-bson = "^0.5.10"
 pydantic = "^1.8.2"
 gensim = "^4.1.2"
-requests = "^2.26.0"
 PyJWT = "^2.3.0"
-python-decouple = "^3.5"
-requests-mock = "^1.9.3"
-types-requests = "^2.27.7"
+python-dotenv = "^0.20.0"
+pyLDAvis = "^3.3.1"
+pymongo = "=4.1.1"
+click = "8.0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
-black = "^21.11b1"
+black = "^22.3"
 isort = "^5.10.1"
 pytest-mock = "^3.6.1"
 flake8 = "^3.8.0"
@@ -32,12 +32,14 @@ flake8-docstrings = "^1.6.0"
 poethepoet = "^0.11.0"
 pre-commit = "^2.15.0"
 mypy = "^0.910"
+requests-mock = "^1.9.3"
+types-requests = "^2.27.7"
 
 
 [tool.poe.tasks]
 lint = "flake8 ."
-type = "mypy nlp_land_prediction_endpoint"
-test = "py.test tests/ -s --cov=nlp_land_prediction_endpoint --cov-report=xml --cov-fail-under 100"
+type = "mypy cs_insights_prediction_endpoint"
+test = "py.test tests/ -s --cov=cs_insights_prediction_endpoint --cov-report=xml --cov-fail-under 75"
 doc = "python3 gen_doc.py"
 alltest = ["lint", "type", "test"]
 isort = "isort ."
@@ -53,4 +55,4 @@ profile = "black"
 line-length = 100
 
 [package]
-include = ["nlp_land_prediction_endpoint/*.py"]
+include = ["cs_insights_prediction_endpoint/*.py"]

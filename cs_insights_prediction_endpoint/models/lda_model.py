@@ -1,14 +1,22 @@
 """This module implements the LDA-Model"""
-from typing import Any, List, Optional, Tuple, TypeVar
+import json
+from typing import Any, Dict, List, Optional, Tuple, TypeVar
 
+import pyLDAvis  # type: ignore
+import pyLDAvis.gensim_models  # type: ignore
+from gensim.corpora.dictionary import Dictionary  # type: ignore
 from gensim.models.ldamodel import LdaModel  # type: ignore
+from gensim.parsing.preprocessing import (  # type: ignore
+    preprocess_string,
+    remove_stopwords,
+)
 from gensim.test.utils import common_corpus  # type: ignore
 
-from nlp_land_prediction_endpoint.models.generic_model import GenericInputModel
-from nlp_land_prediction_endpoint.models.generic_model import (
+from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
+from cs_insights_prediction_endpoint.models.generic_model import (
     GenericModel as myGeneric_Model,
 )
-from nlp_land_prediction_endpoint.models.generic_model import GenericOutputModel
+from cs_insights_prediction_endpoint.models.generic_model import GenericOutputModel
 
 T = TypeVar("T", bound="LDAModel")
 
@@ -23,7 +31,7 @@ class LDAModel(myGeneric_Model):
         data["description"] = "Latent Dirichlet allocation model"
         # XXX-TN    Maybe we should consider adding another model
         #           for the creationParameters, so we can validate the input
-        if "creationParameters" in data:
+        if "creationParameters" in data and data["creationParameters"] != {}:
             data["processingModel"] = LdaModel(**data["creationParameters"])
         else:
             data["processingModel"] = LdaModel(common_corpus, num_topics=10)
@@ -36,10 +44,12 @@ class LDAModel(myGeneric_Model):
             "getNumTopics": self.getNumTopics,
             "getK": self.getK,
             "getTopics": self.getTopics,
+            "getLDAvis": self.getLDAvis,
             "train": self.train,
             "predict": self.predict,
         }
         super().__init__(**data)
+        self.save(f"{self.saveDirectory}/{self.id}")
 
     def alpha(self: T, document: str) -> dict:
         """Calc alpha and return"""
@@ -69,7 +79,7 @@ class LDAModel(myGeneric_Model):
         probability = 0.223
         return probability
 
-    def getk(self: T) -> Any:
+    def getk(self: T) -> int:
         """Returns and computes k (Number of topics)
 
         Returns:
@@ -77,7 +87,7 @@ class LDAModel(myGeneric_Model):
         """
         return len(self.getK())
 
-    def getNumTopics(self: T) -> Any:
+    def getNumTopics(self: T) -> int:
         """Returns and computes Number of topics
 
         Returns:
@@ -100,6 +110,44 @@ class LDAModel(myGeneric_Model):
             Any: A dictionary containing the topics
         """
         return self.getK()
+
+    def getLDAvis(
+        self: T,
+        data: List[Dict[str, str]],
+        num_topics: int = 20,
+        passes: int = 3,
+        random_state: int = 0xBEEF,
+    ) -> Any:
+        """Returns the json output of the LDAvis library, which then gets processed by the frontend
+
+        Args:
+            data (Dict[str,str]): A dictionary containing the title and abstract texts of papers
+
+        Returns:
+            Dict[str, any]: The json output of the LDAvis library. Consider reading
+                            https://pyldavis.readthedocs.io/en/latest/readme.html
+        """
+        docs = list([preprocess_string(remove_stopwords(i["title"])) for i in data])
+        docs = docs + (
+            list(
+                [
+                    preprocess_string(remove_stopwords(i["abstractText"]))
+                    for i in data
+                    if i["abstractText"] is not None
+                ]
+            )
+        )
+
+        dictionary = Dictionary(docs)
+        bow_corpus = [dictionary.doc2bow(doc) for doc in docs]
+
+        self.processingModel = LdaModel(
+            bow_corpus, num_topics=num_topics, passes=passes, random_state=random_state
+        )
+
+        vis = pyLDAvis.gensim_models.prepare(self.processingModel, bow_corpus, dictionary)
+
+        return json.loads(vis.to_json())
 
     def train(self: T, inputObject: dict) -> None:
         """Trains the LDAModel given a inputObject.
@@ -128,6 +176,14 @@ class LDAModel(myGeneric_Model):
         # XXX-TN For now we will use corpus as input, which will be a proccessed bag of words.
         #        Later on this will be an array of paper. ids Maybe create an Issue?
         return list(self.processingModel.get_document_topics(**inputObject))
+
+    def save(self: T, path: str) -> None:
+        """Function for saving a model to a path"""
+        self.processingModel.save(path)
+
+    def load(self: T, path: str) -> None:
+        """Function for loading a model from a path"""
+        self.processingModel.load(path)
 
 
 class LDAInputModel(GenericInputModel):

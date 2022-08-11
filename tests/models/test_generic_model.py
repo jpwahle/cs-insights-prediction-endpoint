@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytest
 
-from nlp_land_prediction_endpoint.models.generic_model import GenericModel
+from cs_insights_prediction_endpoint.models.generic_model import GenericModel
 
 
 @pytest.fixture
@@ -19,6 +19,7 @@ def dummy_generic_model() -> GenericModel:
         "description": "This is a test",
         "creationParameters": {},
         "functionCalls": {},
+        "type": "test",
     }
     dummy = GenericModel(**dummy_values)
     return dummy

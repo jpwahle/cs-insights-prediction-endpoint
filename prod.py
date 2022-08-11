@@ -16,7 +16,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     uvicorn.run(
-        "nlp_land_prediction_endpoint.app:app",
+        "cs_insights_prediction_endpoint.app:app",
         host=args.host,
         port=args.port,
         workers=args.workers,

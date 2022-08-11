@@ -1,8 +1,8 @@
 """This module implements the endpoint logic for topics."""
 from fastapi import APIRouter, status
 
-from nlp_land_prediction_endpoint.models.model_paper import PaperModel
-from nlp_land_prediction_endpoint.models.model_topic import TopicResponseModel
+from cs_insights_prediction_endpoint.models.model_paper import PaperModel
+from cs_insights_prediction_endpoint.models.model_topic import TopicResponseModel
 
 router = APIRouter()
 

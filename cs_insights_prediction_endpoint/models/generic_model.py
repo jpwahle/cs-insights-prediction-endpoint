@@ -1,7 +1,7 @@
 """This modulew implements the generic-model"""
 import random
 from datetime import datetime
-from typing import Any, Optional, Set, TypeVar
+from typing import Any, Dict, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -17,7 +17,9 @@ class GenericModel(BaseModel):
     createdAt: float
     description: str = Field(...)
     # XXX-TN We should a GenericCreationParameters, same as GenericInputModel
-    creationParameters: Optional[dict]
+    creationParameters: Optional[dict] = {}
+    saveDirectory: Optional[str] = "./saved_models"
+    type: str = Field(...)
 
     functionCalls: dict = Field(...)
 
@@ -28,10 +30,6 @@ class GenericModel(BaseModel):
         data["createdAt"] = datetime.timestamp(datetime.now())
         data["id"] = "Model-" + data["name"] + "-" + str(data["createdAt"] * random.random())
         super().__init__(**data)
-
-    def __hash__(self: T) -> int:
-        """Compute the hash of this object via the id"""
-        return hash(self.id)
 
     def __str__(self: T) -> str:
         """Returns the String-representation of this GenericModel instance
@@ -73,6 +71,14 @@ class GenericModel(BaseModel):
         """Predict something with data from inputObject"""
         raise NotImplementedError("GenericModel.predict has to be implemented by the subclass")
 
+    def save(self: T, path: str) -> None:
+        """Function to save the state of the model"""
+        pass
+
+    def load(self: T, path: str) -> None:
+        """Function to load the state of the model"""
+        pass
+
 
 class GenericInputModel(BaseModel):
     """Input for a generic model"""
@@ -80,11 +86,11 @@ class GenericInputModel(BaseModel):
     # Other input for BOW's: Set[tuple]
     # Other input for plainText: Set[str] (if we wan't to test one string outide of DB)
 
-    paperIds: Set[str] = Field(...)
+    inputData: Dict = Field(...)
     functionCall: str = Field(...)
 
 
 class GenericOutputModel(BaseModel):
     """Output for a generic model"""
 
-    pass
+    outputData: Dict = Field(...)
