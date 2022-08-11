@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cs-insights-prediction-endpoint"
-version = "v0.7.0"
+version = "v0.8.0"
 description = "This repository implements the processing of machine-learning methods for NLP-Land-backend."
 authors = ["Jan Philip Wahle <wahle@uni-wuppertal.de>", "Terry Ruas <ruas@uni-wuppertal.de>", "Alexander von Tottleben <alexander@vontottleben.de>", ]
 
