@@ -8,25 +8,25 @@ jobs:
   Test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - name: 🏁 Checkout
+        uses: actions/checkout@v2
+
+      - name: ✅ Setup python
+        uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - name: Install poetry
+      
+      - name: 💿 Install poetry
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies
+      
+      - name: 📦 Install dependencies
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      - name: Run test
+      
+      - name: 🧪 Run tests
         run: |
           poetry run poe alltest
 
@@ -34,53 +34,31 @@ jobs:
     needs: [Test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: 🏁 Checkout
+        uses: actions/checkout@v2
         with:
           fetch-depth: "0"#
           persist-credentials: false
-      - uses: actions/setup-python@v2
+      
+      - name: ✅ Setup python
+        uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - name: Bump version and push tag
+      
+      - name: 🏷 Bump version and push tag
         uses: anothrNick/github-tag-action@1.36.0
         id: tagging
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
-      - name: Build Changelog
+      
+      - name: 📝 Build Changelog
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies
-        run: poetry install
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      - name: Update package version to git tag
-        run: |
-          poetry version $(git describe --tags --abbrev=0)
-      - name: Commit files
-        run: |
-          git config --local user.email "jan.philip.wahle@gmail.com"
-          git config --local user.name "github-actions[bot]"
-          git add pyproject.toml
-          git commit -m "[release-bot] Update pyproject.toml version"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.ACCESS_TOKEN }}
-          branch: ${{ github.ref }}
-      - name: Create Release
+      
+      - name: 📦 Create Release
         uses: actions/create-release@v1
         with:
           release_name: ${{steps.tagging.outputs.tag}}
@@ -89,32 +67,71 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  Coverage:
-    needs: [Test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install poetry
+      - name: 💿 Install poetry
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies
+      
+      - name: 📦 Install dependencies
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      - name: Run tests
+      
+      - name: ⬆️ Update package version
         run: |
-          poetry run poe test
-      - name: Upload coverage report
+          poetry version $(git describe --tags --abbrev=0)
+      
+      - name: ➕ Commit files
+        run: |
+          git config --local user.email "jan.philip.wahle@gmail.com"
+          git config --local user.name "github-actions[bot]"
+          git add pyproject.toml
+          git commit -m "[release-bot] Update pyproject.toml version"
+      
+      - name: 💨 Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.ACCESS_TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: 🔑 Docker GitHub package login
+        run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐳 Build docker image
+        run: docker build -t ghcr.io/gipplab/cs-insights-backend:${{steps.tagging.outputs.tag}} -t ghcr.io/gipplab/cs-insights-prediction-endpoint:latest .
+
+      - name: 📦 Push docker image
+        run: |
+          docker push ghcr.io/gipplab/cs-insights-prediciton-endpoint:${{steps.tagging.outputs.tag}}
+          docker push ghcr.io/gipplab/cs-insights-prediction-endpoint:latest
+
+  Coverage:
+    needs: [Test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏁 Checkout
+        uses: actions/checkout@v2
+
+      - name: ✅ Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      
+      - name: 💿 Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      
+      - name: 📦 Install dependencies
+        run: poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      
+      - name: 🧪 Run tests
+        run: |
+          poetry run poe alltest
+      
+      - name: ⬆ Upload coverage report
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -125,27 +142,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - name: Install poetry
+      
+      - name: 💿 Install poetry
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies
+      
+      - name: 📦 Install dependencies
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      - name: Generate docs
+      
+      - name: 📘 Generate docs
         run: |
           poetry run poe doc
-      - name: Deploy docs 🚀
+      
+      - name: 🚀 Deploy docs
         uses: JamesIves/github-pages-deploy-action@4.0.0
         with:
           branch: docs
