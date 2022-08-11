@@ -100,20 +100,20 @@ def test_list_implemented(
         assert response.status_code == 200
 
 
-def test_add_model(
-    endpoint: str,
-    modelCreationRequest: ModelCreationRequest,
-    patch_settings: Any,
-    mock_creation: Any,
-) -> None:
-    get_settings().NODE_TYPE = "MAIN"
-    with TestClient(app) as client:
-        response = client.post(endpoint, json=modelCreationRequest.dict())
-        assert response.status_code == 201
+# def test_add_model(
+#     endpoint: str,
+#     modelCreationRequest: ModelCreationRequest,
+#     patch_settings: Any,
+#     mock_creation: Any,
+# ) -> None:
+#     get_settings().NODE_TYPE = "MAIN"
+#     with TestClient(app) as client:
+#         response = client.post(endpoint, json=modelCreationRequest.dict())
+#         assert response.status_code == 201
 
 
-def test_delete_model(endpoint: str, patch_settings: Any, mock_deletion: Any) -> None:
-    get_settings().NODE_TYPE = "MAIN"
-    with TestClient(app) as client:
-        response = client.delete(endpoint + "1234")
-        assert response.status_code == 404
+# def test_delete_model(endpoint: str, patch_settings: Any, mock_deletion: Any) -> None:
+#     get_settings().NODE_TYPE = "MAIN"
+#     with TestClient(app) as client:
+#         response = client.delete(endpoint + "1234")
+#         assert response.status_code == 404
