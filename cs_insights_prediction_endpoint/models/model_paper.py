@@ -7,7 +7,7 @@ from typing import List
 from bson.objectid import ObjectId  # type: ignore
 from pydantic import AnyUrl, BaseModel, Field
 
-from nlp_land_prediction_endpoint.enums.enum_paper import (
+from cs_insights_prediction_endpoint.enums.enum_paper import (
     ExtractionMethod,
     ShortLong,
     TypeOfPaper,

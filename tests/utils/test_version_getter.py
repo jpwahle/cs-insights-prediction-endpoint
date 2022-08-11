@@ -1,11 +1,11 @@
-import os
 from typing import Any
 
 import pytest
 import requests
 from requests.models import Response
 
-from nlp_land_prediction_endpoint.utils.version_getter import get_backend_version
+from cs_insights_prediction_endpoint.utils import settings
+from cs_insights_prediction_endpoint.utils.version_getter import get_backend_version
 
 
 @pytest.fixture
@@ -27,14 +27,5 @@ def mock_version_request(monkeypatch: Any) -> None:
 
 
 def test_missing_backend_version(monkeypatch: Any, mock_version_request: Any) -> None:
-    envs = {
-        "AUTH_BACKEND_VERSION": None,
-        "AUTH_BACKEND_URL": "http://127.0.0.1/api/{version}",
-        "AUTH_BACKEND_LOGIN_ROUTE": "/auth/login/service",
-        "AUTH_TOKEN_ROUTE": "/auth/service",
-        "JWT_SECRET": "super_secret_secret",
-        "JWT_TOKEN_EXPIRATION_MINUTES": 30,
-        "JWT_SIGN_ALG": "HS256",
-    }
-    monkeypatch.setattr(os, "environ", envs)
+    settings.get_settings().AUTH_BACKEND_VERSION = None
     get_backend_version()

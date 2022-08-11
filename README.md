@@ -12,35 +12,7 @@
 
 ## Installation & Setup
 
-### Production
-
-To spin up the production version of this project, switch into the root directory of this project and run:
-
-```console
-docker-compose up --build
-```
-
-### Development
-
-For development install [poetry](https://python-poetry.org/):
-
-```console
-pip install poetry
-```
-
-Then run:
-
-```console
-poetry install
-```
-
-Then you can use the api like this:
-
-```console
-poetry run python dev.py
-```
-
-If you are using VSCode, you can also run debugging using the `.vscode/launch.json`.
+This project is part of the `cs-insights`-ecosystem. Please refer to the readme [here](https://github.com/gipplab/cs-insights-main) to spin up the development and production system.
 
 ## Code quality and tests
 
