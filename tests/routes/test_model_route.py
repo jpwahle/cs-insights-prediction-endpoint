@@ -12,7 +12,9 @@ from cs_insights_prediction_endpoint.routes.route_model import (
     ModelFunctionRequest,
     ModelUpdateRequest,
 )
-from cs_insights_prediction_endpoint.utils.storage_controller import get_storage_controller
+from cs_insights_prediction_endpoint.utils.storage_controller import (
+    get_storage_controller,
+)
 
 
 @pytest.fixture(scope="function")

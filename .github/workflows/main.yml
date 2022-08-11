@@ -25,6 +25,11 @@ jobs:
       - name: 📦 Install dependencies
         run: poetry install
 
+      - name: 🌱 Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: 5.0.9
+
       - name: 🧪 Run tests
         run: |
           poetry run poe alltest

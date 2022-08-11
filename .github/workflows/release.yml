@@ -26,6 +26,11 @@ jobs:
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       
+      - name: 🌱 Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: 5.0.9
+
       - name: 🧪 Run tests
         run: |
           poetry run poe alltest
@@ -127,6 +132,11 @@ jobs:
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       
+      - name: 🌱 Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: 5.0.9
+
       - name: 🧪 Run tests
         run: |
           poetry run poe alltest

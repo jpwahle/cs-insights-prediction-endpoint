@@ -5,11 +5,13 @@ import cs_insights_prediction_endpoint
 
 # from cs_insights_prediction_endpoint.middleware.forward_middleware import ForwardMiddleware
 from cs_insights_prediction_endpoint.routes.route_auth import router as AuthRouter
-from cs_insights_prediction_endpoint.routes.route_hosts import router as RemoteHostRouter
-from cs_insights_prediction_endpoint.routes.route_model import router as ModelRouter
+from cs_insights_prediction_endpoint.routes.route_hosts import (
+    router as RemoteHostRouter,
+)
 from cs_insights_prediction_endpoint.routes.route_model import (
     router as ModelForwardRouter,
 )
+from cs_insights_prediction_endpoint.routes.route_model import router as ModelRouter
 from cs_insights_prediction_endpoint.routes.route_status import router as StatusRouter
 from cs_insights_prediction_endpoint.routes.route_topic import router as TopicRouter
 from cs_insights_prediction_endpoint.utils.settings import get_settings
