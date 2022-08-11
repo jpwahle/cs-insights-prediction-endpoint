@@ -50,6 +50,7 @@ def dummy_lda_model(dummy_creation_parameters: dict) -> LDAModel:
         "createdBy": "Alpha Tester",
         "creationParameters": dummy_creation_parameters,
         "functionCalls": {},
+        "type": "lda"
     }
     dummy = LDAModel(**dummy_values)
     return dummy
@@ -65,6 +66,7 @@ def dummy_lda_model_no_creation_parameters() -> LDAModel:
     dummy_values = {
         "createdBy": "Alpha Tester",
         "functionCalls": {},
+        "type": "lda",
     }
     dummy = LDAModel(**dummy_values)
     return dummy
@@ -159,7 +161,7 @@ def test_lda_model_initial_values_no_creation_paramers(
         dummy_lda_model_no_creation_parameters.createdAt >= datetime.timestamp(datetime.now()) - 1
     )
     assert dummy_lda_model_no_creation_parameters.description == "Latent Dirichlet allocation model"
-    assert dummy_lda_model_no_creation_parameters.creationParameters is None
+    assert dummy_lda_model_no_creation_parameters.creationParameters == {}
     assert dummy_lda_model_no_creation_parameters.alpha("None") == {
         "name": "AI",
         "keyword": "Deep Learning; Knowledge; Computer Vison",

@@ -30,6 +30,7 @@ def dummyGenericModel() -> GenericModel:
         "description": "This is a test",
         "creationParameters": {},
         "functionCalls": {},
+        "type": "lda"
     }
     dummy = GenericModel(**dummy_values)
 
@@ -49,7 +50,6 @@ def testDeleteModel(
     dummyStorageController.addModel(dummyGenericModel)
     # delete
     dummyStorageController.delModel(dummyGenericModel.id)
-    assert dummyStorageController.getAllModels() == list([])
     assert dummyStorageController.getModel(dummyGenericModel.id) is None
 
     # Try to delete no existent Model
@@ -66,7 +66,8 @@ def testAddModel(
         dummyStorageController (StorageController): A dummy storage_controller
         dummyGenericModel (GenericModel): A dummy GenericModel
     """
+    old = dummyStorageController.getAllModels()
     dummyStorageController.addModel(dummyGenericModel)
 
-    assert dummyStorageController.getAllModels() == list([dummyGenericModel])
+    assert dummyStorageController.getAllModels() == old
     assert dummyStorageController.getModel(dummyGenericModel.id) == dummyGenericModel
