@@ -12,3 +12,4 @@ COPY . /cs-insights-prediction-endpoint
 COPY test.env /cs-insights-prediction-endpoint/.env
 
 RUN poetry install --no-dev
+RUN rm -rf .venv
