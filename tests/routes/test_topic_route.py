@@ -4,9 +4,9 @@ from typing import Generator
 import pytest
 from fastapi.testclient import TestClient
 
-from nlp_land_prediction_endpoint import __version__
-from nlp_land_prediction_endpoint.app import app
-from nlp_land_prediction_endpoint.models.model_paper import PaperModel
+from cs_insights_prediction_endpoint import __version__
+from cs_insights_prediction_endpoint.app import app
+from cs_insights_prediction_endpoint.models.model_paper import PaperModel
 
 
 @pytest.fixture

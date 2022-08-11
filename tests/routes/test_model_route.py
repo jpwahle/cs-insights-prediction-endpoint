@@ -3,16 +3,16 @@ from typing import Generator
 import pytest
 from fastapi.testclient import TestClient
 
-from nlp_land_prediction_endpoint import __version__
-from nlp_land_prediction_endpoint.app import app
-from nlp_land_prediction_endpoint.models.generic_model import GenericInputModel
-from nlp_land_prediction_endpoint.routes.route_model import (
+from cs_insights_prediction_endpoint import __version__
+from cs_insights_prediction_endpoint.app import app
+from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
+from cs_insights_prediction_endpoint.routes.route_model import (
     ModelCreationRequest,
     ModelDeletionRequest,
     ModelFunctionRequest,
     ModelUpdateRequest,
 )
-from nlp_land_prediction_endpoint.utils.storage_controller import get_storage_controller
+from cs_insights_prediction_endpoint.utils.storage_controller import get_storage_controller
 
 
 @pytest.fixture(scope="function")

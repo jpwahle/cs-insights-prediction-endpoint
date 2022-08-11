@@ -5,14 +5,14 @@ import requests
 from fastapi.testclient import TestClient
 from requests.models import Response
 
-from nlp_land_prediction_endpoint import __version__
-from nlp_land_prediction_endpoint.app import app
-from nlp_land_prediction_endpoint.routes.route_model import (
+from cs_insights_prediction_endpoint import __version__
+from cs_insights_prediction_endpoint.app import app
+from cs_insights_prediction_endpoint.routes.route_model import (
     ModelCreationRequest,
     ModelDeletionRequest,
     ModelFunctionRequest,
 )
-from nlp_land_prediction_endpoint.utils.settings import get_settings
+from cs_insights_prediction_endpoint.utils.settings import get_settings
 
 
 @pytest.fixture

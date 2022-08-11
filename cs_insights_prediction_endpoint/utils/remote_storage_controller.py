@@ -6,8 +6,8 @@ from typing import Any, List, Optional, TypeVar
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
-from nlp_land_prediction_endpoint.models.model_hosts import RemoteHost
-from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
+from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
+from cs_insights_prediction_endpoint.utils.settings import Settings, get_settings
 
 RS = TypeVar("RS", bound="RemoteStorageController")
 

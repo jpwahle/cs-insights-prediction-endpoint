@@ -4,8 +4,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from nlp_land_prediction_endpoint.models.model_hosts import RemoteHost
-from nlp_land_prediction_endpoint.utils.remote_storage_controller import (
+from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
+from cs_insights_prediction_endpoint.utils.remote_storage_controller import (
     RemoteStorageController,
     get_remote_storage_controller,
 )

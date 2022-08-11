@@ -3,7 +3,7 @@ import os
 
 import requests
 
-from nlp_land_prediction_endpoint.utils import settings as Settings
+from cs_insights_prediction_endpoint.utils import settings as Settings
 
 settings = Settings.get_settings()
 

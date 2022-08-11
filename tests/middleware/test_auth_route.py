@@ -9,14 +9,14 @@ import requests
 from fastapi.testclient import TestClient
 from requests.models import Response
 
-from nlp_land_prediction_endpoint import __version__
-from nlp_land_prediction_endpoint.app import app
-from nlp_land_prediction_endpoint.middleware.auth import create_token, decode_token
-from nlp_land_prediction_endpoint.models.model_token import TokenModel
-from nlp_land_prediction_endpoint.models.model_token_data import TokenData
-from nlp_land_prediction_endpoint.models.model_user import UserModel
-from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
-from nlp_land_prediction_endpoint.utils.settings import get_settings
+from cs_insights_prediction_endpoint import __version__
+from cs_insights_prediction_endpoint.app import app
+from cs_insights_prediction_endpoint.middleware.auth import create_token, decode_token
+from cs_insights_prediction_endpoint.models.model_token import TokenModel
+from cs_insights_prediction_endpoint.models.model_token_data import TokenData
+from cs_insights_prediction_endpoint.models.model_user import UserModel
+from cs_insights_prediction_endpoint.models.model_user_login import UserLoginModel
+from cs_insights_prediction_endpoint.utils.settings import get_settings
 
 
 @pytest.fixture

@@ -3,16 +3,16 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from nlp_land_prediction_endpoint.middleware.auth import (
+from cs_insights_prediction_endpoint.middleware.auth import (
     authenticate_user,
     create_token,
     get_current_user,
 )
-from nlp_land_prediction_endpoint.models.model_token import TokenModel
-from nlp_land_prediction_endpoint.models.model_token_data import TokenData
-from nlp_land_prediction_endpoint.models.model_user import UserModel
-from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
-from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
+from cs_insights_prediction_endpoint.models.model_token import TokenModel
+from cs_insights_prediction_endpoint.models.model_token_data import TokenData
+from cs_insights_prediction_endpoint.models.model_user import UserModel
+from cs_insights_prediction_endpoint.models.model_user_login import UserLoginModel
+from cs_insights_prediction_endpoint.utils.settings import Settings, get_settings
 
 router = APIRouter()
 

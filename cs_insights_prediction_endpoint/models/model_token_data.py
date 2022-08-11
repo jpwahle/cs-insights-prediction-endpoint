@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import Field
 
-from nlp_land_prediction_endpoint.models.model_user import UserModel
+from cs_insights_prediction_endpoint.models.model_user import UserModel
 
 
 class TokenData(UserModel):

@@ -5,19 +5,19 @@ from typing import Any, Dict, List
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel
 
-from nlp_land_prediction_endpoint import __version__
-from nlp_land_prediction_endpoint.models.generic_model import (
+from cs_insights_prediction_endpoint import __version__
+from cs_insights_prediction_endpoint.models.generic_model import (
     GenericInputModel,
     GenericOutputModel,
 )
-from nlp_land_prediction_endpoint.utils.remote_storage_controller import (
+from cs_insights_prediction_endpoint.utils.remote_storage_controller import (
     RemoteStorageController,
     get_remote_storage_controller,
 )
 
-# from nlp_land_prediction_endpoint.models.lda_model import LDAModel
-from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
-from nlp_land_prediction_endpoint.utils.storage_controller import (
+# from cs_insights_prediction_endpoint.models.lda_model import LDAModel
+from cs_insights_prediction_endpoint.utils.settings import Settings, get_settings
+from cs_insights_prediction_endpoint.utils.storage_controller import (
     StorageController,
     get_storage_controller,
 )

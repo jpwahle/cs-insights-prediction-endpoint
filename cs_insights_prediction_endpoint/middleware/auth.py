@@ -8,10 +8,10 @@ import requests
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from nlp_land_prediction_endpoint.models.model_token_data import TokenData
-from nlp_land_prediction_endpoint.models.model_user import UserModel
-from nlp_land_prediction_endpoint.models.model_user_login import UserLoginModel
-from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
+from cs_insights_prediction_endpoint.models.model_token_data import TokenData
+from cs_insights_prediction_endpoint.models.model_user import UserModel
+from cs_insights_prediction_endpoint.models.model_user_login import UserLoginModel
+from cs_insights_prediction_endpoint.utils.settings import Settings, get_settings
 
 token_url = get_settings().AUTH_TOKEN_ROUTE
 jwt_scheme = OAuth2PasswordBearer(tokenUrl=token_url)

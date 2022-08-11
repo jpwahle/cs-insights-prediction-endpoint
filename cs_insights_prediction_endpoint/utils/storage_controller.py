@@ -7,8 +7,8 @@ from typing import Any, List, Optional, TypeVar
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
-from nlp_land_prediction_endpoint.models.generic_model import GenericModel
-from nlp_land_prediction_endpoint.utils.settings import Settings, get_settings
+from cs_insights_prediction_endpoint.models.generic_model import GenericModel
+from cs_insights_prediction_endpoint.utils.settings import Settings, get_settings
 
 T = TypeVar("T", bound="StorageController")
 

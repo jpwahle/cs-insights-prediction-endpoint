@@ -2,9 +2,9 @@
 
 import pytest
 
-from nlp_land_prediction_endpoint.models.generic_model import GenericModel
-from nlp_land_prediction_endpoint.utils.settings import get_settings
-from nlp_land_prediction_endpoint.utils.storage_controller import StorageController
+from cs_insights_prediction_endpoint.models.generic_model import GenericModel
+from cs_insights_prediction_endpoint.utils.settings import get_settings
+from cs_insights_prediction_endpoint.utils.storage_controller import StorageController
 
 
 @pytest.fixture

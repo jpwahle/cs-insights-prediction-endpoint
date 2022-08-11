@@ -4,8 +4,8 @@ import pytest
 import requests
 from requests.models import Response
 
-from nlp_land_prediction_endpoint.utils import settings
-from nlp_land_prediction_endpoint.utils.version_getter import get_backend_version
+from cs_insights_prediction_endpoint.utils import settings
+from cs_insights_prediction_endpoint.utils.version_getter import get_backend_version
 
 
 @pytest.fixture

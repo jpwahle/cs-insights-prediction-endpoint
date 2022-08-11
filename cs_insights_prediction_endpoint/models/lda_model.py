@@ -12,11 +12,11 @@ from gensim.parsing.preprocessing import (  # type: ignore
 )
 from gensim.test.utils import common_corpus  # type: ignore
 
-from nlp_land_prediction_endpoint.models.generic_model import GenericInputModel
-from nlp_land_prediction_endpoint.models.generic_model import (
+from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
+from cs_insights_prediction_endpoint.models.generic_model import (
     GenericModel as myGeneric_Model,
 )
-from nlp_land_prediction_endpoint.models.generic_model import GenericOutputModel
+from cs_insights_prediction_endpoint.models.generic_model import GenericOutputModel
 
 T = TypeVar("T", bound="LDAModel")
 

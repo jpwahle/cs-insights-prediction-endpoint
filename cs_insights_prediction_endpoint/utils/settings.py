@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     JWT_TOKEN_EXPIRATION_MINUTES: int = 30
     JWT_SIGN_ALG: str = "HS256"
     IMPLEMENTED_MODELS: list = [
-        {"lda": ["nlp_land_prediction_endpoint.models.lda_model", "LDAModel"]}
+        {"lda": ["cs_insights_prediction_endpoint.models.lda_model", "LDAModel"]}
     ]
     NODE_TYPE: str = "SECONDARY"
 
