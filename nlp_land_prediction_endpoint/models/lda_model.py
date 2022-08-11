@@ -177,10 +177,12 @@ class LDAModel(myGeneric_Model):
         #        Later on this will be an array of paper. ids Maybe create an Issue?
         return list(self.processingModel.get_document_topics(**inputObject))
 
-    def save(self: T, path: str):
+    def save(self: T, path: str) -> None:
+        """Function for saving a model to a path"""
         self.processingModel.save(path)
 
-    def load(self: T, path: str):
+    def load(self: T, path: str) -> None:
+        """Function for loading a model from a path"""
         self.processingModel.load(path)
 
 

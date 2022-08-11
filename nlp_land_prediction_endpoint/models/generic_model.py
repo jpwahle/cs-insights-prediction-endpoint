@@ -71,11 +71,11 @@ class GenericModel(BaseModel):
         """Predict something with data from inputObject"""
         raise NotImplementedError("GenericModel.predict has to be implemented by the subclass")
 
-    def save(self: T, path:str) -> None:
+    def save(self: T, path: str) -> None:
         """Function to save the state of the model"""
         pass
 
-    def load(self:T, path:str) -> None:
+    def load(self: T, path: str) -> None:
         """Function to load the state of the model"""
         pass
 

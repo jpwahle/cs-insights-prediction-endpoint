@@ -30,7 +30,7 @@ def dummyGenericModel() -> GenericModel:
         "description": "This is a test",
         "creationParameters": {},
         "functionCalls": {},
-        "type": "lda"
+        "type": "lda",
     }
     dummy = GenericModel(**dummy_values)
 

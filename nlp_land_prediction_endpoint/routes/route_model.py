@@ -235,7 +235,9 @@ def create_model(
             model_specs = implemented_models[modelCreationRequest.modelType]
             model_module = import_module(model_specs[0])  # TODO Use proper model
             model_class = model_specs[1]
-            model = getattr(model_module, model_class)(type=modelCreationRequest.modelType,**(modelCreationRequest.modelSpecification))
+            model = getattr(model_module, model_class)(
+                type=modelCreationRequest.modelType, **(modelCreationRequest.modelSpecification)
+            )
     if model is None:
         raise HTTPException(status_code=404, detail="Model not implemented")
     sc.addModel(model)

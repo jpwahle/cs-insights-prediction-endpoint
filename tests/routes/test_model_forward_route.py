@@ -1,21 +1,18 @@
-from typing import Any, Generator
+from typing import Any
 
 import pytest
 import requests
-from requests.models import Response
 from fastapi.testclient import TestClient
+from requests.models import Response
 
 from nlp_land_prediction_endpoint import __version__
 from nlp_land_prediction_endpoint.app import app
-from nlp_land_prediction_endpoint.models.generic_model import GenericInputModel
 from nlp_land_prediction_endpoint.routes.route_model import (
     ModelCreationRequest,
     ModelDeletionRequest,
     ModelFunctionRequest,
-    ModelUpdateRequest,
 )
 from nlp_land_prediction_endpoint.utils.settings import get_settings
-from nlp_land_prediction_endpoint.utils.storage_controller import get_storage_controller
 
 
 @pytest.fixture
@@ -37,6 +34,7 @@ def patch_settings(monkeypatch: Any) -> None:
 @pytest.fixture
 def mock_deletion(monkeypatch: Any) -> None:
     def mock_post(*args, **kwargs):
+        # type: (*str, **int) -> Response
         response = Response()
         response.status_code = 200
         response._content = b'{"modelID": "1234"}'
@@ -48,6 +46,7 @@ def mock_deletion(monkeypatch: Any) -> None:
 @pytest.fixture
 def mock_creation(monkeypatch: Any) -> None:
     def mock_post(*args, **kwargs):
+        # type: (*str, **int) -> Response
         response = Response()
         response.status_code = 201
         response._content = b'{"modelID": "1234"}'
@@ -113,9 +112,7 @@ def test_add_model(
         assert response.status_code == 201
 
 
-def test_delete_model(
-    endpoint: str, patch_settings: Any, mock_deletion: Any
-) -> None:
+def test_delete_model(endpoint: str, patch_settings: Any, mock_deletion: Any) -> None:
     get_settings().NODE_TYPE = "MAIN"
     with TestClient(app) as client:
         response = client.delete(endpoint + "1234")
