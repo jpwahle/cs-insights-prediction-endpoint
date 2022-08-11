@@ -18,7 +18,7 @@ from cs_insights_prediction_endpoint.utils.settings import get_settings
 from cs_insights_prediction_endpoint.utils.version_getter import get_backend_version
 
 app = FastAPI(
-    title="NLP-Land-prediction-endpoint",
+    title="cs-insights-prediction-endpoint",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
 )
