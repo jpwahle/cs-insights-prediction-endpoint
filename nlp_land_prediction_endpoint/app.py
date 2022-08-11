@@ -23,7 +23,6 @@ app = FastAPI(
 
 
 settings = get_settings()
-print(get_settings().NODE_TYPE)
 
 if "{version}" in settings.AUTH_BACKEND_URL:
     get_backend_version()

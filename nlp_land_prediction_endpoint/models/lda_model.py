@@ -31,7 +31,7 @@ class LDAModel(myGeneric_Model):
         data["description"] = "Latent Dirichlet allocation model"
         # XXX-TN    Maybe we should consider adding another model
         #           for the creationParameters, so we can validate the input
-        if "creationParameters" in data:
+        if "creationParameters" in data and data["creationParameters"] != {}:
             data["processingModel"] = LdaModel(**data["creationParameters"])
         else:
             data["processingModel"] = LdaModel(common_corpus, num_topics=10)
@@ -49,6 +49,7 @@ class LDAModel(myGeneric_Model):
             "predict": self.predict,
         }
         super().__init__(**data)
+        self.save(f"{self.saveDirectory}/{self.id}")
 
     def alpha(self: T, document: str) -> dict:
         """Calc alpha and return"""
@@ -175,6 +176,12 @@ class LDAModel(myGeneric_Model):
         # XXX-TN For now we will use corpus as input, which will be a proccessed bag of words.
         #        Later on this will be an array of paper. ids Maybe create an Issue?
         return list(self.processingModel.get_document_topics(**inputObject))
+
+    def save(self: T, path: str):
+        self.processingModel.save(path)
+
+    def load(self: T, path: str):
+        self.processingModel.load(path)
 
 
 class LDAInputModel(GenericInputModel):

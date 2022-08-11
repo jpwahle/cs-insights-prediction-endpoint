@@ -1,6 +1,7 @@
 """This module implements a storage controller for the endpoint management"""
 
 from functools import lru_cache
+from importlib import import_module
 from typing import Any, List, Optional, TypeVar
 
 from pymongo import MongoClient
@@ -30,6 +31,17 @@ class StorageController:
             settings.MODEL_DB_NAME
         ]
         self.models = list([])
+
+        for db_model in self.model_db.find():
+            #self.models.append(GenericModel(**model))
+            for implemented_models in settings.IMPLEMENTED_MODELS:
+                if db_model["type"] in implemented_models:
+                    model_specs = implemented_models[db_model["type"]]
+                    model_module = import_module(model_specs[0])
+                    model_class = model_specs[1]
+                    model = getattr(model_module, model_class)(**db_model)
+                    model.load(f"{model.saveDirectory}/{model.id}")
+                    self.models.append(model)
         # print(f"Successful connection to {settings.MODEL_DB_URL}")
 
     def getModel(self: T, id: str) -> Optional[GenericModel]:
