@@ -31,8 +31,6 @@ class GenericModel(BaseModel):
         data["createdAt"] = datetime.timestamp(datetime.now())
         data["id"] = "Model-" + data["name"] + "-" + str(data["createdAt"] * random.random())
         super().__init__(**data)
-        Path(saveDirectory).mkdir(parents=True, exist_ok=True)
-
         Path(self.saveDirectory).mkdir(parents=True, exist_ok=True)
 
     def __str__(self: T) -> str:
