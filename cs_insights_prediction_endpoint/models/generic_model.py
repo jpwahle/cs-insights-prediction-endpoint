@@ -1,6 +1,7 @@
 """This modulew implements the generic-model"""
 import random
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, Optional, TypeVar
 
 from pydantic import BaseModel, Field
@@ -29,6 +30,7 @@ class GenericModel(BaseModel):
         """Constructor for GenericModel"""
         data["createdAt"] = datetime.timestamp(datetime.now())
         data["id"] = "Model-" + data["name"] + "-" + str(data["createdAt"] * random.random())
+        Path(saveDirectory).mkdir(parents=True, exist_ok=True)
         super().__init__(**data)
 
     def __str__(self: T) -> str:
