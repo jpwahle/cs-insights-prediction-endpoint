@@ -56,3 +56,4 @@ line-length = 100
 
 [package]
 include = ["cs_insights_prediction_endpoint/*.py"]
+
