@@ -27,7 +27,7 @@ def endpoint() -> str:
 
 @pytest.fixture
 def patch_settings(monkeypatch: Any) -> None:
-    monkeypatch.setattr(get_settings(), "NODE_TYPE", "MAIN")
+    monkeypatch.setattr(get_settings(), "node_type", "MAIN")
     # monkeypatch.setenv("NODE_TYPE", "MAIN")
 
 
@@ -94,26 +94,26 @@ def test_list_implemented(
     endpoint: str,
     patch_settings: Any,
 ) -> None:
-    get_settings().NODE_TYPE = "MAIN"
+    get_settings().node_type = "MAIN"
     with TestClient(app) as client:
         response = client.get(endpoint + "implemented")
         assert response.status_code == 200
 
 
-# def test_add_model(
-#     endpoint: str,
-#     modelCreationRequest: ModelCreationRequest,
-#     patch_settings: Any,
-#     mock_creation: Any,
-# ) -> None:
-#     get_settings().NODE_TYPE = "MAIN"
-#     with TestClient(app) as client:
-#         response = client.post(endpoint, json=modelCreationRequest.dict())
-#         assert response.status_code == 201
+def test_add_model(
+    endpoint: str,
+    modelCreationRequest: ModelCreationRequest,
+    patch_settings: Any,
+    mock_creation: Any,
+) -> None:
+    get_settings().node_type = "MAIN"
+    with TestClient(app) as client:
+        response = client.post(endpoint, json=modelCreationRequest.dict())
+        assert response.status_code == 201
 
 
-# def test_delete_model(endpoint: str, patch_settings: Any, mock_deletion: Any) -> None:
-#     get_settings().NODE_TYPE = "MAIN"
-#     with TestClient(app) as client:
-#         response = client.delete(endpoint + "1234")
-#         assert response.status_code == 404
+def test_delete_model(endpoint: str, patch_settings: Any, mock_deletion: Any) -> None:
+    get_settings().node_type = "MAIN"
+    with TestClient(app) as client:
+        response = client.delete(endpoint + "1234")
+        assert response.status_code == 404

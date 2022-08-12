@@ -28,7 +28,8 @@ class StorageController:
         """
         print(get_settings())
         self.model_client: MongoClient = MongoClient(
-            f"mongodb://{settings.mongo_user.get_secret_value()}:{settings.mongo_password.get_secret_value()}@{settings.mongo_host}",
+            f"mongodb://{settings.mongo_user.get_secret_value()}"
+            + f":{settings.mongo_password.get_secret_value()}@{settings.mongo_host}",
         )
         self.model_db: Collection = self.model_client[settings.model_db_name][
             settings.model_db_name

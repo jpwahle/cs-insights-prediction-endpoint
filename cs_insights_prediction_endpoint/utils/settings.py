@@ -1,6 +1,5 @@
 """This module implements the settings as well as the default settings"""
 from functools import lru_cache
-from typing import Optional
 
 from pydantic import BaseSettings, SecretStr
 
@@ -8,17 +7,17 @@ from pydantic import BaseSettings, SecretStr
 class Settings(BaseSettings):
     """Settings class according to pydantic"""
 
-    auth_backend_version: Optional[str] = "v0"
-    implemented_models: Optional[list] = [
+    auth_backend_version: str = "v0"
+    implemented_models: list = [
         {"lda": ["cs_insights_prediction_endpoint.models.lda_model", "LDAModel"]}
     ]
-    node_type: Optional[str] = "SECONDARY"
-    remote_host_db_name: Optional[str] = "remote_hosts"
-    model_db_name: Optional[str] = "models"
-    auth_token_route: Optional[str] = "/auth/service"
-    auth_backend_login_route: Optional[str] = "/auth/login/service"
-    jwt_sign_alg: Optional[str] = "HS256"
-    jwt_token_expiration_minutes: Optional[int] = 30
+    node_type: str = "SECONDARY"
+    remote_host_db_name: str = "remote_hosts"
+    model_db_name: str = "models"
+    auth_token_route: str = "/auth/service"
+    auth_backend_login_route: str = "/auth/login/service"
+    jwt_sign_alg: str = "HS256"
+    jwt_token_expiration_minutes: int = 30
 
     jwt_secret: SecretStr
     mongo_user: SecretStr
@@ -31,6 +30,7 @@ class Settings(BaseSettings):
         """Configuration for settings"""
 
         case_sensitive = False
+        env_file = ".env.development"
         secrets_dir = "/run/secrets"  # for production and docker secrets
 
 

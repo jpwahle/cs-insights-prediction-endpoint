@@ -18,8 +18,8 @@ class GenericModel(BaseModel):
     createdAt: float
     description: str = Field(...)
     # XXX-TN We should a GenericCreationParameters, same as GenericInputModel
+    saveDirectory: str = "./saved_models"
     creationParameters: Optional[dict] = {}
-    saveDirectory: Optional[str] = "./saved_models"
     type: str = Field(...)
 
     functionCalls: dict = Field(...)

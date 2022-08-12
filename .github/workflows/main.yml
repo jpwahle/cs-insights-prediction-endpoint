@@ -29,6 +29,8 @@ jobs:
         uses: supercharge/mongodb-github-action@1.7.0
         with:
           mongodb-version: 5.0.9
+          mongodb-username: admin
+          mongodb-password: admin_password
 
       - name: 🧪 Run tests
         run: |

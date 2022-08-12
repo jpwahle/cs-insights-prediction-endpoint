@@ -39,7 +39,7 @@ types-requests = "^2.27.7"
 [tool.poe.tasks]
 lint = "flake8 ."
 type = "mypy cs_insights_prediction_endpoint"
-test = "py.test tests/ -s --cov=cs_insights_prediction_endpoint --cov-report=xml --cov-fail-under 75"
+test = "py.test tests/ -s --cov=cs_insights_prediction_endpoint --cov-report=xml --cov-fail-under 90"
 doc = "python3 gen_doc.py"
 alltest = ["lint", "type", "test"]
 isort = "isort ."
