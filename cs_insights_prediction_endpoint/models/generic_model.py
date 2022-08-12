@@ -1,6 +1,7 @@
 """This modulew implements the generic-model"""
 import random
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, Optional, TypeVar
 
 from pydantic import BaseModel, Field
@@ -30,6 +31,8 @@ class GenericModel(BaseModel):
         data["createdAt"] = datetime.timestamp(datetime.now())
         data["id"] = "Model-" + data["name"] + "-" + str(data["createdAt"] * random.random())
         super().__init__(**data)
+
+        Path(self.saveDirectory).mkdir(parents=True, exist_ok=True)
 
     def __str__(self: T) -> str:
         """Returns the String-representation of this GenericModel instance

@@ -72,7 +72,7 @@ def create_token(user: UserModel, settings: Settings, expires_delta: timedelta =
 def authenticate_user(user: UserLoginModel, settings: Settings) -> Optional[UserModel]:
     """Checks whether the supplied UserModel contains valid
     credentials. This is done by going through the authorization
-    endpoint specified in AUTH_LOGIN_ROUTE at the host AUTH_LOGIN_PROVIDER.
+    endpoint specified in AUTH_LOGIN_ROUTE at the host AUTH_BACKEND_URL.
 
     Arguments:
         user (UserModel): a user model to authenticate

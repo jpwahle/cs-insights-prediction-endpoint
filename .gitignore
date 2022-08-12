@@ -135,3 +135,4 @@ docs/oas.json
 
 # vim specific swap files
 *.swp
+saved_models/

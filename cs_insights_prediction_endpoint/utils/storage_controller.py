@@ -26,7 +26,9 @@ class StorageController:
         Args:
             settings (Settings): Settings object used for information on the databse
         """
-        self.model_client: MongoClient = MongoClient(settings.MODEL_DB_URL)
+        self.model_client: MongoClient = MongoClient(
+            f"mongodb://{settings.MONGO_USER}:{settings.MONGO_PASSWORD}@{settings.MONGO_HOST}",
+        )
         self.model_db: Collection = self.model_client[settings.MODEL_DB_NAME][
             settings.MODEL_DB_NAME
         ]
@@ -42,7 +44,6 @@ class StorageController:
                     model = getattr(model_module, model_class)(**db_model)
                     model.load(f"{model.saveDirectory}/{model.id}")
                     self.models.append(model)
-        # print(f"Successful connection to {settings.MODEL_DB_URL}")
 
     def getModel(self: T, id: str) -> Optional[GenericModel]:
         """Returns the model with id"""

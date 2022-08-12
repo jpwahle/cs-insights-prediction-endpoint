@@ -23,8 +23,8 @@ app = FastAPI(
     redoc_url="/api/redoc",
 )
 
-
 settings = get_settings()
+print(settings)
 
 if "{version}" in settings.AUTH_BACKEND_URL:
     get_backend_version()
