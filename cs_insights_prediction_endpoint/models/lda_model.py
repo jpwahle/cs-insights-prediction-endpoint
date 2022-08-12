@@ -114,7 +114,7 @@ class LDAModel(myGeneric_Model):
     def getLDAvis(
         self: T,
         data: List[Dict[str, str]],
-        num_topics: int = 20,
+        num_topics: int = 10,
         passes: int = 3,
         random_state: int = 0xBEEF,
     ) -> Any:
@@ -146,6 +146,8 @@ class LDAModel(myGeneric_Model):
         )
 
         vis = pyLDAvis.gensim_models.prepare(self.processingModel, bow_corpus, dictionary)
+
+        print(vis.to_json())
 
         return json.loads(vis.to_json())
 
