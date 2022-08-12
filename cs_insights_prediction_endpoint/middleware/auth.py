@@ -13,7 +13,7 @@ from cs_insights_prediction_endpoint.models.model_user import UserModel
 from cs_insights_prediction_endpoint.models.model_user_login import UserLoginModel
 from cs_insights_prediction_endpoint.utils.settings import Settings, get_settings
 
-token_url = get_settings().AUTH_TOKEN_ROUTE
+token_url = get_settings().auth_token_route
 jwt_scheme = OAuth2PasswordBearer(tokenUrl=token_url)
 
 
@@ -26,8 +26,8 @@ def encode_token(data: dict, settings: Settings) -> str:
     Returns:
         str: a valid JWT token
     """
-    SECRET = settings.JWT_SECRET
-    ALG = settings.JWT_SIGN_ALG
+    SECRET = settings.jwt_secret.get_secret_value()
+    ALG = settings.jwt_sign_alg
     return str(jwt.encode(data, SECRET, ALG))
 
 
@@ -42,8 +42,8 @@ def decode_token(token: str, settings: Settings) -> TokenData:
     Returns:
         TokenData: a TokenData model representing the decoded JWT token
     """
-    SECRET = settings.JWT_SECRET
-    ALG = settings.JWT_SIGN_ALG
+    SECRET = settings.jwt_secret.get_secret_value()
+    ALG = settings.jwt_sign_alg
     return TokenData(**jwt.decode(token, SECRET, [ALG]))
 
 
@@ -82,8 +82,8 @@ def authenticate_user(user: UserLoginModel, settings: Settings) -> Optional[User
         Optional[UserModel]: If the authentication was successful a UserModel object;
         None otherwise
     """
-    login_provider = settings.AUTH_BACKEND_URL
-    login_route = settings.AUTH_BACKEND_LOGIN_ROUTE
+    login_provider = settings.auth_backend_url
+    login_route = settings.auth_backend_login_route
     try:
         r = requests.post(
             f"{login_provider}{login_route}",

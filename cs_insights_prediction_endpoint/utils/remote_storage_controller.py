@@ -36,10 +36,10 @@ class RemoteStorageController:
             settings (Settings): Settings object used for information on the databse
         """
         self.remote_host_client: MongoClient = MongoClient(
-            f"mongodb://{settings.MONGO_USER}:{settings.MONGO_PASSWORD}@{settings.MONGO_HOST}",
+            f"mongodb://{settings.mongo_user.get_secret_value()}:{settings.mongo_password.get_secret_value()}@{settings.mongo_host}",
         )
-        self.remote_host_db: Collection = self.remote_host_client[settings.REMOTE_HOST_DB_NAME][
-            settings.REMOTE_HOST_DB_NAME
+        self.remote_host_db: Collection = self.remote_host_client[settings.remote_host_db_name][
+            settings.remote_host_db_name
         ]
 
     def get_all_models(self: RS) -> List[str]:

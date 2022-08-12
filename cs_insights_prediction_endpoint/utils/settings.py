@@ -2,34 +2,35 @@
 from functools import lru_cache
 from typing import Optional
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, SecretStr
 
 
 class Settings(BaseSettings):
     """Settings class according to pydantic"""
 
-    AUTH_BACKEND_VERSION: Optional[str] = "v0"
-    IMPLEMENTED_MODELS: Optional[list] = [
+    auth_backend_version: Optional[str] = "v0"
+    implemented_models: Optional[list] = [
         {"lda": ["cs_insights_prediction_endpoint.models.lda_model", "LDAModel"]}
     ]
-    NODE_TYPE: Optional[str] = "SECONDARY"
-    REMOTE_HOST_DB_NAME: Optional[str] = "remote_hosts"
-    MODEL_DB_NAME: Optional[str] = "models"
-    AUTH_TOKEN_ROUTE: Optional[str] = "/auth/service"
-    AUTH_BACKEND_LOGIN_ROUTE: Optional[str] = "/auth/login/service"
-    JWT_SIGN_ALG: Optional[str] = "HS256"
-    JWT_TOKEN_EXPIRATION_MINUTES: Optional[int] = 30
+    node_type: Optional[str] = "SECONDARY"
+    remote_host_db_name: Optional[str] = "remote_hosts"
+    model_db_name: Optional[str] = "models"
+    auth_token_route: Optional[str] = "/auth/service"
+    auth_backend_login_route: Optional[str] = "/auth/login/service"
+    jwt_sign_alg: Optional[str] = "HS256"
+    jwt_token_expiration_minutes: Optional[int] = 30
 
-    AUTH_BACKEND_URL: str
-    JWT_SECRET: str
-    MONGO_USER: str
-    MONGO_PASSWORD: str
-    MONGO_DB: str
-    MONGO_HOST: str
+    jwt_secret: SecretStr
+    mongo_user: SecretStr
+    mongo_password: SecretStr
+    mongo_db: str
+    mongo_host: str
+    auth_backend_url: str
 
     class Config:
         """Configuration for settings"""
 
+        case_sensitive = False
         secrets_dir = "/run/secrets"  # for production and docker secrets
 
 

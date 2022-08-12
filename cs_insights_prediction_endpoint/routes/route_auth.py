@@ -35,7 +35,7 @@ async def login(user: UserLoginModel, settings: Settings = Depends(get_settings)
             detail="Invalid credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    TIME_DELTA = settings.JWT_TOKEN_EXPIRATION_MINUTES
+    TIME_DELTA = settings.jwt_token_expiration_minutes
     token_expiration = timedelta(minutes=TIME_DELTA)
     token = create_token(auth_user, settings, token_expiration)
     return TokenModel(access_token=token, token_type="bearer")
@@ -54,7 +54,7 @@ async def refresh(
     Returns:
         TokenModel: a JWT given a valid user from the NLP-Land-Backend
     """
-    TIME_DELTA = settings.JWT_TOKEN_EXPIRATION_MINUTES
+    TIME_DELTA = settings.jwt_token_expiration_minutes
     token_expiration = timedelta(minutes=TIME_DELTA)
     token = create_token(TokenData(**user.dict()), settings, token_expiration)
     return TokenModel(access_token=token, token_type="bearer")

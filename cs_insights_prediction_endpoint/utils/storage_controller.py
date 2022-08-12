@@ -26,17 +26,18 @@ class StorageController:
         Args:
             settings (Settings): Settings object used for information on the databse
         """
+        print(get_settings())
         self.model_client: MongoClient = MongoClient(
-            f"mongodb://{settings.MONGO_USER}:{settings.MONGO_PASSWORD}@{settings.MONGO_HOST}",
+            f"mongodb://{settings.mongo_user.get_secret_value()}:{settings.mongo_password.get_secret_value()}@{settings.mongo_host}",
         )
-        self.model_db: Collection = self.model_client[settings.MODEL_DB_NAME][
-            settings.MODEL_DB_NAME
+        self.model_db: Collection = self.model_client[settings.model_db_name][
+            settings.model_db_name
         ]
         self.models = list([])
 
         for db_model in self.model_db.find():
             # self.models.append(GenericModel(**model))
-            for implemented_models in settings.IMPLEMENTED_MODELS:
+            for implemented_models in settings.implemented_models:
                 if db_model["type"] in implemented_models:
                     model_specs = implemented_models[db_model["type"]]
                     model_module = import_module(model_specs[0])
