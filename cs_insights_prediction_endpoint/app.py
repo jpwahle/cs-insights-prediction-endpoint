@@ -23,10 +23,9 @@ app = FastAPI(
     redoc_url="/api/redoc",
 )
 
-
 settings = get_settings()
 
-if "{version}" in settings.AUTH_BACKEND_URL:
+if "{version}" in settings.auth_backend_url:
     get_backend_version()
 
 app.include_router(
@@ -41,7 +40,7 @@ app.include_router(
     prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/topics",
 )
 
-if settings.NODE_TYPE == "MAIN":
+if settings.node_type == "MAIN":
     app.include_router(
         ModelForwardRouter,
         tags=["ModelForward"],

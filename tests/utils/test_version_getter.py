@@ -27,5 +27,5 @@ def mock_version_request(monkeypatch: Any) -> None:
 
 
 def test_missing_backend_version(monkeypatch: Any, mock_version_request: Any) -> None:
-    settings.get_settings().AUTH_BACKEND_VERSION = None
+    settings.get_settings().auth_backend_version = None
     get_backend_version()

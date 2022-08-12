@@ -117,7 +117,7 @@ def list_all_implemented_models(
 ) -> StorageControllerListReponse:
     """Endpoint for getting a list of all implemented models"""
     models = []
-    for implemented_models in settings.IMPLEMENTED_MODELS:
+    for implemented_models in settings.implemented_models:
         for implemented_model in implemented_models.keys():
             models.append(implemented_model)
     return StorageControllerListReponse(models=models)
@@ -230,7 +230,7 @@ def create_model(
     """
     model = None
     # TODO-TN We need to have a list with all implemented models
-    for implemented_models in settings.IMPLEMENTED_MODELS:
+    for implemented_models in settings.implemented_models:
         if modelCreationRequest.modelType in implemented_models:
             model_specs = implemented_models[modelCreationRequest.modelType]
             model_module = import_module(model_specs[0])  # TODO Use proper model

@@ -8,7 +8,6 @@ RUN pip install poetry
 RUN poetry config virtualenvs.in-project false
 
 COPY . /cs-insights-prediction-endpoint
-COPY test.env /cs-insights-prediction-endpoint/.env
 
 RUN poetry install --no-dev
-RUN rm -rf .venv #Remove broken env that is created althouth `virtualenvs.in-project` is set to false
+RUN rm -rf .venv # Remove broken env that is created althouth `virtualenvs.in-project` is set to false
