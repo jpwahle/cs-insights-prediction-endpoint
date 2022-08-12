@@ -30,8 +30,8 @@ class GenericModel(BaseModel):
         """Constructor for GenericModel"""
         data["createdAt"] = datetime.timestamp(datetime.now())
         data["id"] = "Model-" + data["name"] + "-" + str(data["createdAt"] * random.random())
-        Path(saveDirectory).mkdir(parents=True, exist_ok=True)
         super().__init__(**data)
+        Path(saveDirectory).mkdir(parents=True, exist_ok=True)
 
         Path(self.saveDirectory).mkdir(parents=True, exist_ok=True)
 
