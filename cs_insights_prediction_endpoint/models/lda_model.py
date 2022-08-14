@@ -1,5 +1,6 @@
 """This module implements the LDA-Model"""
 import json
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, TypeVar
 
 import pyLDAvis  # type: ignore
@@ -26,11 +27,11 @@ class LDAModel(myGeneric_Model):
 
     def __init__(self: T, **data: Any) -> None:
         """Create LDAModel"""
-        data["name"] = "LDA"
+        if "name" not in data:
+            data["name"] = "Unnamed-LDA-" + str(hash(datetime.timestamp(datetime.now())))
         # XXX-TN We should consider adding "description" as a class config example
-        data["description"] = "Latent Dirichlet allocation model"
-        # XXX-TN    Maybe we should consider adding another model
-        #           for the creationParameters, so we can validate the input
+        if "description" not in data:
+            data["description"] = "Latent Dirichlet allocation model"
         if "creationParameters" in data and data["creationParameters"] != {}:
             data["processingModel"] = LdaModel(**data["creationParameters"])
         else:
