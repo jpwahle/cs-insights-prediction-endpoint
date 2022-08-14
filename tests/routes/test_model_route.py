@@ -110,7 +110,17 @@ def modelFunctionCallRequest() -> GenericInputModel:
     return GenericInputModel(functionCall="getTopics", inputData={})
 
 
-@mongomock.patch(servers=(("127.0.0.1", 27017),), on_new="create")
+@pytest.fixture
+def modelFailingFunctionCallRequest() -> GenericInputModel:
+    """Get an incorrect GenericInput model used for testing the function call endpoint
+
+    Returns:
+        GenericInputModel: A GenericModelInput with a function call and empty data
+    """
+    return GenericInputModel(functionCall="NonExistent", inputData={})
+
+
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_create(
     client: Generator, endpoint: str, modelCreationRequest: ModelCreationRequest
 ) -> None:
@@ -121,6 +131,7 @@ def test_model_create(
         endpoint (str): Endpoint to query
         modelCreationRequest (ModelCreationRequest): A correct ModelCreationRequest
     """
+    before_response_json = client.get(endpoint).json()
     response = client.post(endpoint, json=modelCreationRequest.dict())
     assert response.status_code == 201
     createdModelID = response.json()["modelID"]
@@ -130,7 +141,8 @@ def test_model_create(
     assert response2.status_code == 200
     response2_json = response2.json()
     assert "models" in response2_json
-    # assert response2_json["models"] == [createdModelID] # FIXME Uses old model from other test
+    assert "models" in before_response_json
+    assert response2_json["models"] == before_response_json["models"] + [createdModelID]
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
@@ -219,17 +231,26 @@ def test_model_function(
     assert "models" in models
     testModelID = models["models"][0]
     mfr = ModelFunctionRequest(modelID=testModelID)
-    response = client.post(
-        endpoint + str(mfr.modelID), json=modelFunctionCallRequest.dict()
-    )  # TODO remove /test
+    response = client.post(endpoint + str(mfr.modelID), json=modelFunctionCallRequest.dict())
     assert response.status_code == 200
+    response_json = response.json()
+    assert "outputData" in response_json and "getTopics" in response_json["outputData"]
+
+
+def test_failing_model_function(
+    client: Generator, endpoint: str, modelFailingFunctionCallRequest: GenericInputModel
+) -> None:
     failing_response = client.post(
-        endpoint + "nonExistentModel", json={"functionCall": "ThisWillNeverExists", "inputData": {}}
-    )  # TODO make a proper pyfixture
+        endpoint + "nonExistentModel", json=modelFailingFunctionCallRequest.dict()
+    )
+    models = client.get(endpoint).json()
+    assert "models" in models
+    testModelID = models["models"][0]
+    mfr = ModelFunctionRequest(modelID=testModelID)
     assert failing_response.status_code == 404
     failing_response = client.post(
-        endpoint + str(mfr.modelID), json={"functionCall": "ThisWillNeverExists", "inputData": {}}
-    )  # TODO make a proper pyfixture
+        endpoint + str(mfr.modelID), json=modelFailingFunctionCallRequest.dict()
+    )
     assert failing_response.status_code == 404
 
 

@@ -75,11 +75,11 @@ class GenericModel(BaseModel):
 
     def save(self: T, path: str) -> None:
         """Function to save the state of the model"""
-        pass
+        raise NotImplementedError("GenericModel.save has to be implemented by the subclass")
 
     def load(self: T, path: str) -> None:
         """Function to load the state of the model"""
-        pass
+        raise NotImplementedError("GenericModel.load has to be implemented by the subclass")
 
 
 class GenericInputModel(BaseModel):

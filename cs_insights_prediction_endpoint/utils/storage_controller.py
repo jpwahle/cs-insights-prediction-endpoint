@@ -72,7 +72,7 @@ class StorageController:
         if model is None:
             raise KeyError("Model not found")
         else:
-            self.model_db.delete_one({"id": model.id})  # TODO check if actually deleted
+            self.model_db.delete_one({"id": model.id})
             self.models.remove(model)
 
 

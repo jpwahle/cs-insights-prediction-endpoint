@@ -229,7 +229,6 @@ def create_model(
         dict: Either an error or the created model id
     """
     model = None
-    # TODO-TN We need to have a list with all implemented models
     for implemented_models in settings.implemented_models:
         if modelCreationRequest.modelType in implemented_models:
             model_specs = implemented_models[modelCreationRequest.modelType]

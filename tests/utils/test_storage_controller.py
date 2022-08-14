@@ -1,5 +1,6 @@
-"""Test the lda model."""
+"""Test the storage controller."""
 
+import mongomock
 import pytest
 
 from cs_insights_prediction_endpoint.models.generic_model import GenericModel
@@ -37,37 +38,39 @@ def dummyGenericModel() -> GenericModel:
     return dummy
 
 
-# def testDeleteModel(
-#     dummyStorageController: StorageController, dummyGenericModel: GenericModel
-# ) -> None:
-#     """Test for deleteing models from the StorageController
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
+def testDeleteModel(
+    dummyStorageController: StorageController, dummyGenericModel: GenericModel
+) -> None:
+    """Test for deleteing models from the StorageController
 
-#     Arguments:
-#         dummyStorageController (StorageController): A dummy storage_controller
-#         dummyGenericModel (GenericModel): A dummy GenericModel
-#     """
-#     # add
-#     dummyStorageController.addModel(dummyGenericModel)
-#     # delete
-#     dummyStorageController.delModel(dummyGenericModel.id)
-#     assert dummyStorageController.getModel(dummyGenericModel.id) is None
+    Arguments:
+        dummyStorageController (StorageController): A dummy storage_controller
+        dummyGenericModel (GenericModel): A dummy GenericModel
+    """
+    # add
+    dummyStorageController.addModel(dummyGenericModel)
+    # delete
+    dummyStorageController.delModel(dummyGenericModel.id)
+    assert dummyStorageController.getModel(dummyGenericModel.id) is None
 
-#     # Try to delete no existent Model
-#     with pytest.raises(KeyError):
-#         dummyStorageController.delModel("kjsdhgf8iuz")
+    # Try to delete no existent Model
+    with pytest.raises(KeyError):
+        dummyStorageController.delModel("kjsdhgf8iuz")
 
 
-# def testAddModel(
-#     dummyStorageController: StorageController, dummyGenericModel: GenericModel
-# ) -> None:
-#     """Test for adding models to the StorageController
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
+def testAddModel(
+    dummyStorageController: StorageController, dummyGenericModel: GenericModel
+) -> None:
+    """Test for adding models to the StorageController
 
-#     Arguments:
-#         dummyStorageController (StorageController): A dummy storage_controller
-#         dummyGenericModel (GenericModel): A dummy GenericModel
-#     """
-#     old = dummyStorageController.getAllModels()
-#     dummyStorageController.addModel(dummyGenericModel)
+    Arguments:
+        dummyStorageController (StorageController): A dummy storage_controller
+        dummyGenericModel (GenericModel): A dummy GenericModel
+    """
+    old = dummyStorageController.getAllModels()
+    dummyStorageController.addModel(dummyGenericModel)
 
-#     assert dummyStorageController.getAllModels() == old
-#     assert dummyStorageController.getModel(dummyGenericModel.id) == dummyGenericModel
+    assert dummyStorageController.getAllModels() == old
+    assert dummyStorageController.getModel(dummyGenericModel.id) == dummyGenericModel
