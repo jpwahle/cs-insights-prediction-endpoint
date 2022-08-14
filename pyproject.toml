@@ -17,6 +17,7 @@ python-dotenv = "^0.20.0"
 pyLDAvis = "^3.3.1"
 pymongo = "=4.1.1"
 click = "8.0.2"
+mongomock = "^4.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

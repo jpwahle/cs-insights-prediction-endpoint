@@ -1,5 +1,6 @@
 from typing import Generator
 
+import mongomock
 import pytest
 from fastapi.testclient import TestClient
 
@@ -17,7 +18,7 @@ from cs_insights_prediction_endpoint.utils.storage_controller import (
 )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def client() -> Generator:
     """Get the test client for tests and reuse it.
 
@@ -109,6 +110,7 @@ def modelFunctionCallRequest() -> GenericInputModel:
     return GenericInputModel(functionCall="getTopics", inputData={})
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_create(
     client: Generator, endpoint: str, modelCreationRequest: ModelCreationRequest
 ) -> None:
@@ -128,9 +130,10 @@ def test_model_create(
     assert response2.status_code == 200
     response2_json = response2.json()
     assert "models" in response2_json
-    # assert response2_json["models"] == [createdModelID]
+    assert response2_json["models"] == [createdModelID]
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_list_functionCalls(client: Generator, endpoint: str) -> None:
     """Test for listing all functions of a model
 
@@ -152,6 +155,7 @@ def test_model_list_functionCalls(client: Generator, endpoint: str) -> None:
     assert failing_response.status_code == 404
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_list_implemented(client: Generator, endpoint: str) -> None:
     """Test for listing implemented models
 
@@ -166,6 +170,7 @@ def test_model_list_implemented(client: Generator, endpoint: str) -> None:
     assert "lda" in response_json["models"]
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_create_fail(
     client: Generator, endpoint: str, failingModelCreationRequest: ModelCreationRequest
 ) -> None:
@@ -198,6 +203,7 @@ def test_model_create_fail(
 #     assert "modelID" in response.headers
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_function(
     client: Generator, endpoint: str, modelFunctionCallRequest: GenericInputModel
 ) -> None:
@@ -227,6 +233,7 @@ def test_model_function(
     assert failing_response.status_code == 404
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_delete(
     client: Generator, endpoint: str, modelDeletionRequest: ModelDeletionRequest
 ) -> None:
