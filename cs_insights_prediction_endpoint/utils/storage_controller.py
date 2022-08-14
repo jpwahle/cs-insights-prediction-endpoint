@@ -27,7 +27,6 @@ class StorageController:
         Args:
             settings (Settings): Settings object used for information on the databse
         """
-        print(get_settings())
         self.model_client: MongoClient = pymongo.MongoClient(
             f"mongodb://{settings.mongo_user.get_secret_value()}"
             + f":{settings.mongo_password.get_secret_value()}@{settings.mongo_host}",
