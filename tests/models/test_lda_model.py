@@ -85,9 +85,9 @@ def test_lda_model_initial_values(
         dummy_creation_parameters (dict): The dictionary containing the creation parameters
         of the LdaModel instance
     """
-    assert dummy_lda_model.name == "LDA"
-    assert "Model-" + dummy_lda_model.name in dummy_lda_model.id
-    assert "Model-" + dummy_lda_model.name in dummy_lda_model.getId()
+    assert "Unnamed-LDA" in dummy_lda_model.name
+    assert dummy_lda_model.id == str(hash(dummy_lda_model.name))
+    assert dummy_lda_model.getId() == str(hash(dummy_lda_model.name))
     assert dummy_lda_model.createdBy == "Alpha Tester"
     assert dummy_lda_model.createdAt <= datetime.timestamp(datetime.now()) + 1
     assert dummy_lda_model.createdAt >= datetime.timestamp(datetime.now()) - 1
@@ -144,14 +144,12 @@ def test_lda_model_initial_values_no_creation_paramers(
         LDA_Model implementation
         dummy_lda_instance (LdaModel): The Actual object from gensim used for assertions
     """
-    assert dummy_lda_model_no_creation_parameters.name == "LDA"
-    assert (
-        "Model-" + dummy_lda_model_no_creation_parameters.name
-        in dummy_lda_model_no_creation_parameters.id
+    assert "Unnamed-LDA" in dummy_lda_model_no_creation_parameters.name
+    assert dummy_lda_model_no_creation_parameters.id == str(
+        hash(dummy_lda_model_no_creation_parameters.name)
     )
-    assert (
-        "Model-" + dummy_lda_model_no_creation_parameters.name
-        in dummy_lda_model_no_creation_parameters.getId()
+    assert dummy_lda_model_no_creation_parameters.getId() == str(
+        hash(dummy_lda_model_no_creation_parameters.name)
     )
     assert dummy_lda_model_no_creation_parameters.createdBy == "Alpha Tester"
     assert (

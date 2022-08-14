@@ -32,8 +32,8 @@ def test_generic_model_initial_values(dummy_generic_model: GenericModel) -> None
         dummy_generic_model (Generic_Model): An instance of our GenericModel implementation
     """
     assert dummy_generic_model.name == "Generic"
-    assert "Model-" + dummy_generic_model.name in dummy_generic_model.id
-    assert "Model-" + dummy_generic_model.getName() in dummy_generic_model.getId()
+    assert str(hash(dummy_generic_model.name)) == dummy_generic_model.id
+    assert dummy_generic_model.getName() == dummy_generic_model.name
     assert dummy_generic_model.createdBy == "Alpha Tester"
     assert dummy_generic_model.createdAt <= datetime.timestamp(datetime.now()) + 1
     assert dummy_generic_model.createdAt >= datetime.timestamp(datetime.now()) - 1
