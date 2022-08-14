@@ -19,16 +19,7 @@ RS = TypeVar("RS", bound="RemoteStorageController")
 class RemoteStorageController:
     """StorageController for stroing remote hosts"""
 
-    remote_host_list: List[RemoteHost] = [
-        # RemoteHost(
-        #     **{  # TODO Remove after testing
-        #         "ip": "127.0.0.1",
-        #         "port": "8001",
-        #         "models": ["lda"],
-        #         "created_models": ["1234"],
-        #     }
-        # )
-    ]
+    remote_host_list: List[RemoteHost] = []
 
     def __init__(self: RS, settings: Settings) -> None:
         """Constructor for the remote storage controller
@@ -152,7 +143,7 @@ class RemoteStorageController:
         """
         for i, host in enumerate(self.remote_host_list):
             if host.ip == ip:
-                self.remote_host_db.delete_one({"ip": ip})  # TODO check if actually deleted
+                self.remote_host_db.delete_one({"ip": ip})
                 self.remote_host_list.remove(host)
                 return True
         return False

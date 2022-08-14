@@ -48,3 +48,9 @@ def test_generic_model_initial_values(dummy_generic_model: GenericModel) -> None
 
     with pytest.raises(NotImplementedError):
         dummy_generic_model.predict({})
+
+    with pytest.raises(NotImplementedError):
+        dummy_generic_model.save("")
+
+    with pytest.raises(NotImplementedError):
+        dummy_generic_model.load("")

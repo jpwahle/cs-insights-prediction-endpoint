@@ -1,23 +1,32 @@
-from typing import Generator
+"""Test the hosts route."""
+from importlib import reload
+from typing import Any, Generator
 
 import mongomock
 import pytest
 from fastapi.testclient import TestClient
 
+import cs_insights_prediction_endpoint.app as app
 from cs_insights_prediction_endpoint import __version__
-from cs_insights_prediction_endpoint.app import app
 from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
 from cs_insights_prediction_endpoint.routes.route_hosts import RemoteHostDeleteRequest
+from cs_insights_prediction_endpoint.utils.settings import get_settings
 
 
 @pytest.fixture
-def client() -> Generator:
+def patch_settings(monkeypatch: Any) -> None:
+    monkeypatch.setattr(get_settings(), "node_type", "MAIN")
+
+
+@pytest.fixture
+def client(patch_settings: Any) -> Generator:
     """Get the test client for tests and reuse it.
 
     Yields:
         Generator: Yields the test client as input argument for each test.
     """
-    with TestClient(app) as tc:
+    reload_app = reload(app)
+    with TestClient(reload_app.app) as tc:
         yield tc
 
 
