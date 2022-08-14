@@ -1,5 +1,6 @@
 from typing import Any
 
+import mongomock
 import pytest
 import requests
 from fastapi.testclient import TestClient
@@ -90,6 +91,7 @@ def modelDeletionRequest() -> ModelDeletionRequest:
     )
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),), on_new="create")
 def test_list_implemented(
     endpoint: str,
     patch_settings: Any,
@@ -100,6 +102,7 @@ def test_list_implemented(
         assert response.status_code == 200
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_add_model(
     endpoint: str,
     modelCreationRequest: ModelCreationRequest,
@@ -112,6 +115,7 @@ def test_add_model(
         assert response.status_code == 201
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_delete_model(endpoint: str, patch_settings: Any, mock_deletion: Any) -> None:
     get_settings().node_type = "MAIN"
     with TestClient(app) as client:
