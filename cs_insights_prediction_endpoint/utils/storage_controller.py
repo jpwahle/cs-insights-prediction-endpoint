@@ -4,6 +4,7 @@ from functools import lru_cache
 from importlib import import_module
 from typing import Any, List, Optional, TypeVar
 
+import pymongo
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
@@ -27,7 +28,7 @@ class StorageController:
             settings (Settings): Settings object used for information on the databse
         """
         print(get_settings())
-        self.model_client: MongoClient = MongoClient(
+        self.model_client: MongoClient = pymongo.MongoClient(
             f"mongodb://{settings.mongo_user.get_secret_value()}"
             + f":{settings.mongo_password.get_secret_value()}@{settings.mongo_host}",
         )
@@ -61,7 +62,7 @@ class StorageController:
     def addModel(self: T, model: GenericModel) -> str:
         """Adds model to models"""
         self.model_db.insert_one(model.dict(exclude=exclude_attributes))
-        self.models.append(model)  # TODO check if actually added
+        self.models.append(model)
         return model.id
 
     # TODO For consitency maybe return bool or switch

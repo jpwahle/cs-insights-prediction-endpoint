@@ -1,5 +1,6 @@
 from typing import Generator
 
+import mongomock
 import pytest
 from fastapi.testclient import TestClient
 
@@ -66,6 +67,7 @@ def failing_remote_host_deletion_request() -> RemoteHostDeleteRequest:
     return RemoteHostDeleteRequest(ip="this.is.not.a.vaild.ip.....")
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_remote_hosts_add(
     client: TestClient, endpoint: str, remote_host_creation_request: RemoteHost
 ) -> None:
@@ -75,6 +77,7 @@ def test_remote_hosts_add(
     assert remote_host_list != client.get(endpoint).json()
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_remote_hosts_delete(
     client: TestClient, endpoint: str, remote_host_deletion_request: RemoteHostDeleteRequest
 ) -> None:
@@ -83,6 +86,7 @@ def test_remote_hosts_delete(
     assert response.json()["ip"] == remote_host_deletion_request.ip
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_remote_hosts_delete_fail(
     client: TestClient, endpoint: str, failing_remote_host_deletion_request: RemoteHostDeleteRequest
 ) -> None:
