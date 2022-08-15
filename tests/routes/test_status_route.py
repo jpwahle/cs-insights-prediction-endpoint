@@ -38,6 +38,4 @@ def test_backend_status(client: TestClient, endpoint: str) -> None:
     """
     response = client.get(endpoint)
     assert response.status_code == 200
-    assert response.json() == {
-        "message": f"cs-insights-prediction-endpoint online at version {__version__}."
-    }
+    assert response.json() == {"status": "OK", "version": __version__}
