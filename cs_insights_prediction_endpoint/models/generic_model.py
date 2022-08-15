@@ -1,5 +1,4 @@
 """This modulew implements the generic-model"""
-import random
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional, TypeVar
@@ -28,8 +27,10 @@ class GenericModel(BaseModel):
 
     def __init__(self: T, **data: Any) -> None:
         """Constructor for GenericModel"""
-        data["createdAt"] = datetime.timestamp(datetime.now())
-        data["id"] = "Model-" + data["name"] + "-" + str(data["createdAt"] * random.random())
+        if "createdAt" not in data:
+            data["createdAt"] = datetime.timestamp(datetime.now())
+        if "id" not in data:
+            data["id"] = str(hash(data["name"]))
         super().__init__(**data)
         Path(self.saveDirectory).mkdir(parents=True, exist_ok=True)
 
