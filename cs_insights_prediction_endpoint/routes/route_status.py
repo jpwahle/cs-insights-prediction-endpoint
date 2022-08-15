@@ -15,9 +15,4 @@ async def read_root() -> Dict[str, str]:
     Returns:
         Dict[str, str]: A message of the current status and version.
     """
-    return {
-        "message": (
-            "cs-insights-prediction-endpoint online at version "
-            f"{cs_insights_prediction_endpoint.__version__}."
-        )
-    }
+    return {"status": "OK", "version": cs_insights_prediction_endpoint.__version__}
