@@ -36,7 +36,7 @@ class StorageController:
         ]
         self.models = list([])
 
-        for db_model in self.model_db.find():
+        for db_model in self.model_db.find({}):
             # self.models.append(GenericModel(**model))
             for implemented_models in settings.implemented_models:
                 if db_model["type"] in implemented_models:
