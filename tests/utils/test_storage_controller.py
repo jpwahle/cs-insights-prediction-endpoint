@@ -9,16 +9,6 @@ from cs_insights_prediction_endpoint.utils.storage_controller import StorageCont
 
 
 @pytest.fixture
-def dummyStorageController() -> StorageController:
-    """Provides a dummy storage controller
-
-    Returns:
-        StorageController: empty
-    """
-    return StorageController(get_settings())
-
-
-@pytest.fixture
 def dummyGenericModel() -> GenericModel:
     """Provides a dummy model
 
@@ -38,16 +28,26 @@ def dummyGenericModel() -> GenericModel:
     return dummy
 
 
+@pytest.fixture
+def dummyStorageController(dummyGenericModel: GenericModel) -> StorageController:
+    """Provides a dummy storage controller
+
+    Returns:
+        StorageController: empty
+    """
+    mongomock.patch(servers=(("127.0.0.1", 27017),))
+    return StorageController(get_settings())
+
+
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
-def testDeleteModel(
-    dummyStorageController: StorageController, dummyGenericModel: GenericModel
-) -> None:
+def testDeleteModel(dummyGenericModel: GenericModel) -> None:
     """Test for deleteing models from the StorageController
 
     Arguments:
         dummyStorageController (StorageController): A dummy storage_controller
         dummyGenericModel (GenericModel): A dummy GenericModel
     """
+    dummyStorageController = StorageController(get_settings())
     # add
     dummyStorageController.addModel(dummyGenericModel)
     # delete
@@ -60,17 +60,18 @@ def testDeleteModel(
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
-def testAddModel(
-    dummyStorageController: StorageController, dummyGenericModel: GenericModel
-) -> None:
+def testAddModel(dummyGenericModel: GenericModel) -> None:
     """Test for adding models to the StorageController
 
     Arguments:
         dummyStorageController (StorageController): A dummy storage_controller
         dummyGenericModel (GenericModel): A dummy GenericModel
     """
+    dummyStorageController = StorageController(get_settings())
     old = dummyStorageController.getAllModels()
     dummyStorageController.addModel(dummyGenericModel)
 
     assert dummyStorageController.getAllModels() == old
     assert dummyStorageController.getModel(dummyGenericModel.id) == dummyGenericModel
+    restartedStorageController = StorageController(get_settings())
+    assert len(restartedStorageController.getAllModels()) > 0
