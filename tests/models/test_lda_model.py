@@ -1,5 +1,5 @@
 """Test the lda model."""
-# from datetime import datetime
+from datetime import datetime
 
 import pytest
 from gensim.models.ldamodel import LdaModel
@@ -72,115 +72,120 @@ def dummy_lda_model_no_creation_parameters() -> LDAModel:
     return dummy
 
 
-# def test_lda_model_initial_values(
-#     dummy_lda_model: LDAModel,
-#     dummy_lda_instance: LdaModel,
-#     dummy_creation_parameters: dict,
-# ) -> None:
-#     """Test for checking if the LDAModel gets created correctly
+def test_lda_model_initial_values(
+    dummy_lda_model: LDAModel,
+    dummy_lda_instance: LdaModel,
+    dummy_creation_parameters: dict,
+) -> None:
+    """Test for checking if the LDAModel gets created correctly
 
-#     Arguments:
-#         dummy_lda_model (LDAModel): An instance of our LDA_Model implementation
-#         dummy_lda_instance (LdaModel): The Actual object from gensim used for assertions
-#         dummy_creation_parameters (dict): The dictionary containing the creation parameters
-#         of the LdaModel instance
-#     """
-#     assert dummy_lda_model.name == "LDA"
-#     assert "Model-" + dummy_lda_model.name in dummy_lda_model.id
-#     assert "Model-" + dummy_lda_model.name in dummy_lda_model.getId()
-#     assert dummy_lda_model.createdBy == "Alpha Tester"
-#     assert dummy_lda_model.createdAt <= datetime.timestamp(datetime.now()) + 1
-#     assert dummy_lda_model.createdAt >= datetime.timestamp(datetime.now()) - 1
-#     assert dummy_lda_model.description == "Latent Dirichlet allocation model"
-#     assert dummy_lda_model.creationParameters == dummy_creation_parameters
-#     assert dummy_lda_model.alpha("None") == {
-#         "name": "AI",
-#         "keyword": "Deep Learning; Knowledge; Computer Vison",
-#         "weight": 0.123,
-#     }
-#     assert dummy_lda_model.beta("None", "None") == {
-#         "word": "consetetur",
-#         "probability": "0.0312",
-#     }
-#     assert dummy_lda_model.phi("None", "None") == 0.213
-#     assert dummy_lda_model.theta("None", "None") == 0.223
+    Arguments:
+        dummy_lda_model (LDAModel): An instance of our LDA_Model implementation
+        dummy_lda_instance (LdaModel): The Actual object from gensim used for assertions
+        dummy_creation_parameters (dict): The dictionary containing the creation parameters
+        of the LdaModel instance
+    """
+    assert dummy_lda_model.name == "LDA"
+    assert "Model-" + dummy_lda_model.name in dummy_lda_model.id
+    assert "Model-" + dummy_lda_model.name in dummy_lda_model.getId()
+    assert dummy_lda_model.createdBy == "Alpha Tester"
+    assert dummy_lda_model.createdAt <= datetime.timestamp(datetime.now()) + 1
+    assert dummy_lda_model.createdAt >= datetime.timestamp(datetime.now()) - 1
+    assert dummy_lda_model.description == "Latent Dirichlet allocation model"
+    assert dummy_lda_model.creationParameters == dummy_creation_parameters
+    assert dummy_lda_model.alpha("None") == {
+        "name": "AI",
+        "keyword": "Deep Learning; Knowledge; Computer Vison",
+        "weight": 0.123,
+    }
+    assert dummy_lda_model.beta("None", "None") == {
+        "word": "consetetur",
+        "probability": "0.0312",
+    }
+    assert dummy_lda_model.phi("None", "None") == 0.213
+    assert dummy_lda_model.theta("None", "None") == 0.223
 
-#     assert dummy_lda_model.getk() == 10
-#     assert dummy_lda_model.getNumTopics() == 10
-#     # This assertion works, because we initialize it with the same random_state
-#     assert dummy_lda_model.getTopics() == dummy_lda_model.getK()
-#     assert dummy_lda_model.getTopics() == dummy_lda_instance.get_topics().tolist()
+    assert dummy_lda_model.getk() == 10
+    assert dummy_lda_model.getNumTopics() == 10
+    # This assertion works, because we initialize it with the same random_state
+    assert dummy_lda_model.getTopics() == dummy_lda_model.getK()
+    assert dummy_lda_model.getTopics() == dummy_lda_instance.get_topics().tolist()
 
-#     dummy_lda_instance.update(common_corpus)
-#     dummy_lda_model.train({"corpus": common_corpus})
-#     assert dummy_lda_model.getTopics() == dummy_lda_instance.get_topics().tolist()
-#     test_training = list(dummy_lda_instance.get_document_topics(common_corpus))
-#     assert dummy_lda_model.predict({"bow": common_corpus}) == test_training
+    dummy_lda_instance.update(common_corpus)
+    dummy_lda_model.train({"corpus": common_corpus})
+    assert dummy_lda_model.getTopics() == dummy_lda_instance.get_topics().tolist()
+    test_training = list(dummy_lda_instance.get_document_topics(common_corpus))
+    assert dummy_lda_model.predict({"bow": common_corpus}) == test_training
 
-#     assert (
-#         isinstance(
-#             dummy_lda_model.getLDAvis(
-#                 [
-#                     {"title": "Test1", "abstractText": "Test1"},
-#                     {"title": "Test2", "abstractText": "Test2"},
-#                     {"title": "Test3", "abstractText": "Test3"},
-#                 ],
-#                 num_topics=3,
-#                 passes=1,
-#             ),
-#             dict,
-#         )
-#         is True
-#     )
+    assert (
+        isinstance(
+            dummy_lda_model.getLDAvis(
+                [
+                    {"title": "Test1", "abstractText": "Test1"},
+                    {"title": "Test2", "abstractText": "Test2"},
+                    {"title": "Test3", "abstractText": "Test3"},
+                ],
+                num_topics=3,
+                passes=1,
+            ),
+            dict,
+        )
+        is True
+    )
 
 
-# def test_lda_model_initial_values_no_creation_paramers(
-#     dummy_lda_model_no_creation_parameters: LDAModel, dummy_lda_instance: LdaModel
-# ) -> None:
-#     """Test for checking if the LDAModel gets created correctly (without creation parameters)
+def test_lda_model_initial_values_no_creation_paramers(
+    dummy_lda_model_no_creation_parameters: LDAModel, dummy_lda_instance: LdaModel
+) -> None:
+    """Test for checking if the LDAModel gets created correctly (without creation parameters)
 
-#     Arguments:
-#         dummy_lda_model_no_creation_parameters (LDAModel): An instance of our
-#         LDA_Model implementation
-#         dummy_lda_instance (LdaModel): The Actual object from gensim used for assertions
-#     """
-#     assert dummy_lda_model_no_creation_parameters.name == "LDA"
-#     assert (
-#         "Model-" + dummy_lda_model_no_creation_parameters.name
-#         in dummy_lda_model_no_creation_parameters.id
-#     )
-#     assert (
-#         "Model-" + dummy_lda_model_no_creation_parameters.name
-#         in dummy_lda_model_no_creation_parameters.getId()
-#     )
-#     assert dummy_lda_model_no_creation_parameters.createdBy == "Alpha Tester"
-#     assert (
-#         dummy_lda_model_no_creation_parameters.createdAt <= datetime.timestamp(datetime.now()) + 1
-#     )
-#     assert (
-#         dummy_lda_model_no_creation_parameters.createdAt >= datetime.timestamp(datetime.now()) - 1
-#     )
-#     assert dummy_lda_model_no_creation_parameters.description ==
-#       "Latent Dirichlet allocation model"
-#     assert dummy_lda_model_no_creation_parameters.creationParameters == {}
-#     assert dummy_lda_model_no_creation_parameters.alpha("None") == {
-#         "name": "AI",
-#         "keyword": "Deep Learning; Knowledge; Computer Vison",
-#         "weight": 0.123,
-#     }
-#     assert dummy_lda_model_no_creation_parameters.beta("None", "None") == {
-#         "word": "consetetur",
-#         "probability": "0.0312",
-#     }
-#     assert dummy_lda_model_no_creation_parameters.phi("None", "None") == 0.213
-#     assert dummy_lda_model_no_creation_parameters.theta("None", "None") == 0.223
+    Arguments:
+        dummy_lda_model_no_creation_parameters (LDAModel): An instance of our
+        LDA_Model implementation
+        dummy_lda_instance (LdaModel): The Actual object from gensim used for assertions
+    """
+    assert dummy_lda_model_no_creation_parameters.name == "LDA"
+    assert (
+        "Model-" + dummy_lda_model_no_creation_parameters.name
+        in dummy_lda_model_no_creation_parameters.id
+    )
+    assert (
+        "Model-" + dummy_lda_model_no_creation_parameters.name
+        in dummy_lda_model_no_creation_parameters.getId()
+    )
+    assert dummy_lda_model_no_creation_parameters.createdBy == "Alpha Tester"
+    assert (
+        dummy_lda_model_no_creation_parameters.createdAt <= datetime.timestamp(datetime.now()) + 1
+    )
+    assert (
+        dummy_lda_model_no_creation_parameters.createdAt >= datetime.timestamp(datetime.now()) - 1
+    )
+    assert (
+        dummy_lda_model_no_creation_parameters.description
+        == "Latent Dirichlet" + " allocation model"
+    )
+    assert dummy_lda_model_no_creation_parameters.creationParameters == {}
+    assert dummy_lda_model_no_creation_parameters.alpha("None") == {
+        "name": "AI",
+        "keyword": "Deep Learning; Knowledge; Computer Vison",
+        "weight": 0.123,
+    }
+    assert dummy_lda_model_no_creation_parameters.beta("None", "None") == {
+        "word": "consetetur",
+        "probability": "0.0312",
+    }
+    assert dummy_lda_model_no_creation_parameters.phi("None", "None") == 0.213
+    assert dummy_lda_model_no_creation_parameters.theta("None", "None") == 0.223
 
-#     assert dummy_lda_model_no_creation_parameters.getk() == 10
-#     assert dummy_lda_model_no_creation_parameters.getNumTopics() == 10
-#     # We cannot assert getTopics like we did in the previous test due to randomness in LDA
-#     assert len(dummy_lda_model_no_creation_parameters.getK()) == len(
-#         dummy_lda_instance.get_topics().tolist()
-#     )
-#     assert len(dummy_lda_model_no_creation_parameters.getTopics()) == len(
-#         dummy_lda_instance.get_topics().tolist()
-#     )
+    assert dummy_lda_model_no_creation_parameters.getk() == 10
+    assert dummy_lda_model_no_creation_parameters.getNumTopics() == 10
+    # We cannot assert getTopics like we did in the previous test due to randomness in LDA
+    assert len(dummy_lda_model_no_creation_parameters.getK()) == len(
+        dummy_lda_instance.get_topics().tolist()
+    )
+    assert len(dummy_lda_model_no_creation_parameters.getTopics()) == len(
+        dummy_lda_instance.get_topics().tolist()
+    )
+
+    with pytest.raises(FileNotFoundError):
+        dummy_lda_model_no_creation_parameters.load("")

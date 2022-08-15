@@ -1,8 +1,9 @@
 """This module implements a remote storage controller for the endpoint management"""
 
 from functools import lru_cache
-from typing import Any, List, Optional, TypeVar
+from typing import List, Optional, TypeVar
 
+import pymongo
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
@@ -12,22 +13,13 @@ from cs_insights_prediction_endpoint.utils.settings import Settings, get_setting
 RS = TypeVar("RS", bound="RemoteStorageController")
 
 # Attributes to exclude when saving pydentic models to the database
-exclude_attributes: Any = {}
+# exclude_attributes: Any = {}
 
 
 class RemoteStorageController:
     """StorageController for stroing remote hosts"""
 
-    remote_host_list: List[RemoteHost] = [
-        # RemoteHost(
-        #     **{  # TODO Remove after testing
-        #         "ip": "127.0.0.1",
-        #         "port": "8001",
-        #         "models": ["lda"],
-        #         "created_models": ["1234"],
-        #     }
-        # )
-    ]
+    remote_host_list: List[RemoteHost] = []
 
     def __init__(self: RS, settings: Settings) -> None:
         """Constructor for the remote storage controller
@@ -35,7 +27,7 @@ class RemoteStorageController:
         Args:
             settings (Settings): Settings object used for information on the databse
         """
-        self.remote_host_client: MongoClient = MongoClient(
+        self.remote_host_client: MongoClient = pymongo.MongoClient(
             f"mongodb://{settings.mongo_user.get_secret_value()}"
             + f":{settings.mongo_password.get_secret_value()}@{settings.mongo_host}",
         )
@@ -136,8 +128,9 @@ class RemoteStorageController:
         Returns:
             RemoteHost: The host that was added; or None on failure
         """
-        self.remote_host_db.insert_one(to_add.dict(exclude=exclude_attributes))
-        self.remote_host_list.append(to_add)  # TODO Check if actually added
+        # self.remote_host_db.insert_one(to_add.dict(exclude=exclude_attributes))
+        self.remote_host_db.insert_one(to_add.dict())
+        self.remote_host_list.append(to_add)
         return to_add
 
     def remove_remote_host(self: RS, ip: str) -> bool:
@@ -150,7 +143,7 @@ class RemoteStorageController:
         """
         for i, host in enumerate(self.remote_host_list):
             if host.ip == ip:
-                self.remote_host_db.delete_one({"ip": ip})  # TODO check if actually deleted
+                self.remote_host_db.delete_one({"ip": ip})
                 self.remote_host_list.remove(host)
                 return True
         return False

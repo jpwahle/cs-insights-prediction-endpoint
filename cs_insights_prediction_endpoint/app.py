@@ -8,10 +8,10 @@ from cs_insights_prediction_endpoint.routes.route_auth import router as AuthRout
 from cs_insights_prediction_endpoint.routes.route_hosts import (
     router as RemoteHostRouter,
 )
-from cs_insights_prediction_endpoint.routes.route_model import (
+from cs_insights_prediction_endpoint.routes.route_model import router as ModelRouter
+from cs_insights_prediction_endpoint.routes.route_model_forward import (
     router as ModelForwardRouter,
 )
-from cs_insights_prediction_endpoint.routes.route_model import router as ModelRouter
 from cs_insights_prediction_endpoint.routes.route_status import router as StatusRouter
 from cs_insights_prediction_endpoint.routes.route_topic import router as TopicRouter
 from cs_insights_prediction_endpoint.utils.settings import get_settings
@@ -46,12 +46,6 @@ if settings.node_type == "MAIN":
         tags=["ModelForward"],
         prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/models",
     )
-else:
-    app.include_router(
-        ModelRouter,
-        tags=["Model"],
-        prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/models",
-    )
 
     app.include_router(
         RemoteHostRouter,
@@ -59,6 +53,12 @@ else:
         prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/hosts",
     )
 
+else:
+    app.include_router(
+        ModelRouter,
+        tags=["Model"],
+        prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/models",
+    )
 
 app.include_router(
     AuthRouter,

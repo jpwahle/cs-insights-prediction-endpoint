@@ -147,7 +147,7 @@ class LDAModel(myGeneric_Model):
 
         vis = pyLDAvis.gensim_models.prepare(self.processingModel, bow_corpus, dictionary)
 
-        print(vis.to_json())
+        # print(vis.to_json())
 
         return json.loads(vis.to_json())
 

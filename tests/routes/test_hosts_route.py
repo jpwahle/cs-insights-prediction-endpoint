@@ -1,22 +1,32 @@
-from typing import Generator
+"""Test the hosts route."""
+from importlib import reload
+from typing import Any, Generator
 
+import mongomock
 import pytest
 from fastapi.testclient import TestClient
 
+import cs_insights_prediction_endpoint.app as app
 from cs_insights_prediction_endpoint import __version__
-from cs_insights_prediction_endpoint.app import app
 from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
 from cs_insights_prediction_endpoint.routes.route_hosts import RemoteHostDeleteRequest
+from cs_insights_prediction_endpoint.utils.settings import get_settings
 
 
 @pytest.fixture
-def client() -> Generator:
+def patch_settings(monkeypatch: Any) -> None:
+    monkeypatch.setattr(get_settings(), "node_type", "MAIN")
+
+
+@pytest.fixture
+def client(patch_settings: Any) -> Generator:
     """Get the test client for tests and reuse it.
 
     Yields:
         Generator: Yields the test client as input argument for each test.
     """
-    with TestClient(app) as tc:
+    reload_app = reload(app)
+    with TestClient(reload_app.app) as tc:
         yield tc
 
 
@@ -66,6 +76,7 @@ def failing_remote_host_deletion_request() -> RemoteHostDeleteRequest:
     return RemoteHostDeleteRequest(ip="this.is.not.a.vaild.ip.....")
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_remote_hosts_add(
     client: TestClient, endpoint: str, remote_host_creation_request: RemoteHost
 ) -> None:
@@ -75,6 +86,7 @@ def test_remote_hosts_add(
     assert remote_host_list != client.get(endpoint).json()
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_remote_hosts_delete(
     client: TestClient, endpoint: str, remote_host_deletion_request: RemoteHostDeleteRequest
 ) -> None:
@@ -83,6 +95,7 @@ def test_remote_hosts_delete(
     assert response.json()["ip"] == remote_host_deletion_request.ip
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_remote_hosts_delete_fail(
     client: TestClient, endpoint: str, failing_remote_host_deletion_request: RemoteHostDeleteRequest
 ) -> None:
