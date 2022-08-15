@@ -75,3 +75,6 @@ def testAddModel(dummyGenericModel: GenericModel) -> None:
     assert dummyStorageController.getModel(dummyGenericModel.id) == dummyGenericModel
     restartedStorageController = StorageController(get_settings())
     assert len(restartedStorageController.getAllModels()) > 0
+    added_model = restartedStorageController.getModel(dummyGenericModel.getId())
+    assert added_model is not None
+    assert added_model.name == dummyGenericModel.name
