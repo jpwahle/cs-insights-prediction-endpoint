@@ -16,7 +16,6 @@ from cs_insights_prediction_endpoint.utils.settings import Settings, get_setting
 
 router = APIRouter()
 
-time_delta = config("JWT_TOKEN_EXPIRATION_MINUTES", cast=int)
 
 
 @router.post("/login", response_description="Trigger login procedure", response_model=token_model)
