@@ -59,7 +59,7 @@ class paper_model(BaseModel):
             "example": {
                 "id": "5136bc054aed4daf9e2a43203",
                 "title": "Attention is all you need",
-                "abstractText": (
+                "abstract_text": (
                     "The dominant sequence transduction models are based on complex recurrent or"
                     " convolutional neural networks in an encoder-decoder configuration. The best"
                     " performing models also connect the encoder and decoder through an attention"
@@ -77,9 +77,9 @@ class paper_model(BaseModel):
                     " applying it successfully to English constituency parsing both with large and"
                     " limited training data."
                 ),
-                "abstractExtractor": "grobid",
+                "abstract_extractor": "grobid",
                 "type_of_paper": "conference",
-                "short_or_long": "long",
+                "short_long": "long",
                 "at_main_conference": True,
                 "is_shared_task": False,
                 "is_student_paper": False,

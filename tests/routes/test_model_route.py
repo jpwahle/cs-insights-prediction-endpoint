@@ -46,7 +46,7 @@ def model_creation_request() -> model_creation_request:
     Returns:
         model_creation_request: An correct modelcreation request
     """
-    return model_creation_request(modelType="lda", modelSpecification={"createdBy": "Test"})
+    return model_creation_request(model_type="lda", model_specification={"created_by": "Test"})
 
 
 # TODO-AT change accordingly to changes in route_model.py
@@ -58,7 +58,7 @@ def model_function_request() -> model_function_request:
         model_function_request: An correct modeldeletion request
     """
     return model_function_request(
-        model_id="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+        model_id="1234", model_type="lda", model_specification={"created_by": "Test"}
     )
 
 
@@ -71,7 +71,7 @@ def model_deletion_request() -> model_deletion_request:
         model_deletion_request: An correct modeldeletion request
     """
     return model_deletion_request(
-        model_id="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+        model_id="1234", model_type="lda", model_specification={"created_by": "Test"}
     )
 
 
@@ -84,7 +84,7 @@ def model_update_request() -> model_update_request:
         model_update_request: An correct modeldeletion request
     """
     return model_update_request(
-        model_id="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+        model_id="1234", model_type="lda", model_specification={"created_by": "Test"}
     )
 
 
@@ -96,28 +96,28 @@ def failingmodel_creation_request() -> model_creation_request:
         model_creation_request: An correct modelcreation request
     """
     return model_creation_request(
-        modelType="Does not exist", modelSpecification={"createdBy": "Test"}
+        model_type="Does not exist", model_specification={"created_by": "Test"}
     )
 
 
 @pytest.fixture
-def modelFunctionCallRequest() -> generic_input_model:
+def model_function_call_request() -> generic_input_model:
     """Get a correct GenericInput model used for testing the function call endpoint
 
     Returns:
         generic_input_model: A GenericModelInput with a function call and empty data
     """
-    return generic_input_model(functionCall="getTopics", inputData={})
+    return generic_input_model(function_call="get_topics", input_data={})
 
 
 @pytest.fixture
-def modelFailingFunctionCallRequest() -> generic_input_model:
+def model_failing_function_call_request() -> generic_input_model:
     """Get an incorrect GenericInput model used for testing the function call endpoint
 
     Returns:
         generic_input_model: A GenericModelInput with a function call and empty data
     """
-    return generic_input_model(functionCall="NonExistent", inputData={})
+    return generic_input_model(function_call="NonExistent", input_data={})
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
@@ -146,7 +146,7 @@ def test_model_create(
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
-def test_model_list_functionCalls(client: Generator, endpoint: str) -> None:
+def test_model_list_function_calls(client: Generator, endpoint: str) -> None:
     """Test for listing all functions of a model
 
     Arguments:
@@ -159,8 +159,8 @@ def test_model_list_functionCalls(client: Generator, endpoint: str) -> None:
     response = client.get(endpoint + test_model_id)
     assert response.status_code == 200
     response_json = response.json()
-    assert "functionCalls" in response_json
-    assert len(response_json["functionCalls"]) == len(
+    assert "function_calls" in response_json
+    assert len(response_json["function_calls"]) == len(
         get_storage_controller().get_model(test_model_id).function_calls
     )
     failing_response = client.get(endpoint + "thisWillNeverEverExist")
@@ -217,31 +217,31 @@ def test_model_create_fail(
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_function(
-    client: Generator, endpoint: str, modelFunctionCallRequest: generic_input_model
+    client: Generator, endpoint: str, model_function_call_request: generic_input_model
 ) -> None:
     """Test for successfull model update
 
     Arguments:
         client (TestClient): The current test client
         endpoint (str): Endpoint to query
-        modelFunctionCallRequest (generic_input_model): A GenericInput model holding the
+        model_function_call_request (generic_input_model): A GenericInput model holding the
                                                       function call as well as no data
     """
     models = client.get(endpoint).json()
     assert "models" in models
     test_model_id = models["models"][0]
     mfr = model_function_request(model_id=test_model_id)
-    response = client.post(endpoint + str(mfr.model_id), json=modelFunctionCallRequest.dict())
+    response = client.post(endpoint + str(mfr.model_id), json=model_function_call_request.dict())
     assert response.status_code == 200
     response_json = response.json()
-    assert "outputData" in response_json and "getTopics" in response_json["outputData"]
+    assert "output_data" in response_json and "get_topics" in response_json["output_data"]
 
 
 def test_failing_model_function(
-    client: Generator, endpoint: str, modelFailingFunctionCallRequest: generic_input_model
+    client: Generator, endpoint: str, model_failing_function_call_request: generic_input_model
 ) -> None:
     failing_response = client.post(
-        endpoint + "nonExistentModel", json=modelFailingFunctionCallRequest.dict()
+        endpoint + "nonExistentModel", json=model_failing_function_call_request.dict()
     )
     models = client.get(endpoint).json()
     assert "models" in models
@@ -249,7 +249,7 @@ def test_failing_model_function(
     mfr = model_function_request(model_id=test_model_id)
     assert failing_response.status_code == 404
     failing_response = client.post(
-        endpoint + str(mfr.model_id), json=modelFailingFunctionCallRequest.dict()
+        endpoint + str(mfr.model_id), json=model_failing_function_call_request.dict()
     )
     assert failing_response.status_code == 404
 

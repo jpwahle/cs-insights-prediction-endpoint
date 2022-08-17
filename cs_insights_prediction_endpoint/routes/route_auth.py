@@ -17,7 +17,6 @@ from cs_insights_prediction_endpoint.utils.settings import Settings, get_setting
 router = APIRouter()
 
 
-
 @router.post("/login", response_description="Trigger login procedure", response_model=token_model)
 async def login(user: user_login_model, settings: Settings = Depends(get_settings)) -> token_model:
     """Login routine
@@ -36,8 +35,8 @@ async def login(user: user_login_model, settings: Settings = Depends(get_setting
             detail="Invalid credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    TIME_DELTA = settings.jwt_token_expiration_minutes
-    token_expiration = timedelta(minutes=TIME_DELTA)
+    time_delta = settings.jwt_token_expiration_minutes
+    token_expiration = timedelta(minutes=time_delta)
     token = create_token(auth_user, settings, token_expiration)
     return token_model(access_token=token, token_type="bearer")
 
@@ -55,7 +54,7 @@ async def refresh(
     Returns:
         TokenModel: a JWT given a valid user from the NLP-Land-Backend
     """
-    TIME_DELTA = settings.jwt_token_expiration_minutes
-    token_expiration = timedelta(minutes=TIME_DELTA)
+    time_delta = settings.jwt_token_expiration_minutes
+    token_expiration = timedelta(minutes=time_delta)
     token = create_token(token_data(**user.dict()), settings, token_expiration)
     return token_model(access_token=token, token_type="bearer")

@@ -39,19 +39,19 @@ class storage_controller_list_reponse(BaseModel):
 class model_specific_function_call_response(BaseModel):
     """Response model for model specific function calls"""
 
-    functionCalls: List[str]
+    function_calls: List[str]
 
 
 class model_creation_response(BaseModel):
     """Response Model for the successfull creation of a model"""
 
-    modelID: str
+    model_id: str
 
 
 class model_deletion_response(BaseModel):
     """Response Model for the successfull deletion of a model"""
 
-    modelID: str
+    model_id: str
 
 
 # TODO-AT TN: I just copied the model_creation_request,
@@ -63,7 +63,7 @@ class model_deletion_request(BaseModel):
     which should be parsable to the modelTypes pydentic schema.
     """
 
-    modelID: str
+    model_id: str
 
 
 # TODO-AT TN: I just copied the model_creation_request,
@@ -75,7 +75,7 @@ class model_function_request(BaseModel):
     which should be parsable to the modelTypes pydentic schema.
     """
 
-    modelID: str
+    model_id: str
 
 
 # TODO-AT TN: I just copied the model_creation_request,
@@ -87,8 +87,8 @@ class model_update_request(BaseModel):
     which should be parsable to the modelTypes pydentic schema.
     """
 
-    modelID: str
-    modelSpecification: dict
+    model_id: str
+    model_specification: dict
 
 
 class model_creation_request(BaseModel):
@@ -97,12 +97,12 @@ class model_creation_request(BaseModel):
     which should be parsable to the modelTypes pydentic schema.
     """
 
-    # XXX-TN I puropsefully chose modelSpecification to be a dict since
+    # XXX-TN I puropsefully chose model_specification to be a dict since
     #          using the generic model, would incur the loss of pydantics strengths
     modelType: str
     # XXX-TN For the docker ochestration it will be helpfull to also have an input for
     #        the location of Model initialization (local, local[dockerfile], remote)
-    modelSpecification: dict
+    model_specification: dict
 
 
 @router.get(
@@ -162,7 +162,7 @@ def delete_model(
 
     # delete it
     sc.del_model(current_model.get_id())
-    return model_deletion_response(modelID=current_model_id)
+    return model_deletion_response(model_id=current_model_id)
 
 
 # TODO-AT I could not get this to work/don't understand what needs to be done
@@ -235,14 +235,15 @@ def create_model(
             model_module = import_module(model_specs[0])  # TODO Use proper model
             model_class = model_specs[1]
             model = getattr(model_module, model_class)(
-                type=model_creation_request.modelType, **(model_creation_request.modelSpecification)
+                type=model_creation_request.modelType,
+                **(model_creation_request.model_specification),
             )
     if model is None:
         raise HTTPException(status_code=404, detail="Model not implemented")
     sc.add_model(model)
     response.headers["location"] = f"/api/v{__version__.split('.')[0]}/models/{model.id}"
 
-    return model_creation_response(modelID=model.id)
+    return model_creation_response(model_id=model.id)
 
 
 @router.post(

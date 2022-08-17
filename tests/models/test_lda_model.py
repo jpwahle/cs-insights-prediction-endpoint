@@ -48,7 +48,7 @@ def dummy_lda_model(dummy_creation_parameters: dict) -> LDAModel:
     """
     dummy_values = {
         "created_by": "Alpha Tester",
-        "creationParameters": dummy_creation_parameters,
+        "creation_parameters": dummy_creation_parameters,
         "function_calls": {},
         "type": "lda",
     }

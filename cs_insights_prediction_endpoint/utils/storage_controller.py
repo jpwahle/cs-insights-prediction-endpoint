@@ -44,7 +44,7 @@ class storage_controller:
                     model_module = import_module(model_specs[0])
                     model_class = model_specs[1]
                     model = getattr(model_module, model_class)(**db_model)
-                    model.load(f"{model.saveDirectory}/{model.id}")
+                    model.load(f"{model.save_directory}/{model.id}")
                     self.models.append(model)
 
     def get_model(self: T, id: str) -> Optional[generic_model]:

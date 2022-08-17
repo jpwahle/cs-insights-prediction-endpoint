@@ -136,7 +136,7 @@ def failing_model_creation_request() -> model_creation_request:
 
 
 @pytest.fixture
-def model_creation_request() -> model_creation_request:
+def fun_model_creation_request() -> model_creation_request:
     """Get a correct model creation request
 
     Returns:
@@ -146,7 +146,7 @@ def model_creation_request() -> model_creation_request:
 
 
 @pytest.fixture
-def model_function_request() -> model_function_request:
+def fun_del_model_function_request() -> model_function_request:
     """Get a correct model deletion request
 
     Returns:

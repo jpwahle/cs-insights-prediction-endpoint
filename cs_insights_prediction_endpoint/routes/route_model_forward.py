@@ -39,7 +39,7 @@ class model_creation_request(BaseModel):
     """
 
     model_type: str
-    modelSpecification: dict
+    model_specification: dict
 
 
 @router.get(
@@ -57,38 +57,38 @@ def forward_list_all_implemented_models(
 
 
 @router.get(
-    "/{current_modelID}",
+    "/{current_model_id}",
     response_description="Lists all function calls of the current model",
     # response_model=ModelSpecificFunctionCallResponse,
     status_code=status.HTTP_200_OK,
 )
 def forward_list_all_function_calls(
     request: Request,
-    current_modelID: str,
+    current_model_id: str,
     rsc: remote_storage_controller = Depends(get_remote_storage_controller),
 ) -> Response:
     """Endpoint for getting a list of all implemented function calls"""
-    host = get_host(current_modelID, rsc)
+    host = get_host(current_model_id, rsc)
     r = requests.get(f"http://{host}{request.url.path}")
     return build_response(r)
 
 
 @router.delete(
-    "/{current_modelID}",
+    "/{current_model_id}",
     response_description="Delete the current model",
     # response_model=ModelDeletionResponse,
     status_code=status.HTTP_200_OK,
 )
 def forward_deleteModel(
     request: Request,
-    current_modelID: str,
+    current_model_id: str,
     rsc: remote_storage_controller = Depends(get_remote_storage_controller),
 ) -> Response:
     """Endpoint for deleting a model"""
-    host = get_host(current_modelID, rsc)
+    host = get_host(current_model_id, rsc)
     r = requests.delete(f"http://{host}{request.url.path}")
     if host is not None and r.ok:
-        rsc.remove_model_from_created_model_list(host.split(":")[0], current_modelID)
+        rsc.remove_model_from_created_model_list(host.split(":")[0], current_model_id)
     return build_response(r)
 
 
@@ -144,26 +144,26 @@ def forward_create_model(
 
 
 @router.post(
-    "/{current_modelID}",
+    "/{current_model_id}",
     response_description="Runs a function",
     # response_model=generic_output_model,
     status_code=status.HTTP_200_OK,
 )
 def forward_getInformation(
     request: Request,
-    current_modelID: str,
+    current_model_id: str,
     generic_input: generic_input_model,
     rsc: remote_storage_controller = Depends(get_remote_storage_controller),
 ) -> Response:
     """Gets info out of post data"""
-    host = get_host(current_modelID, rsc)
+    host = get_host(current_model_id, rsc)
     r = requests.post(f"http://{host}{request.url.path}", json=generic_input.dict())
     return build_response(r)
 
 
-def get_host(current_modelID: str, rsc: remote_storage_controller) -> Optional[str]:
-    """Get host containing the model current_modelID"""
-    return rsc.find_created_model_in_remote_hosts(current_modelID)
+def get_host(current_model_id: str, rsc: remote_storage_controller) -> Optional[str]:
+    """Get host containing the model current_model_id"""
+    return rsc.find_created_model_in_remote_hosts(current_model_id)
 
 
 def build_response(r: requests.Response) -> Response:

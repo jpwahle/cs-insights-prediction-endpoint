@@ -17,10 +17,10 @@ def dummygeneric_model() -> generic_model:
     """
     dummy_values = {
         "name": "Generic",
-        "createdBy": "Alpha Tester",
+        "created_by": "Alpha Tester",
         "description": "This is a test",
-        "creationParameters": {},
-        "functionCalls": {},
+        "creation_parameters": {},
+        "function_calls": {},
         "type": "lda",
     }
     dummy = generic_model(**dummy_values)
