@@ -131,48 +131,48 @@ def failing_model_creation_request() -> model_creation_request:
         model_creation_request: An correct modelcreation request
     """
     return model_creation_request(
-        model_type="non Existent", modelSpecification={"created_by": "Test"}
+        model_type="non Existent", model_specification={"created_by": "Test"}
     )
 
 
 @pytest.fixture
-def fun_model_creation_request() -> model_creation_request:
+def i_model_creation_request() -> model_creation_request:
     """Get a correct model creation request
 
     Returns:
         model_creation_request: An correct modelcreation request
     """
-    return model_creation_request(model_type="lda", modelSpecification={"created_by": "Test"})
+    return model_creation_request(model_type="lda", model_specification={"created_by": "Test"})
 
 
 @pytest.fixture
-def fun_del_model_function_request() -> model_function_request:
+def i_model_function_request() -> model_function_request:
     """Get a correct model deletion request
 
     Returns:
         model_function_request: An correct modeldeletion request
     """
     return model_function_request(
-        model_id="1234", model_type="lda", modelSpecification={"created_by": "Test"}
+        model_id="1234", model_type="lda", model_specification={"created_by": "Test"}
     )
 
 
 # TODO-AT change accordingly to changes in route_model.py
 @pytest.fixture
-def model_deletion_request() -> model_deletion_request:
+def i_modelDeletionRequest() -> model_deletion_request:
     """Get a correct model deletion request
 
     Returns:
         model_deletion_request: An correct modeldeletion request
     """
     return model_deletion_request(
-        model_id="1234", model_type="lda", modelSpecification={"created_by": "Test"}
+        model_id="1234", model_type="lda", model_specification={"created_by": "Test"}
     )
 
 
 @pytest.fixture
 def model_function_call_request() -> generic_input_model:
-    dummy_input = {"input_data": {}, "function_call": "test"}
+    dummy_input = {"inputData": {}, "functionCall": "test"}
     return generic_input_model(**dummy_input)
 
 
@@ -201,11 +201,11 @@ def test_all_gets_forward(
 def test_add_model_forward(
     client: TestClient,
     endpoint: str,
-    model_creation_request: model_creation_request,
+    i_model_creation_request: model_creation_request,
     failing_model_creation_request: model_creation_request,
     mock_creation: Any,
 ) -> None:
-    response = client.post(endpoint, json=model_creation_request.dict())
+    response = client.post(endpoint, json=i_model_creation_request.dict())
     assert response.status_code == 201
     response = client.post(endpoint, json=failing_model_creation_request.dict())
     assert response.status_code == 404
