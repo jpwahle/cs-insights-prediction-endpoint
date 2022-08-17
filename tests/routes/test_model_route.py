@@ -1,5 +1,6 @@
 from typing import Generator
 
+import mongomock
 import pytest
 from fastapi.testclient import TestClient
 
@@ -17,7 +18,7 @@ from cs_insights_prediction_endpoint.utils.storage_controller import (
 )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def client() -> Generator:
     """Get the test client for tests and reuse it.
 
@@ -109,6 +110,17 @@ def modelFunctionCallRequest() -> GenericInputModel:
     return GenericInputModel(functionCall="getTopics", inputData={})
 
 
+@pytest.fixture
+def modelFailingFunctionCallRequest() -> GenericInputModel:
+    """Get an incorrect GenericInput model used for testing the function call endpoint
+
+    Returns:
+        GenericInputModel: A GenericModelInput with a function call and empty data
+    """
+    return GenericInputModel(functionCall="NonExistent", inputData={})
+
+
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_create(
     client: Generator, endpoint: str, modelCreationRequest: ModelCreationRequest
 ) -> None:
@@ -119,6 +131,7 @@ def test_model_create(
         endpoint (str): Endpoint to query
         modelCreationRequest (ModelCreationRequest): A correct ModelCreationRequest
     """
+    before_response_json = client.get(endpoint).json()
     response = client.post(endpoint, json=modelCreationRequest.dict())
     assert response.status_code == 201
     createdModelID = response.json()["modelID"]
@@ -128,9 +141,11 @@ def test_model_create(
     assert response2.status_code == 200
     response2_json = response2.json()
     assert "models" in response2_json
-    # assert response2_json["models"] == [createdModelID]
+    assert "models" in before_response_json
+    # assert response2_json["models"] == before_response_json["models"] + [createdModelID]
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_list_functionCalls(client: Generator, endpoint: str) -> None:
     """Test for listing all functions of a model
 
@@ -152,6 +167,7 @@ def test_model_list_functionCalls(client: Generator, endpoint: str) -> None:
     assert failing_response.status_code == 404
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_list_implemented(client: Generator, endpoint: str) -> None:
     """Test for listing implemented models
 
@@ -166,6 +182,7 @@ def test_model_list_implemented(client: Generator, endpoint: str) -> None:
     assert "lda" in response_json["models"]
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_create_fail(
     client: Generator, endpoint: str, failingModelCreationRequest: ModelCreationRequest
 ) -> None:
@@ -198,6 +215,7 @@ def test_model_create_fail(
 #     assert "modelID" in response.headers
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_function(
     client: Generator, endpoint: str, modelFunctionCallRequest: GenericInputModel
 ) -> None:
@@ -213,20 +231,30 @@ def test_model_function(
     assert "models" in models
     testModelID = models["models"][0]
     mfr = ModelFunctionRequest(modelID=testModelID)
-    response = client.post(
-        endpoint + str(mfr.modelID), json=modelFunctionCallRequest.dict()
-    )  # TODO remove /test
+    response = client.post(endpoint + str(mfr.modelID), json=modelFunctionCallRequest.dict())
     assert response.status_code == 200
+    response_json = response.json()
+    assert "outputData" in response_json and "getTopics" in response_json["outputData"]
+
+
+def test_failing_model_function(
+    client: Generator, endpoint: str, modelFailingFunctionCallRequest: GenericInputModel
+) -> None:
     failing_response = client.post(
-        endpoint + "nonExistentModel", json={"functionCall": "ThisWillNeverExists", "inputData": {}}
-    )  # TODO make a proper pyfixture
+        endpoint + "nonExistentModel", json=modelFailingFunctionCallRequest.dict()
+    )
+    models = client.get(endpoint).json()
+    assert "models" in models
+    testModelID = models["models"][0]
+    mfr = ModelFunctionRequest(modelID=testModelID)
     assert failing_response.status_code == 404
     failing_response = client.post(
-        endpoint + str(mfr.modelID), json={"functionCall": "ThisWillNeverExists", "inputData": {}}
-    )  # TODO make a proper pyfixture
+        endpoint + str(mfr.modelID), json=modelFailingFunctionCallRequest.dict()
+    )
     assert failing_response.status_code == 404
 
 
+@mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_delete(
     client: Generator, endpoint: str, modelDeletionRequest: ModelDeletionRequest
 ) -> None:

@@ -4,6 +4,7 @@ from functools import lru_cache
 from importlib import import_module
 from typing import Any, List, Optional, TypeVar
 
+import pymongo
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
@@ -26,8 +27,7 @@ class StorageController:
         Args:
             settings (Settings): Settings object used for information on the databse
         """
-        print(get_settings())
-        self.model_client: MongoClient = MongoClient(
+        self.model_client: MongoClient = pymongo.MongoClient(
             f"mongodb://{settings.mongo_user.get_secret_value()}"
             + f":{settings.mongo_password.get_secret_value()}@{settings.mongo_host}",
         )
@@ -36,7 +36,7 @@ class StorageController:
         ]
         self.models = list([])
 
-        for db_model in self.model_db.find():
+        for db_model in self.model_db.find({}):
             # self.models.append(GenericModel(**model))
             for implemented_models in settings.implemented_models:
                 if db_model["type"] in implemented_models:
@@ -61,7 +61,7 @@ class StorageController:
     def addModel(self: T, model: GenericModel) -> str:
         """Adds model to models"""
         self.model_db.insert_one(model.dict(exclude=exclude_attributes))
-        self.models.append(model)  # TODO check if actually added
+        self.models.append(model)
         return model.id
 
     # TODO For consitency maybe return bool or switch
@@ -72,7 +72,7 @@ class StorageController:
         if model is None:
             raise KeyError("Model not found")
         else:
-            self.model_db.delete_one({"id": model.id})  # TODO check if actually deleted
+            self.model_db.delete_one({"id": model.id})
             self.models.remove(model)
 
 

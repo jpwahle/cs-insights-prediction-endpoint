@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cs-insights-prediction-endpoint"
-version = "v0.16.0"
+version = "v0.22.0"
 description = "This repository implements the processing of machine-learning methods for NLP-Land-backend."
 authors = ["Jan Philip Wahle <wahle@uni-wuppertal.de>", "Terry Ruas <ruas@uni-wuppertal.de>", "Alexander von Tottleben <alexander@vontottleben.de>", ]
 
@@ -17,6 +17,7 @@ python-dotenv = "^0.20.0"
 pyLDAvis = "^3.3.1"
 pymongo = "=4.1.1"
 click = "8.0.2"
+mongomock = "^4.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -39,7 +40,7 @@ types-requests = "^2.27.7"
 [tool.poe.tasks]
 lint = "flake8 ."
 type = "mypy cs_insights_prediction_endpoint"
-test = "py.test tests/ -s --cov=cs_insights_prediction_endpoint --cov-report=xml --cov-fail-under 85"
+test = "py.test tests/ -s --cov=cs_insights_prediction_endpoint --cov-report=xml --cov-fail-under 100"
 doc = "python3 gen_doc.py"
 alltest = ["lint", "type", "test"]
 isort = "isort ."
