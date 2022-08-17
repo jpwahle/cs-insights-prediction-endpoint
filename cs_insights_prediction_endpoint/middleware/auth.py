@@ -8,9 +8,9 @@ import requests
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from cs_insights_prediction_endpoint.models.model_token_data import TokenData
-from cs_insights_prediction_endpoint.models.model_user import UserModel
-from cs_insights_prediction_endpoint.models.model_user_login import UserLoginModel
+from cs_insights_prediction_endpoint.models.model_token_data import token_data
+from cs_insights_prediction_endpoint.models.model_user import user_model
+from cs_insights_prediction_endpoint.models.model_user_login import user_login_model
 from cs_insights_prediction_endpoint.utils.settings import Settings, get_settings
 
 token_url = get_settings().auth_token_route
@@ -20,18 +20,18 @@ jwt_scheme = OAuth2PasswordBearer(tokenUrl=token_url)
 def encode_token(data: dict, settings: Settings) -> str:
     """Encodes supplied data into an JWT
     Arguments:
-        data (dict): Dictionary containing some data (e.g., a UserModel dict)
+        data (dict): Dictionary containing some data (e.g., a user_model dict)
         settings (Settings): Settings object; populated by .env file
 
     Returns:
         str: a valid JWT token
     """
-    SECRET = settings.jwt_secret.get_secret_value()
-    ALG = settings.jwt_sign_alg
-    return str(jwt.encode(data, SECRET, ALG))
+    secret = settings.jwt_secret.get_secret_value()
+    alg = settings.jwt_sign_alg
+    return str(jwt.encode(data, secret, alg))
 
 
-def decode_token(token: str, settings: Settings) -> TokenData:
+def decode_token(token: str, settings: Settings) -> token_data:
     """Decodes a supplied JWT into a TokenData model
     (decoding exception should be catched on function call)
 
@@ -40,19 +40,19 @@ def decode_token(token: str, settings: Settings) -> TokenData:
         settings (Settings): Settings object; populated by .env file
 
     Returns:
-        TokenData: a TokenData model representing the decoded JWT token
+        token_data: a token_data model representing the decoded JWT token
     """
     SECRET = settings.jwt_secret.get_secret_value()
     ALG = settings.jwt_sign_alg
-    return TokenData(**jwt.decode(token, SECRET, [ALG]))
+    return token_data(**jwt.decode(token, SECRET, [ALG]))
 
 
-def create_token(user: UserModel, settings: Settings, expires_delta: timedelta = None) -> str:
+def create_token(user: user_model, settings: Settings, expires_delta: timedelta = None) -> str:
     """Creates a JWT given a user as TokenData.
     This will use the JWT_SECRET and JWT_SIGN_ALG as defined in the .env variable.
 
     Arguments:
-        user (TokenData): TokenData object containing at minimum the email
+        user (token_data): token_data object containing at minimum the email
         expires_delta (timedelta): time offset from NOW when the token will expire
 
     Returns:
@@ -69,7 +69,7 @@ def create_token(user: UserModel, settings: Settings, expires_delta: timedelta =
     return token
 
 
-def authenticate_user(user: UserLoginModel, settings: Settings) -> Optional[UserModel]:
+def authenticate_user(user: user_login_model, settings: Settings) -> Optional[user_model]:
     """Checks whether the supplied UserModel contains valid
     credentials. This is done by going through the authorization
     endpoint specified in AUTH_LOGIN_ROUTE at the host AUTH_BACKEND_URL.
@@ -79,7 +79,7 @@ def authenticate_user(user: UserLoginModel, settings: Settings) -> Optional[User
         settings (Settings): Settings object; populated by .env file
 
     Returns:
-        Optional[UserModel]: If the authentication was successful a UserModel object;
+        Optional[user_model]: If the authentication was successful a user_model object;
         None otherwise
     """
     login_provider = settings.auth_backend_url
@@ -91,7 +91,7 @@ def authenticate_user(user: UserLoginModel, settings: Settings) -> Optional[User
             headers={"content-type": "application/json"},
         )
         if r.status_code == status.HTTP_200_OK:
-            return UserModel(**r.json())
+            return user_model(**r.json())
         else:
             return None
     except requests.RequestException:
@@ -100,14 +100,14 @@ def authenticate_user(user: UserLoginModel, settings: Settings) -> Optional[User
 
 async def get_current_user(
     token: str = Depends(jwt_scheme), settings: Settings = Depends(get_settings)
-) -> UserModel:
+) -> user_model:
     """Returns the current user given a valid JWT
 
     Arguments:
         token (str): a bearer token taken from the "Authorization" header
 
     Returns:
-        UserModel: If the token is valid a UserModel with at least an email;
+        user_model: If the token is valid a user_model with at least an email;
         None otherwise
     """
     credentials_exception = HTTPException(
@@ -117,7 +117,7 @@ async def get_current_user(
     )
     try:
         decoded_token = decode_token(token, settings)
-        user = UserModel(**decoded_token.dict())
+        user = user_model(**decoded_token.dict())
     except (jwt.exceptions.InvalidTokenError, pydantic.ValidationError):
         raise credentials_exception
     return user

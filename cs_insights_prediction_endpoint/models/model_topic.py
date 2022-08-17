@@ -5,7 +5,7 @@ from bson.objectid import ObjectId  # type: ignore
 from pydantic import BaseModel, Field
 
 
-class TopicModel(BaseModel):
+class topic_model(BaseModel):
     """A single topic.
 
     Args:
@@ -19,19 +19,19 @@ class TopicModel(BaseModel):
     paper_ids: List[str] = Field(...)
 
 
-class TopicResponseModel(BaseModel):
+class topic_response_model(BaseModel):
     """The model for a topic.
 
     Args:
         BaseModel (Any): Base class of FastAPI models.
     """
 
-    topics: List[TopicModel] = Field(...)
+    topics: List[topic_model] = Field(...)
 
     # TODO: Adjust models and add fields that make sense
 
     class Config:
-        """Configuration for the PaperModel."""
+        """Configuration for the paper_model."""
 
         allow_population_by_field_name = True
         json_encoders = {ObjectId: str}

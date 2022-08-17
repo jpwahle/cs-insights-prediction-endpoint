@@ -4,7 +4,7 @@ definition in the NLP-Land-Backend
 from pydantic import BaseModel, Field
 
 
-class UserLoginModel(BaseModel):
+class user_login_model(BaseModel):
     """The model for a user login. This model contains only
     the fields that are submitted on a login
 

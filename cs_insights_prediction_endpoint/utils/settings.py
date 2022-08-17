@@ -19,12 +19,12 @@ class Settings(BaseSettings):
     jwt_sign_alg: str = "HS256"
     jwt_token_expiration_minutes: int = 30
 
-    jwt_secret: SecretStr
-    mongo_user: SecretStr
-    mongo_password: SecretStr
-    mongo_db: str
-    mongo_host: str
-    auth_backend_url: str
+    jwt_secret: SecretStr = SecretStr("super_secret")
+    mongo_user: SecretStr = SecretStr("admin")
+    mongo_password: SecretStr = SecretStr("admin_password")
+    mongo_db: str = "nlpland"
+    mongo_host: str = "127.0.0.1"
+    auth_backend_url: str = "http://127.0.0.1"
 
     class Config:
         """Configuration for settings"""

@@ -1,48 +1,48 @@
-"""This modulew implements the generic-model"""
+"""This module implements the generic-model"""
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 
-T = TypeVar("T", bound="GenericModel")
+T = TypeVar("T", bound="generic_model")
 
 
-class GenericModel(BaseModel):
+class generic_model(BaseModel):
     """Generic Model."""
 
     id: str
     name: str = Field(..., min_length=1, max_length=32)
-    createdBy: str = Field(...)
-    createdAt: float
+    created_by: str = Field(...)
+    created_at: float
     description: str = Field(...)
     # XXX-TN We should a GenericCreationParameters, same as GenericInputModel
-    saveDirectory: str = "./saved_models"
-    creationParameters: Optional[dict] = {}
+    save_directory: str = "./saved_models"
+    creation_parameters: Optional[dict] = {}
     type: str = Field(...)
 
-    functionCalls: dict = Field(...)
+    function_calls: dict = Field(...)
 
-    processingModel: Any
+    processing_model: Any
 
     def __init__(self: T, **data: Any) -> None:
-        """Constructor for GenericModel"""
-        if "createdAt" not in data:
-            data["createdAt"] = datetime.timestamp(datetime.now())
+        """Constructor for generic_model"""
+        if "created_at" not in data:
+            data["created_at"] = datetime.timestamp(datetime.now())
         if "id" not in data:
             data["id"] = str(hash(data["name"]))
         super().__init__(**data)
-        Path(self.saveDirectory).mkdir(parents=True, exist_ok=True)
+        Path(self.save_directory).mkdir(parents=True, exist_ok=True)
 
     def __str__(self: T) -> str:
-        """Returns the String-representation of this GenericModel instance
+        """Returns the String-representation of this generic_model instance
 
         Returns:
-            str: String representation of this GenericModel instance
+            str: String representation of this generic_model instance
         """
         return self.id
 
-    def getId(self: T) -> str:
+    def get_id(self: T) -> str:
         """Returns the id of the object
 
         Returns:
@@ -50,7 +50,7 @@ class GenericModel(BaseModel):
         """
         return self.id
 
-    def getName(self: T) -> str:
+    def get_name(self: T) -> str:
         """Returns the name of the object
 
         Returns:
@@ -58,42 +58,42 @@ class GenericModel(BaseModel):
         """
         return self.name
 
-    def getFunctionCalls(self: T) -> list:
+    def get_function_calls(self: T) -> list:
         """Returns the name of all the functions available
 
         Returns:
             list: Names of all implemented functions
         """
-        return list(self.functionCalls.keys())
+        return list(self.function_calls.keys())
 
     def train(self: T, inputObject: dict) -> None:
         """Train the model with data from inputObject"""
-        raise NotImplementedError("GenericModel.train has to be implemented by the subclass")
+        raise NotImplementedError("generic_model.train has to be implemented by the subclass")
 
     def predict(self: T, inputObject: dict) -> list:
         """Predict something with data from inputObject"""
-        raise NotImplementedError("GenericModel.predict has to be implemented by the subclass")
+        raise NotImplementedError("generic_model.predict has to be implemented by the subclass")
 
     def save(self: T, path: str) -> None:
         """Function to save the state of the model"""
-        raise NotImplementedError("GenericModel.save has to be implemented by the subclass")
+        raise NotImplementedError("generic_model.save has to be implemented by the subclass")
 
     def load(self: T, path: str) -> None:
         """Function to load the state of the model"""
-        raise NotImplementedError("GenericModel.load has to be implemented by the subclass")
+        raise NotImplementedError("generic_model.load has to be implemented by the subclass")
 
 
-class GenericInputModel(BaseModel):
+class generic_input_model(BaseModel):
     """Input for a generic model"""
 
     # Other input for BOW's: Set[tuple]
     # Other input for plainText: Set[str] (if we wan't to test one string outide of DB)
 
-    inputData: Dict = Field(...)
-    functionCall: str = Field(...)
+    input_data: Dict = Field(...)
+    function_call: str = Field(...)
 
 
-class GenericOutputModel(BaseModel):
+class generic_output_model(BaseModel):
     """Output for a generic model"""
 
-    outputData: Dict = Field(...)
+    output_data: Dict = Field(...)

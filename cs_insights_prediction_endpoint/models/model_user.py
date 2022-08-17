@@ -6,7 +6,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class UserModel(BaseModel):
+class user_model(BaseModel):
     """The model for a user. Should be identical to the NLP-Land-backend
 
     Arguments:
@@ -16,17 +16,17 @@ class UserModel(BaseModel):
         email (str): email of the user
         password (str): password of the user
         fullname (Optional[str]): fullname of the user
-        isAdmin (Optional[bool]): flag indicating whether it is a admin
-        isActive (Optional[bool]): flag indicating whether the user is still active
+        is_admin (Optional[bool]): flag indicating whether it is a admin
+        is_active (Optional[bool]): flag indicating whether the user is still active
     """
 
     email: str = Field(...)
     fullname: Optional[str] = Field()
-    isAdmin: Optional[bool] = Field()
-    isActive: Optional[bool] = Field()
+    is_admin: Optional[bool] = Field()
+    is_active: Optional[bool] = Field()
 
-    # XXX-TN change isAdmin to groups
-    # TODO-TN isActive is currently getting ignored
+    # XXX-TN change is_admin to groups
+    # TODO-TN is_active is currently getting ignored
 
     class Config:
         """Configuration for UserModel"""
@@ -34,9 +34,9 @@ class UserModel(BaseModel):
         schema_extra = {
             "example": {
                 "email": "admin@nlp.de",
-                "fullname=": "admin",
+                "fullname": "admin",
                 "token": None,
-                "isAdmin": True,
-                "isActive": True,
+                "is_admin": True,
+                "is_active": True,
             }
         }

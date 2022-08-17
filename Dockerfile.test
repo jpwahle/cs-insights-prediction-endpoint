@@ -1,0 +1,11 @@
+FROM python:3.8
+
+RUN apt-get update &&\
+    apt-get install liblapack-dev libblas-dev gfortran -y
+RUN /usr/local/bin/python -m pip install --upgrade pip 
+RUN pip install poetry
+
+WORKDIR /cs_insights_prediction_endpoint
+COPY . /cs_insights_prediction_endpoint
+
+RUN poetry install

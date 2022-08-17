@@ -2,7 +2,7 @@
 from pydantic import BaseModel, Field
 
 
-class TokenModel(BaseModel):
+class token_model(BaseModel):
     """Model used for JWT-responses
 
     Attributes:

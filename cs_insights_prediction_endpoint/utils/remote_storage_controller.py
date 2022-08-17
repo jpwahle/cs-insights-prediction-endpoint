@@ -7,19 +7,19 @@ import pymongo
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
-from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
+from cs_insights_prediction_endpoint.models.model_hosts import remote_host
 from cs_insights_prediction_endpoint.utils.settings import Settings, get_settings
 
-RS = TypeVar("RS", bound="RemoteStorageController")
+RS = TypeVar("RS", bound="remote_storage_controller")
 
 # Attributes to exclude when saving pydentic models to the database
 # exclude_attributes: Any = {}
 
 
-class RemoteStorageController:
+class remote_storage_controller:
     """StorageController for stroing remote hosts"""
 
-    remote_host_list: List[RemoteHost] = []
+    remote_host_list: List[remote_host] = []
 
     def __init__(self: RS, settings: Settings) -> None:
         """Constructor for the remote storage controller
@@ -59,15 +59,15 @@ class RemoteStorageController:
                 all_created_models.append(model)
         return all_created_models
 
-    def get_all_remote_hosts(self: RS) -> List[RemoteHost]:
+    def get_all_remote_hosts(self: RS) -> List[remote_host]:
         """Returns all remote hosts currently in the remote_host_list
 
         Returns:
-            Set[RemoteHost]: The set of all currently added remote hosts
+            Set[remote_host]: The set of all currently added remote hosts
         """
         return self.remote_host_list
 
-    def get_remote_host(self: RS, ip: str) -> Optional[RemoteHost]:
+    def get_remote_host(self: RS, ip: str) -> Optional[remote_host]:
         """Returns the remote hosts specified by ip
         Args:
             ip (str): The ip address of the host to return
@@ -81,14 +81,14 @@ class RemoteStorageController:
 
     def add_model_to_created_model_list(self: RS, ip: str, model_id: str) -> None:
         """Adds a newly created model to the list of remote models"""
-        r_host: Optional[RemoteHost] = self.get_remote_host(ip)
+        r_host: Optional[remote_host] = self.get_remote_host(ip)
         if r_host is not None:
             r_host.created_models.append(model_id)
             self.remote_host_db.update_one({"ip": ip}, {"$set": r_host.dict()})
 
     def remove_model_from_created_model_list(self: RS, ip: str, model_id: str) -> None:
         """Removes a created model from the list of remote models"""
-        r_host: Optional[RemoteHost] = self.get_remote_host(ip)
+        r_host: Optional[remote_host] = self.get_remote_host(ip)
         if r_host is not None:
             r_host.created_models.remove(model_id)
             self.remote_host_db.update_one({"ip": ip}, {"$set": r_host.dict()})
@@ -119,14 +119,14 @@ class RemoteStorageController:
                 return f"{host.ip}:{host.port}"
         return None
 
-    def add_remote_host(self: RS, to_add: RemoteHost) -> RemoteHost:
+    def add_remote_host(self: RS, to_add: remote_host) -> remote_host:
         """Add a remote host to the list
 
         Args:
-            to_add (RemoteHost): Host to add
+            to_add (remote_host): Host to add
 
         Returns:
-            RemoteHost: The host that was added; or None on failure
+            remote_host: The host that was added; or None on failure
         """
         # self.remote_host_db.insert_one(to_add.dict(exclude=exclude_attributes))
         self.remote_host_db.insert_one(to_add.dict())
@@ -149,11 +149,11 @@ class RemoteStorageController:
         return False
 
 
-# remote_storage_controller: RemoteStorageController = RemoteStorageController(get_settings())
+# remote_storage_controller: remote_storage_controller = remote_storage_controller(get_settings())
 
 
 @lru_cache()
-def get_remote_storage_controller() -> RemoteStorageController:
+def get_remote_storage_controller() -> remote_storage_controller:
     """Return the remote_storage_controller instance"""
-    return RemoteStorageController(get_settings())
+    return remote_storage_controller(get_settings())
     # return remote_storage_controller

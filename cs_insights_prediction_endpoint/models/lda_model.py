@@ -13,16 +13,16 @@ from gensim.parsing.preprocessing import (  # type: ignore
 )
 from gensim.test.utils import common_corpus  # type: ignore
 
-from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
+from cs_insights_prediction_endpoint.models.generic_model import generic_input_model
 from cs_insights_prediction_endpoint.models.generic_model import (
-    GenericModel as myGeneric_Model,
+    generic_model as my_generic_model,
 )
-from cs_insights_prediction_endpoint.models.generic_model import GenericOutputModel
+from cs_insights_prediction_endpoint.models.generic_model import generic_output_model
 
 T = TypeVar("T", bound="LDAModel")
 
 
-class LDAModel(myGeneric_Model):
+class LDAModel(my_generic_model):
     """Implementation of the LDA (Latent Dirichlet Allocation Model)"""
 
     def __init__(self: T, **data: Any) -> None:
@@ -42,15 +42,15 @@ class LDAModel(myGeneric_Model):
             "phi": self.phi,
             "theta": self.theta,
             "getk": self.getk,
-            "getNumTopics": self.getNumTopics,
+            "get_num_topics": self.get_num_topics,
             "getK": self.getK,
-            "getTopics": self.getTopics,
+            "get_topics": self.get_topics,
             "getLDAvis": self.getLDAvis,
             "train": self.train,
             "predict": self.predict,
         }
         super().__init__(**data)
-        self.save(f"{self.saveDirectory}/{self.id}")
+        self.save(f"{self.save_directory}/{self.id}")
 
     def alpha(self: T, document: str) -> dict:
         """Calc alpha and return"""
@@ -88,7 +88,7 @@ class LDAModel(myGeneric_Model):
         """
         return len(self.getK())
 
-    def getNumTopics(self: T) -> int:
+    def get_num_topics(self: T) -> int:
         """Returns and computes Number of topics
 
         Returns:
@@ -104,7 +104,7 @@ class LDAModel(myGeneric_Model):
         """
         return self.processingModel.get_topics().tolist()
 
-    def getTopics(self: T) -> Any:
+    def get_topics(self: T) -> Any:
         """Returns and computes K (Topics in a dict)
 
         Returns:
@@ -189,7 +189,7 @@ class LDAModel(myGeneric_Model):
         self.processingModel.load(path)
 
 
-class LDAInputModel(GenericInputModel):
+class LDAInputModel(generic_input_model):
     """Input for a generic model"""
 
     # just docs (M) are mandatory, others can be computed
@@ -200,7 +200,7 @@ class LDAInputModel(GenericInputModel):
     numOfDocs: Optional[int]  # num of documents, aka m
 
 
-class LDAOutputModel(GenericOutputModel):
+class LDAOutputModel(generic_output_model):
     """Output for a generic model"""
 
     # wordID:float -> str: value

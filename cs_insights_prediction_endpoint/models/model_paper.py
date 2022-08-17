@@ -14,7 +14,7 @@ from cs_insights_prediction_endpoint.enums.enum_paper import (
 )
 
 
-class PaperModel(BaseModel):
+class paper_model(BaseModel):
     """The model for a paper. Should be identical to the NLP-Land-backend.
 
     Args:
@@ -23,34 +23,34 @@ class PaperModel(BaseModel):
 
     id: str = Field(...)
     title: str = Field(...)
-    abstractText: str = Field(...)
-    abstractExtractor: ExtractionMethod = Field(...)
-    typeOfPaper: TypeOfPaper = Field(...)
-    shortOrLong: ShortLong = Field(...)
+    abstract_text: str = Field(...)
+    abstract_extractor: ExtractionMethod = Field(...)
+    type_of_paper: TypeOfPaper = Field(...)
+    short_long: ShortLong = Field(...)
 
-    atMainConference: bool = Field(...)
-    isSharedTask: bool = Field(...)
-    isStudentPaper: bool = Field(...)
+    at_main_conference: bool = Field(...)
+    is_shared_task: bool = Field(...)
+    is_student_paper: bool = Field(...)
 
     doi: str = Field(...)
-    preProcessingGitHash: str = Field(...)
-    pdfUrl: AnyUrl = Field(...)
-    absUrl: AnyUrl = Field(...)
+    pre_processing_git_hash: str = Field(...)
+    pdf_url: AnyUrl = Field(...)
+    abs_url: AnyUrl = Field(...)
 
-    datePublished: str = Field(...)
-    citationInfoTimestamp: str = Field(...)
-    citedBy: List[str] = Field(...)
+    date_published: str = Field(...)
+    citation_info_timestamp: str = Field(...)
+    cited_by: List[str] = Field(...)
 
     authors: List[str] = Field(...)
-    firstAuthor: str = Field(...)
+    first_author: str = Field(...)
     venues: List[str] = Field(...)
 
-    createdBy: str = Field(...)
-    createdAt: str = Field(...)
-    dblpId: str = Field(...)
+    created_by: str = Field(...)
+    created_at: str = Field(...)
+    dblp_id: str = Field(...)
 
     class Config:
-        """Configuration for the PaperModel."""
+        """Configuration for the paper_model."""
 
         use_enum_values = True
         allow_population_by_field_name = True
@@ -78,18 +78,18 @@ class PaperModel(BaseModel):
                     " limited training data."
                 ),
                 "abstractExtractor": "grobid",
-                "typeOfPaper": "conference",
-                "shortOrLong": "long",
-                "atMainConference": True,
-                "isSharedTask": False,
-                "isStudentPaper": False,
+                "type_of_paper": "conference",
+                "short_or_long": "long",
+                "at_main_conference": True,
+                "is_shared_task": False,
+                "is_student_paper": False,
                 "doi": "10.5555/3295222.3295349",
-                "preProcessingGitHash": "955ef880159216a23b7bfd13d3fb56eaa54b4113",
-                "pdfUrl": "https://dl.acm.org/doi/pdf/10.5555/3295222.3295349",
-                "absUrl": "https://dl.acm.org/doi/10.5555/3295222.3295349",
-                "datePublished": datetime.today().isoformat(),
-                "citationInfoTimestamp": datetime.today().isoformat(),
-                "citedBy": [
+                "pre_processing_git_hash": "955ef880159216a23b7bfd13d3fb56eaa54b4113",
+                "pdf_url": "https://dl.acm.org/doi/pdf/10.5555/3295222.3295349",
+                "abs_url": "https://dl.acm.org/doi/10.5555/3295222.3295349",
+                "date_published": datetime.today().isoformat(),
+                "citation_info_timestamp": datetime.today().isoformat(),
+                "cited_by": [
                     "5136bc054aed4daf9e2a1231",
                     "5136bc054aed4daf9e2a1239",
                     "5136bc054aed4daf9e2a1237",
@@ -104,14 +104,14 @@ class PaperModel(BaseModel):
                     "5126bc054aed4daf9e2a1235",
                     "5126bc054aed4daf9e2a1236",
                 ],
-                "firstAuthor": "5126bc054aed4daf9e2a1232",
+                "first_author": "5126bc054aed4daf9e2a1232",
                 "venues": [
                     "5126bc054aed4daf9e2a1237",
                     "5126bc054aed4daf9e2a1238",
                     "5126bc054aed4daf9e2a1239",
                 ],
-                "createdBy": "507f1f77bcf86cd799439011",
-                "createdAt": datetime.today().isoformat(),
-                "dblpId": "whatever/id/it/is",
+                "created_by": "507f1f77bcf86cd799439011",
+                "created_at": datetime.today().isoformat(),
+                "dblp_id": "whatever/id/it/is",
             }
         }

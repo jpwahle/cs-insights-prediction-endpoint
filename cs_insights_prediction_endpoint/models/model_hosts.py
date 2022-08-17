@@ -3,10 +3,10 @@ from typing import List, TypeVar
 
 from pydantic import BaseModel, Field
 
-T = TypeVar("T", bound="RemoteHost")
+T = TypeVar("T", bound="remote_host")
 
 
-class RemoteHost(BaseModel):
+class remote_host(BaseModel):
     """The model for a Remote Host
 
     Args:

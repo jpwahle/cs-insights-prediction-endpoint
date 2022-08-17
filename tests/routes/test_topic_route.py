@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from cs_insights_prediction_endpoint import __version__
 from cs_insights_prediction_endpoint.app import app
-from cs_insights_prediction_endpoint.models.model_paper import PaperModel
+from cs_insights_prediction_endpoint.models.model_paper import paper_model
 
 
 @pytest.fixture
@@ -31,23 +31,23 @@ def endpoint() -> str:
 
 
 @pytest.fixture
-def dummy_paper() -> PaperModel:
+def dummy_paper() -> paper_model:
     """Create a dummy paper.
 
     Returns:
         str: The endpoint including current version.
     """
-    example = PaperModel.Config.schema_extra.get("example", {})
-    return PaperModel(**example)
+    example = paper_model.Config.schema_extra.get("example", {})
+    return paper_model(**example)
 
 
-def test_post_topic_for_papers(client: TestClient, endpoint: str, dummy_paper: PaperModel) -> None:
+def test_post_topic_for_papers(client: TestClient, endpoint: str, dummy_paper: paper_model) -> None:
     """Test the backend status.
 
     Args:
         client (TestClient): The current test client.
         endpoint (str): Endpoint prefix.
-        dummy_paper (PaperModel): A dummy paper to test.
+        dummy_paper (paper_model): A dummy paper to test.
     """
     response = client.post(endpoint, json=dummy_paper.dict())
     assert response.status_code == 200

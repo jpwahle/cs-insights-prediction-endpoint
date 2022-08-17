@@ -6,12 +6,12 @@ from fastapi.testclient import TestClient
 
 from cs_insights_prediction_endpoint import __version__
 from cs_insights_prediction_endpoint.app import app
-from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
+from cs_insights_prediction_endpoint.models.generic_model import generic_input_model
 from cs_insights_prediction_endpoint.routes.route_model import (
-    ModelCreationRequest,
-    ModelDeletionRequest,
-    ModelFunctionRequest,
-    ModelUpdateRequest,
+    model_creation_request,
+    model_deletion_request,
+    model_function_request,
+    model_update_request,
 )
 from cs_insights_prediction_endpoint.utils.storage_controller import (
     get_storage_controller,
@@ -40,109 +40,109 @@ def endpoint() -> str:
 
 
 @pytest.fixture
-def modelCreationRequest() -> ModelCreationRequest:
+def model_creation_request() -> model_creation_request:
     """Get a correct model creation request
 
     Returns:
-        ModelCreationRequest: An correct modelcreation request
+        model_creation_request: An correct modelcreation request
     """
-    return ModelCreationRequest(modelType="lda", modelSpecification={"createdBy": "Test"})
+    return model_creation_request(modelType="lda", modelSpecification={"createdBy": "Test"})
 
 
 # TODO-AT change accordingly to changes in route_model.py
 @pytest.fixture
-def modelFunctionRequest() -> ModelFunctionRequest:
+def model_function_request() -> model_function_request:
     """Get a correct model deletion request
 
     Returns:
-        ModelFunctionRequest: An correct modeldeletion request
+        model_function_request: An correct modeldeletion request
     """
-    return ModelFunctionRequest(
-        modelID="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+    return model_function_request(
+        model_id="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
     )
 
 
 # TODO-AT change accordingly to changes in route_model.py
 @pytest.fixture
-def modelDeletionRequest() -> ModelDeletionRequest:
+def model_deletion_request() -> model_deletion_request:
     """Get a correct model deletion request
 
     Returns:
-        ModelDeletionRequest: An correct modeldeletion request
+        model_deletion_request: An correct modeldeletion request
     """
-    return ModelDeletionRequest(
-        modelID="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+    return model_deletion_request(
+        model_id="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
     )
 
 
 # TODO-AT change accordingly to changes in route_model.py
 @pytest.fixture
-def modelUpdateRequest() -> ModelUpdateRequest:
+def model_update_request() -> model_update_request:
     """Get a correct model deletion request
 
     Returns:
-        ModelUpdateRequest: An correct modeldeletion request
+        model_update_request: An correct modeldeletion request
     """
-    return ModelUpdateRequest(
-        modelID="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+    return model_update_request(
+        model_id="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
     )
 
 
 @pytest.fixture
-def failingModelCreationRequest() -> ModelCreationRequest:
+def failingmodel_creation_request() -> model_creation_request:
     """Get a failing model creation request
 
     Returns:
-        ModelCreationRequest: An correct modelcreation request
+        model_creation_request: An correct modelcreation request
     """
-    return ModelCreationRequest(
+    return model_creation_request(
         modelType="Does not exist", modelSpecification={"createdBy": "Test"}
     )
 
 
 @pytest.fixture
-def modelFunctionCallRequest() -> GenericInputModel:
+def modelFunctionCallRequest() -> generic_input_model:
     """Get a correct GenericInput model used for testing the function call endpoint
 
     Returns:
-        GenericInputModel: A GenericModelInput with a function call and empty data
+        generic_input_model: A GenericModelInput with a function call and empty data
     """
-    return GenericInputModel(functionCall="getTopics", inputData={})
+    return generic_input_model(functionCall="getTopics", inputData={})
 
 
 @pytest.fixture
-def modelFailingFunctionCallRequest() -> GenericInputModel:
+def modelFailingFunctionCallRequest() -> generic_input_model:
     """Get an incorrect GenericInput model used for testing the function call endpoint
 
     Returns:
-        GenericInputModel: A GenericModelInput with a function call and empty data
+        generic_input_model: A GenericModelInput with a function call and empty data
     """
-    return GenericInputModel(functionCall="NonExistent", inputData={})
+    return generic_input_model(functionCall="NonExistent", inputData={})
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_create(
-    client: Generator, endpoint: str, modelCreationRequest: ModelCreationRequest
+    client: Generator, endpoint: str, model_creation_request: model_creation_request
 ) -> None:
     """Test for successfull model creation
 
     Arguments:
         client (TestClient): The current test client
         endpoint (str): Endpoint to query
-        modelCreationRequest (ModelCreationRequest): A correct ModelCreationRequest
+        model_creation_request (model_creation_request): A correct model_creation_request
     """
     before_response_json = client.get(endpoint).json()
-    response = client.post(endpoint, json=modelCreationRequest.dict())
+    response = client.post(endpoint, json=model_creation_request.dict())
     assert response.status_code == 201
-    createdModelID = response.json()["modelID"]
+    createdmodel_id = response.json()["model_id"]
     assert "location" in response.headers
-    assert response.headers["location"] == endpoint + createdModelID
+    assert response.headers["location"] == endpoint + createdmodel_id
     response2 = client.get(endpoint)
     assert response2.status_code == 200
     response2_json = response2.json()
     assert "models" in response2_json
     assert "models" in before_response_json
-    # assert response2_json["models"] == before_response_json["models"] + [createdModelID]
+    # assert response2_json["models"] == before_response_json["models"] + [createdmodel_id]
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
@@ -155,13 +155,13 @@ def test_model_list_functionCalls(client: Generator, endpoint: str) -> None:
     """
     models = client.get(endpoint).json()
     assert "models" in models
-    testModelID = models["models"][0]
-    response = client.get(endpoint + testModelID)
+    test_model_id = models["models"][0]
+    response = client.get(endpoint + test_model_id)
     assert response.status_code == 200
     response_json = response.json()
     assert "functionCalls" in response_json
     assert len(response_json["functionCalls"]) == len(
-        get_storage_controller().getModel(testModelID).functionCalls
+        get_storage_controller().get_model(test_model_id).function_calls
     )
     failing_response = client.get(endpoint + "thisWillNeverEverExist")
     assert failing_response.status_code == 404
@@ -184,94 +184,94 @@ def test_model_list_implemented(client: Generator, endpoint: str) -> None:
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_create_fail(
-    client: Generator, endpoint: str, failingModelCreationRequest: ModelCreationRequest
+    client: Generator, endpoint: str, failingmodel_creation_request: model_creation_request
 ) -> None:
     """Test for failing model creation
 
     Arguments:
         client (TestClient): The current test client
         endpoint (str): Endpoint to query
-        failingModelCreationRequest (ModelCreationRequest): An incorrect ModelCreationRequest
+        failingmodel_creation_request (model_creation_request): An incorrect model_creation_request
     """
-    response = client.post(endpoint, json=failingModelCreationRequest.dict())
+    response = client.post(endpoint, json=failingmodel_creation_request.dict())
     assert response.status_code == 404
 
 
 # TODO
 # def test_model_update(
-#     client: Generator, endpoint: str, modelUpdateRequest: ModelUpdateRequest
+#     client: Generator, endpoint: str, model_update_request: model_update_request
 # ) -> None:
 #     """Test for successfull model update
 #
 #     Arguments:
 #         client (TestClient): The current test client
 #         endpoint (str): Endpoint to query
-#         modelUpdateRequest (ModelUpdateRequest): A correct ModelUpdateRequest
+#         model_update_request (model_update_request): A correct model_update_request
 #     """
-#     response = client.patch(endpoint, json=modelUpdateRequest.dict())
+#     response = client.patch(endpoint, json=model_update_request.dict())
 #     assert response.status_code == 201
-#     updatedModelID = response.json()["modelID"]
-#     assert updatedModelID == modelUpdateRequest.modelID
-#     assert "modelID" in response.headers
+#     updatedmodel_id = response.json()["model_id"]
+#     assert updatedmodel_id == model_update_request.model_id
+#     assert "model_id" in response.headers
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_function(
-    client: Generator, endpoint: str, modelFunctionCallRequest: GenericInputModel
+    client: Generator, endpoint: str, modelFunctionCallRequest: generic_input_model
 ) -> None:
     """Test for successfull model update
 
     Arguments:
         client (TestClient): The current test client
         endpoint (str): Endpoint to query
-        modelFunctionCallRequest (GenericInputModel): A GenericInput model holding the
+        modelFunctionCallRequest (generic_input_model): A GenericInput model holding the
                                                       function call as well as no data
     """
     models = client.get(endpoint).json()
     assert "models" in models
-    testModelID = models["models"][0]
-    mfr = ModelFunctionRequest(modelID=testModelID)
-    response = client.post(endpoint + str(mfr.modelID), json=modelFunctionCallRequest.dict())
+    test_model_id = models["models"][0]
+    mfr = model_function_request(model_id=test_model_id)
+    response = client.post(endpoint + str(mfr.model_id), json=modelFunctionCallRequest.dict())
     assert response.status_code == 200
     response_json = response.json()
     assert "outputData" in response_json and "getTopics" in response_json["outputData"]
 
 
 def test_failing_model_function(
-    client: Generator, endpoint: str, modelFailingFunctionCallRequest: GenericInputModel
+    client: Generator, endpoint: str, modelFailingFunctionCallRequest: generic_input_model
 ) -> None:
     failing_response = client.post(
         endpoint + "nonExistentModel", json=modelFailingFunctionCallRequest.dict()
     )
     models = client.get(endpoint).json()
     assert "models" in models
-    testModelID = models["models"][0]
-    mfr = ModelFunctionRequest(modelID=testModelID)
+    test_model_id = models["models"][0]
+    mfr = model_function_request(model_id=test_model_id)
     assert failing_response.status_code == 404
     failing_response = client.post(
-        endpoint + str(mfr.modelID), json=modelFailingFunctionCallRequest.dict()
+        endpoint + str(mfr.model_id), json=modelFailingFunctionCallRequest.dict()
     )
     assert failing_response.status_code == 404
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_delete(
-    client: Generator, endpoint: str, modelDeletionRequest: ModelDeletionRequest
+    client: Generator, endpoint: str, model_deletion_request: model_deletion_request
 ) -> None:
     """Test for successfull model deletion
 
     Arguments:
         client (TestClient): The current test client
         endpoint (str): Endpoint to query
-        modelDeletionRequest (ModelDeletionRequest): A correct ModelDeletionRequest
+        model_deletion_request (model_deletion_request): A correct model_deletion_request
     """
     models = client.get(endpoint).json()
     assert "models" in models
-    testModelID = models["models"][0]
-    mdr = ModelDeletionRequest(modelID=testModelID)
-    response = client.delete(endpoint + str(mdr.modelID))
+    test_model_id = models["models"][0]
+    mdr = model_deletion_request(model_id=test_model_id)
+    response = client.delete(endpoint + str(mdr.model_id))
     assert response.status_code == 200
-    deletedModelID = response.json()["modelID"]
-    assert deletedModelID == mdr.modelID
+    deletedmodel_id = response.json()["model_id"]
+    assert deletedmodel_id == mdr.model_id
     failing_response = client.delete(endpoint + "thisWillNeverEverExist")
     assert failing_response.status_code == 404

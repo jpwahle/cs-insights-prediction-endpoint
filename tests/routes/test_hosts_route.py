@@ -8,8 +8,10 @@ from fastapi.testclient import TestClient
 
 import cs_insights_prediction_endpoint.app as app
 from cs_insights_prediction_endpoint import __version__
-from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
-from cs_insights_prediction_endpoint.routes.route_hosts import RemoteHostDeleteRequest
+from cs_insights_prediction_endpoint.models.model_hosts import remote_host
+from cs_insights_prediction_endpoint.routes.route_hosts import (
+    remote_host_delete_request,
+)
 from cs_insights_prediction_endpoint.utils.settings import get_settings
 
 
@@ -41,7 +43,7 @@ def endpoint() -> str:
 
 
 @pytest.fixture
-def remote_host_creation_request() -> RemoteHost:
+def remote_host_creation_request() -> remote_host:
     """Get a correct model creation request
 
     Returns:
@@ -53,32 +55,32 @@ def remote_host_creation_request() -> RemoteHost:
         "models": ["test"],
         "created_models": [],
     }
-    return RemoteHost(**dummy_remote_host)
+    return remote_host(**dummy_remote_host)
 
 
 @pytest.fixture
-def remote_host_deletion_request() -> RemoteHostDeleteRequest:
+def remote_host_deletion_request() -> remote_host_delete_request:
     """Get a correct model deletion request
 
     Returns:
         ModelCreationRequest: An correct model deletion request
     """
-    return RemoteHostDeleteRequest(ip="192.168.0.100")
+    return remote_host_delete_request(ip="192.168.0.100")
 
 
 @pytest.fixture
-def failing_remote_host_deletion_request() -> RemoteHostDeleteRequest:
+def failing_remote_host_deletion_request() -> remote_host_delete_request:
     """Get a correct model deletion request
 
     Returns:
         ModelCreationRequest: An correct model deletion request
     """
-    return RemoteHostDeleteRequest(ip="this.is.not.a.vaild.ip.....")
+    return remote_host_delete_request(ip="this.is.not.a.vaild.ip.....")
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_remote_hosts_add(
-    client: TestClient, endpoint: str, remote_host_creation_request: RemoteHost
+    client: TestClient, endpoint: str, remote_host_creation_request: remote_host
 ) -> None:
     remote_host_list = client.get(endpoint).json()
     response = client.post(endpoint, json=remote_host_creation_request.dict())
@@ -88,7 +90,7 @@ def test_remote_hosts_add(
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_remote_hosts_delete(
-    client: TestClient, endpoint: str, remote_host_deletion_request: RemoteHostDeleteRequest
+    client: TestClient, endpoint: str, remote_host_deletion_request: remote_host_delete_request
 ) -> None:
     response = client.delete(endpoint, json=remote_host_deletion_request.dict())
     assert response.status_code == 200
@@ -97,7 +99,9 @@ def test_remote_hosts_delete(
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_remote_hosts_delete_fail(
-    client: TestClient, endpoint: str, failing_remote_host_deletion_request: RemoteHostDeleteRequest
+    client: TestClient,
+    endpoint: str,
+    failing_remote_host_deletion_request: remote_host_delete_request,
 ) -> None:
     response = client.delete(endpoint, json=failing_remote_host_deletion_request.dict())
     assert response.status_code == 404
