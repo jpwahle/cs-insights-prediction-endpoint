@@ -172,7 +172,7 @@ def i_modelDeletionRequest() -> model_deletion_request:
 
 @pytest.fixture
 def model_function_call_request() -> generic_input_model:
-    dummy_input = {"inputData": {}, "functionCall": "test"}
+    dummy_input = {"input_data": {}, "function_call": "test"}
     return generic_input_model(**dummy_input)
 
 

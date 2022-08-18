@@ -137,7 +137,7 @@ def forward_create_model(
         response = build_response(r)
         if r.ok:
             # Append new model to list:
-            model_id = r.json()["modelID"]
+            model_id = r.json()["model_id"]
             rsc.add_model_to_created_model_list(host.split(":")[0], model_id)
             response.headers["location"] = f"/api/v{__version__.split('.')[0]}/models/{model_id}"
         return response

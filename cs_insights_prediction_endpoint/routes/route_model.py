@@ -59,8 +59,8 @@ class model_deletion_response(BaseModel):
 #         please change
 class model_deletion_request(BaseModel):
     """Response model for creating a Model
-    This contains the modelType (e.g., lda) and the model specification
-    which should be parsable to the modelTypes pydentic schema.
+    This contains the model_type (e.g., lda) and the model specification
+    which should be parsable to the model_types pydentic schema.
     """
 
     model_id: str
@@ -71,8 +71,8 @@ class model_deletion_request(BaseModel):
 #         please change
 class model_function_request(BaseModel):
     """Response model for creating a Model
-    This contains the modelType (e.g., lda) and the model specification
-    which should be parsable to the modelTypes pydentic schema.
+    This contains the model_type (e.g., lda) and the model specification
+    which should be parsable to the model_types pydentic schema.
     """
 
     model_id: str
@@ -83,8 +83,8 @@ class model_function_request(BaseModel):
 #         please change
 class model_update_request(BaseModel):
     """Response model for creating a Model
-    This contains the modelType (e.g., lda) and the model specification
-    which should be parsable to the modelTypes pydentic schema.
+    This contains the model_type (e.g., lda) and the model specification
+    which should be parsable to the model_types pydentic schema.
     """
 
     model_id: str
@@ -93,13 +93,13 @@ class model_update_request(BaseModel):
 
 class model_creation_request(BaseModel):
     """Response model for creating a Model
-    This contains the modelType (e.g., lda) and the model specification
-    which should be parsable to the modelTypes pydentic schema.
+    This contains the model_type (e.g., lda) and the model specification
+    which should be parsable to the model_types pydentic schema.
     """
 
     # XXX-TN I puropsefully chose model_specification to be a dict since
     #          using the generic model, would incur the loss of pydantics strengths
-    modelType: str
+    model_type: str
     # XXX-TN For the docker ochestration it will be helpfull to also have an input for
     #        the location of Model initialization (local, local[dockerfile], remote)
     model_specification: dict
@@ -141,7 +141,7 @@ def list_all_function_calls(
 
     # get fun calls
     cMFCalls = current_model.get_function_calls()  # current model functioncalls list
-    return model_specific_function_call_response(functionCalls=cMFCalls)
+    return model_specific_function_call_response(function_calls=cMFCalls)
 
 
 @router.delete(
@@ -230,12 +230,12 @@ def create_model(
     """
     model = None
     for implemented_models in settings.implemented_models:
-        if model_creation_request.modelType in implemented_models:
-            model_specs = implemented_models[model_creation_request.modelType]
+        if model_creation_request.model_type in implemented_models:
+            model_specs = implemented_models[model_creation_request.model_type]
             model_module = import_module(model_specs[0])  # TODO Use proper model
             model_class = model_specs[1]
             model = getattr(model_module, model_class)(
-                type=model_creation_request.modelType,
+                type=model_creation_request.model_type,
                 **(model_creation_request.model_specification),
             )
     if model is None:
@@ -252,7 +252,7 @@ def create_model(
     response_model=generic_output_model,
     status_code=status.HTTP_200_OK,
 )
-def getInformation(
+def get_information(
     current_model_id: str,
     generic_input: generic_input_model,
     sc: storage_controller = Depends(get_storage_controller),
@@ -285,6 +285,6 @@ def run_function(
     if not type(output) is dict:
         # raise HTTPException(status_code=500, detail="Model did not return a valid response")
         output = {req_function: str(output)}  # TODO-TN this is relly hacky
-    out_model_resp = generic_output_model(outputData=output)
+    out_model_resp = generic_output_model(output_data=output)
 
     return out_model_resp

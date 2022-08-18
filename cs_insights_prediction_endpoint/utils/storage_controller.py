@@ -14,7 +14,7 @@ from cs_insights_prediction_endpoint.utils.settings import Settings, get_setting
 T = TypeVar("T", bound="storage_controller")
 
 # Attributes to exclude when saving pydentic models to the database
-exclude_attributes: Any = {"functionCalls": True, "processingModel": True}
+exclude_attributes: Any = {"function_calls": True, "processing_model": True}
 
 
 class storage_controller:
