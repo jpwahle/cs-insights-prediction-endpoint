@@ -10,8 +10,8 @@
 <a href="https://gipplab.github.io/cs-insights-prediction-endpoint/"><img alt="Docs" src="https://img.shields.io/badge/Docs-gh--pages-blue"></a>
 <a href="https://github.com/gipplab/cs-insights-prediction-endpoint/blob/master/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
-<img alt="All-time uptime 100.00%" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgipplab%2Fcs-insights-uptime%2FHEAD%2Fapi%2Fprediction-endpoint%2Fuptime.json">
-<img alt="Response time 773" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgipplab%2Fcs-insights-uptime%2FHEAD%2Fapi%2Fprediction-endpoint%2Fresponse-time.json">
+<a href="https://gipplab.github.io/cs-insights-uptime/"><img alt="All-time uptime 100.00%" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgipplab%2Fcs-insights-uptime%2FHEAD%2Fapi%2Fprediction-endpoint%2Fuptime.json"></a>
+<a href="https://gipplab.github.io/cs-insights-uptime/"><img alt="Response time 773" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgipplab%2Fcs-insights-uptime%2FHEAD%2Fapi%2Fprediction-endpoint%2Fresponse-time.json"></a>
 </p>
 
 ## Installation & Setup
