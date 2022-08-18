@@ -1,7 +1,9 @@
 # cs-insights-prediction-endpoint
 
 <p align="center">
-<a href="https://codecov.io/gh/gipplab/cs-insights-prediction-endpoint"><img src="https://codecov.io/gh/gipplab/cs-insights-prediction-endpoint/branch/main/graph/badge.svg?token=7CL6B5LNKP"/></a>    
+<a href="https://codecov.io/gh/gipplab/cs-insights-prediction-endpoint" > 
+ <img src="https://codecov.io/gh/gipplab/cs-insights-prediction-endpoint/branch/dev/graph/badge.svg?token=KF9ZW8HSJB"/> 
+ </a>
 <a href="https://github.com/gipplab/cs-insights-prediction-endpoint/actions/workflows/release.yml"><img alt="Actions Status" src="https://github.com/gipplab/cs-insights-prediction-endpoint/actions/workflows/release.yml/badge.svg?branch=dev">    
 <a href="https://github.com/gipplab/cs-insights-prediction-endpoint/actions/workflows/main.yml"><img alt="Actions Status" src="https://github.com/gipplab/cs-insights-prediction-endpoint/actions/workflows/main.yml/badge.svg?branch=dev">
 <a href="https://github.com/gipplab/cs-insights-prediction-endpoint/releases"><img alt="Actions Status" src="https://img.shields.io/github/v/release/gipplab/cs-insights-prediction-endpoint"></a>
