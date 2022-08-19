@@ -17,7 +17,6 @@ python-dotenv = "^0.20.0"
 pyLDAvis = "^3.3.1"
 pymongo = "=4.1.1"
 click = "8.0.2"
-mongomock = "^4.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -35,6 +34,8 @@ pre-commit = "^2.15.0"
 mypy = "^0.910"
 requests-mock = "^1.9.3"
 types-requests = "^2.27.7"
+mongomock = "^4.1.2"
+pep8-naming = "^0.13.1"
 
 
 [tool.poe.tasks]
