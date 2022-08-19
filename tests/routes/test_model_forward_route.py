@@ -112,6 +112,59 @@ def mock_get_request(monkeypatch: Any) -> None:
 
 
 @pytest.fixture
+def hosts_endpoint() -> str:
+    """Get the endpoint for tests.
+
+    Returns:
+        str: The endpoint including current version.
+    """
+    return f"/api/v{__version__.split('.')[0]}/hosts/"
+
+
+@pytest.fixture
+def dummy_remote_host() -> RemoteHost:
+    dummy_remote_host = {
+        "ip": "192.168.0.100",
+        "port": "666",
+        "models": ["lda"],
+        "created_models": ["1234"],
+    }
+    return RemoteHost(**dummy_remote_host)
+
+
+@pytest.fixture
+def remote_host_creation(
+    client: TestClient, dummy_remote_host: RemoteHost, hosts_endpoint: str
+) -> None:
+    """Creates a dummy remote Host for further tests"""
+    client.post(hosts_endpoint, json=dummy_remote_host.dict())
+
+
+@pytest.fixture
+def mock_post_request(monkeypatch: Any) -> None:
+    def mock_post(*args, **kwargs):
+        # type: (*str, **int) -> Response
+        response = Response()
+        response.status_code = 200
+        response._content = b"{}"
+        return response
+
+    monkeypatch.setattr(requests, "post", mock_post)
+
+
+@pytest.fixture
+def mock_get_request(monkeypatch: Any) -> None:
+    def mock_get(*args, **kwargs):
+        # type: (*str, **int) -> Response
+        response = Response()
+        response.status_code = 200
+        response._content = b'{"models": []"}'
+        return response
+
+    monkeypatch.setattr(requests, "get", mock_get)
+
+
+@pytest.fixture
 def mock_creation(monkeypatch: Any) -> None:
     def mock_post(*args, **kwargs):
         # type: (*str, **int) -> Response
@@ -218,6 +271,7 @@ def test_function_call_model_forward(
     model_function_call_request: GenericInputModel,
     mock_post_request: Any,
 ) -> None:
+
     response = client.post(endpoint + "1234", json=model_function_call_request.dict())
     assert response.status_code == 200
 

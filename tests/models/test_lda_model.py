@@ -1,4 +1,4 @@
-# """Test the lda model."""
+"""Test the lda model."""
 from datetime import datetime
 
 import pytest
