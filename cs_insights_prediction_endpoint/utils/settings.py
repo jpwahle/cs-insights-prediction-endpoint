@@ -18,13 +18,12 @@ class Settings(BaseSettings):
     auth_backend_login_route: str = "/auth/login/service"
     jwt_sign_alg: str = "HS256"
     jwt_token_expiration_minutes: int = 30
-
-    jwt_secret: SecretStr = SecretStr("super_secret")
+    jwt_secret: SecretStr = SecretStr("super_secret_secret")
     mongo_user: SecretStr = SecretStr("admin")
-    mongo_password: SecretStr = SecretStr("admin_password")
+    mongo_password: SecretStr = SecretStr("admin_user")
     mongo_db: str = "nlpland"
     mongo_host: str = "127.0.0.1"
-    auth_backend_url: str = "http://127.0.0.1"
+    auth_backend_url: str = "http://127.0.0.1/api/{version}"
 
     class Config:
         """Configuration for settings"""
