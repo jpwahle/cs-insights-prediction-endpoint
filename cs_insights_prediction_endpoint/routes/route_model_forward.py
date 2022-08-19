@@ -6,23 +6,23 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel
 
 from cs_insights_prediction_endpoint import __version__
-from cs_insights_prediction_endpoint.models.generic_model import generic_input_model
+from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
 from cs_insights_prediction_endpoint.utils.remote_storage_controller import (
+    RemoteStorageController,
     get_remote_storage_controller,
-    remote_storage_controller,
 )
 
 # from cs_insights_prediction_endpoint.models.lda_model import LDAModel
 from cs_insights_prediction_endpoint.utils.settings import Settings, get_settings
 from cs_insights_prediction_endpoint.utils.storage_controller import (
+    StorageController,
     get_storage_controller,
-    storage_controller,
 )
 
 router: APIRouter = APIRouter()
 
 
-class storage_controller_list_reponse(BaseModel):
+class StorageControllerListReponse(BaseModel):
     """Response model for both
         - GET /
         - GET /implemented
@@ -32,10 +32,10 @@ class storage_controller_list_reponse(BaseModel):
     models: List[str]
 
 
-class model_creation_request(BaseModel):
+class ModelCreationRequest(BaseModel):
     """Response model for creating a Model
-    This contains the model_type (e.g., lda) and the model specification
-    which should be parsable to the model_types pydentic schema.
+    This contains the modelType (e.g., lda) and the model specification
+    which should be parsable to the modelTypes pydentic schema.
     """
 
     model_type: str
@@ -45,15 +45,15 @@ class model_creation_request(BaseModel):
 @router.get(
     "/implemented",
     response_description="Lists all currently available(implemented) models",
-    response_model=storage_controller_list_reponse,
+    response_model=StorageControllerListReponse,
     status_code=status.HTTP_200_OK,
 )
 def forward_list_all_implemented_models(
     settings: Settings = Depends(get_settings),
-    rsc: remote_storage_controller = Depends(get_remote_storage_controller),
-) -> storage_controller_list_reponse:
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
+) -> StorageControllerListReponse:
     """Endpoint for getting a list of all implemented models"""
-    return storage_controller_list_reponse(models=rsc.get_all_models())
+    return StorageControllerListReponse(models=rsc.get_all_models())
 
 
 @router.get(
@@ -65,7 +65,7 @@ def forward_list_all_implemented_models(
 def forward_list_all_function_calls(
     request: Request,
     current_model_id: str,
-    rsc: remote_storage_controller = Depends(get_remote_storage_controller),
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> Response:
     """Endpoint for getting a list of all implemented function calls"""
     host = get_host(current_model_id, rsc)
@@ -79,10 +79,10 @@ def forward_list_all_function_calls(
     # response_model=ModelDeletionResponse,
     status_code=status.HTTP_200_OK,
 )
-def forward_deleteModel(
+def forward_delete_model(
     request: Request,
     current_model_id: str,
-    rsc: remote_storage_controller = Depends(get_remote_storage_controller),
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> Response:
     """Endpoint for deleting a model"""
     host = get_host(current_model_id, rsc)
@@ -95,17 +95,17 @@ def forward_deleteModel(
 @router.get(
     "/",
     response_description="Lists all currently created models",
-    # response_model=storage_controller_list_reponse,
+    # response_model=StorageControllerListReponse,
     status_code=status.HTTP_200_OK,
 )
 def forward_list_all_created_models(
     settings: Settings = Depends(get_settings),
-    sc: storage_controller = Depends(get_storage_controller),
-    rsc: remote_storage_controller = Depends(get_remote_storage_controller),
-) -> storage_controller_list_reponse:
+    sc: StorageController = Depends(get_storage_controller),
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
+) -> StorageControllerListReponse:
     """Endpoint for getting a list of all created models"""
     all_models = rsc.get_all_created_models()
-    return storage_controller_list_reponse(models=all_models)
+    return StorageControllerListReponse(models=all_models)
 
 
 @router.post(
@@ -116,15 +116,15 @@ def forward_list_all_created_models(
 )
 def forward_create_model(
     request: Request,
-    model_creation_request: model_creation_request,
+    model_creation_request: ModelCreationRequest,
     settings: Settings = Depends(get_settings),
-    rsc: remote_storage_controller = Depends(get_remote_storage_controller),
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> Response:
     """Endpoint for creating a model
 
     Arguments:
-        model_creation_request (model_creation_request): A model_creation_request used for the
-        creation of the actual model
+        modelCreationRequest (ModelCreationRequest): A ModelCreationRequest used for the creation
+                                                 of the actual model
 
     Returns:
         dict: Either an error or the created model id
@@ -146,14 +146,14 @@ def forward_create_model(
 @router.post(
     "/{current_model_id}",
     response_description="Runs a function",
-    # response_model=generic_output_model,
+    # response_model=GenericOutputModel,
     status_code=status.HTTP_200_OK,
 )
-def forward_getInformation(
+def forward_get_information(
     request: Request,
     current_model_id: str,
-    generic_input: generic_input_model,
-    rsc: remote_storage_controller = Depends(get_remote_storage_controller),
+    generic_input: GenericInputModel,
+    rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> Response:
     """Gets info out of post data"""
     host = get_host(current_model_id, rsc)
@@ -161,7 +161,7 @@ def forward_getInformation(
     return build_response(r)
 
 
-def get_host(current_model_id: str, rsc: remote_storage_controller) -> Optional[str]:
+def get_host(current_model_id: str, rsc: RemoteStorageController) -> Optional[str]:
     """Get host containing the model current_model_id"""
     return rsc.find_created_model_in_remote_hosts(current_model_id)
 

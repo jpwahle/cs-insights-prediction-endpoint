@@ -1,4 +1,5 @@
 """This module implements the models for papers."""
+# flake8: noqa N815
 from __future__ import annotations
 
 from datetime import datetime
@@ -14,7 +15,7 @@ from cs_insights_prediction_endpoint.enums.enum_paper import (
 )
 
 
-class paper_model(BaseModel):
+class PaperModel(BaseModel):
     """The model for a paper. Should be identical to the NLP-Land-backend.
 
     Args:

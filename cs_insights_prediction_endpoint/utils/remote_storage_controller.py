@@ -19,7 +19,7 @@ RS = TypeVar("RS", bound="remote_storage_controller")
 class remote_storage_controller:
     """StorageController for stroing remote hosts"""
 
-    remote_host_list: List[remote_host] = []
+    remote_host_list: List[RemoteHost] = []
 
     def __init__(self: RS, settings: Settings) -> None:
         """Constructor for the remote storage controller

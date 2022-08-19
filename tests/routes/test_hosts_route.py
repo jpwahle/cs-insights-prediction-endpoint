@@ -8,10 +8,8 @@ from fastapi.testclient import TestClient
 
 import cs_insights_prediction_endpoint.app as app
 from cs_insights_prediction_endpoint import __version__
-from cs_insights_prediction_endpoint.models.model_hosts import remote_host
-from cs_insights_prediction_endpoint.routes.route_hosts import (
-    remote_host_delete_request,
-)
+from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
+from cs_insights_prediction_endpoint.routes.route_hosts import RemoteHostDeleteRequest
 from cs_insights_prediction_endpoint.utils.settings import get_settings
 
 

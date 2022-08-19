@@ -33,7 +33,6 @@ class storage_controller_list_reponse(BaseModel):
     """
 
     models: List[str]
-    # error: str
 
 
 class model_specific_function_call_response(BaseModel):
@@ -130,7 +129,7 @@ def list_all_implemented_models(
     status_code=status.HTTP_200_OK,
 )
 def list_all_function_calls(
-    current_model_id: str, sc: storage_controller = Depends(get_storage_controller)
+    current_model_id: str, sc: StorageController = Depends(get_storage_controller)
 ) -> BaseModel:
     """Endpoint for getting a list of all implemented function calls"""
     # validate id
@@ -140,8 +139,10 @@ def list_all_function_calls(
         raise HTTPException(status_code=404, detail="Model not found")
 
     # get fun calls
-    cMFCalls = current_model.get_function_calls()  # current model functioncalls list
-    return model_specific_function_call_response(function_calls=cMFCalls)
+    current_model_function_calls = (
+        current_model.get_function_calls()
+    )  # current model functioncalls list
+    return ModelSpecificFunctionCallResponse(function_calls=current_model_function_calls)
 
 
 @router.delete(
@@ -151,8 +152,8 @@ def list_all_function_calls(
     status_code=status.HTTP_200_OK,
 )
 def delete_model(
-    current_model_id: str, sc: storage_controller = Depends(get_storage_controller)
-) -> model_deletion_response:
+    current_model_id: str, sc: StorageController = Depends(get_storage_controller)
+) -> ModelDeletionResponse:
     """Endpoint for deleting a model"""
     # validate id
     current_model = sc.get_model(current_model_id)
@@ -162,34 +163,7 @@ def delete_model(
 
     # delete it
     sc.del_model(current_model.get_id())
-    return model_deletion_response(model_id=current_model_id)
-
-
-# TODO-AT I could not get this to work/don't understand what needs to be done
-#         and i think we should not be calling other endpoint functions
-# XXX-AT Some do it like that, but with "FastAPI" and some use just "get" for it.
-#        Other question would be, if we actually need this, if we have delete and put.
-#        Is there a reason, why we use "API-Router" and not "FastAPI"?
-# @router.patch(
-#     "/{current_model_id}",
-#     response_description="Update the current model",
-#     response_model=model_creation_response,
-#     status_code=status.HTTP_201_CREATED,
-# )
-# def updateModel(
-#     model_creation_request: model_creation_request, response: Response, current_model_id: str
-# ) -> BaseModel:
-#     """Endpoint for updating a model"""
-#     # validate id
-#     current_model = storage.getModel(current_model_id)
-#     if current_model is None:
-#         # error not found
-#         raise HTTPException(status_code=404, detail="Model not implemented")
-#
-#     # create new, delete old
-#     newID = create_model(model_creation_request, response)
-#     storage.delModel(current_model.getId())
-#     return model_creation_response(modelID=newID)
+    return ModelDeletionResponse(model_id=current_model_id)
 
 
 @router.get(
@@ -204,7 +178,7 @@ def list_all_created_models(
 ) -> storage_controller_list_reponse:
     """Endpoint for getting a list of all created models"""
     all_models = list([str(i) for i in sc.get_all_models()])
-    return storage_controller_list_reponse(models=all_models)
+    return StorageControllerListReponse(models=all_models)
 
 
 @router.post(
@@ -214,7 +188,7 @@ def list_all_created_models(
     status_code=status.HTTP_201_CREATED,
 )
 def create_model(
-    model_creation_request: model_creation_request,
+    model_creation_request: ModelCreationRequest,
     response: Response,
     settings: Settings = Depends(get_settings),
     sc: storage_controller = Depends(get_storage_controller),
@@ -235,7 +209,7 @@ def create_model(
             model_module = import_module(model_specs[0])  # TODO Use proper model
             model_class = model_specs[1]
             model = getattr(model_module, model_class)(
-                type=model_creation_request.model_type,
+                type_of_model=model_creation_request.model_type,
                 **(model_creation_request.model_specification),
             )
     if model is None:
@@ -243,7 +217,7 @@ def create_model(
     sc.add_model(model)
     response.headers["location"] = f"/api/v{__version__.split('.')[0]}/models/{model.id}"
 
-    return model_creation_response(model_id=model.id)
+    return ModelCreationResponse(model_id=model.id)
 
 
 @router.post(
@@ -254,15 +228,15 @@ def create_model(
 )
 def get_information(
     current_model_id: str,
-    generic_input: generic_input_model,
-    sc: storage_controller = Depends(get_storage_controller),
+    generic_input: GenericInputModel,
+    sc: StorageController = Depends(get_storage_controller),
 ) -> BaseModel:
     """Gets info out of post data"""
     return run_function(current_model_id, generic_input.function_call, generic_input.input_data, sc)
 
 
 def run_function(
-    current_model_id: str, req_function: str, data_input: Dict[Any, Any], sc: storage_controller
+    current_model_id: str, req_function: str, data_input: Dict[Any, Any], sc: StorageController
 ) -> BaseModel:
     """Runs a given function of a given model"""
     # Validate id
@@ -274,17 +248,17 @@ def run_function(
     # Check if the function is actually availabe in the requested model
     # Return an HTTPException if not; Execute the function and return Dict otherwise
     try:
-        my_fun = getattr(current_model, req_function)
+        my_fn = getattr(current_model, req_function)
     except AttributeError:
         raise HTTPException(status_code=404, detail="Function not implemented")
 
     # Run function and parse output dict into actual response model
-    output = my_fun(**data_input)
+    output = my_fn(**data_input)
     # XXX-TN we have to ensure that we return a dict on a function call
     #        i dont know if the following is the best way to achive this
     if not type(output) is dict:
         # raise HTTPException(status_code=500, detail="Model did not return a valid response")
         output = {req_function: str(output)}  # TODO-TN this is relly hacky
-    out_model_resp = generic_output_model(output_data=output)
+    out_model_response = GenericOutputModel(output_data=output)
 
-    return out_model_resp
+    return out_model_response

@@ -1,13 +1,15 @@
 """Model used for defining a user; Should be equivilent to the
-definition in the NLP-Land-Backend
+definition in the cs-insights-backend
 """
 from typing import Optional
 
 from pydantic import BaseModel, Field
 
+# flake8: noqa N815
 
-class user_model(BaseModel):
-    """The model for a user. Should be identical to the NLP-Land-backend
+
+class UserModel(BaseModel):
+    """The model for a user. Should be identical to the cs-insights-backend
 
     Arguments:
         BaseModel(Any): Base class of FastAPI modesl.

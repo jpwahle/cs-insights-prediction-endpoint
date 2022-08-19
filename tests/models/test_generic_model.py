@@ -19,7 +19,7 @@ def dummy_generic_model() -> generic_model:
         "description": "This is a test",
         "creation_parameters": {},
         "function_calls": {},
-        "type": "test",
+        "type_of_model": "test",
     }
     dummy = generic_model(**dummy_values)
     return dummy

@@ -26,7 +26,7 @@ async def login(user: user_login_model, settings: Settings = Depends(get_setting
         settings (Settings): Settings object; Populatet from .env file
 
     Returns:
-        token_model: a JWT given a valid user from the NLP-Land-Backend
+        TokenModel: a JWT given a valid user from the cs-insights-backend
     """
     auth_user = authenticate_user(user, settings)
     if not auth_user:
@@ -52,9 +52,9 @@ async def refresh(
         settings (Settings): Settings object; Populatet from .env file
 
     Returns:
-        TokenModel: a JWT given a valid user from the NLP-Land-Backend
+        TokenModel: a JWT given a valid user from the cs-insights-backend
     """
     time_delta = settings.jwt_token_expiration_minutes
     token_expiration = timedelta(minutes=time_delta)
-    token = create_token(token_data(**user.dict()), settings, token_expiration)
-    return token_model(access_token=token, token_type="bearer")
+    token = create_token(TokenData(**user.dict()), settings, token_expiration)
+    return TokenModel(access_token=token, token_type="bearer")

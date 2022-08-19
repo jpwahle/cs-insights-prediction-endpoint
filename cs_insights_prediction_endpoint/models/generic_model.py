@@ -1,4 +1,4 @@
-"""This module implements the generic-model"""
+"""This modulew implements the generic-model"""
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional, TypeVar
@@ -19,14 +19,12 @@ class generic_model(BaseModel):
     # XXX-TN We should a GenericCreationParameters, same as GenericInputModel
     save_directory: str = "./saved_models"
     creation_parameters: Optional[dict] = {}
-    type: str = Field(...)
-
+    type_of_model: str = Field(...)
     function_calls: dict = Field(...)
-
     processing_model: Any
 
     def __init__(self: T, **data: Any) -> None:
-        """Constructor for generic_model"""
+        """Constructor for GenericModel"""
         if "created_at" not in data:
             data["created_at"] = datetime.timestamp(datetime.now())
         if "id" not in data:
@@ -66,21 +64,21 @@ class generic_model(BaseModel):
         """
         return list(self.function_calls.keys())
 
-    def train(self: T, inputObject: dict) -> None:
+    def train(self: T, input_object: dict) -> None:
         """Train the model with data from inputObject"""
         raise NotImplementedError("generic_model.train has to be implemented by the subclass")
 
-    def predict(self: T, inputObject: dict) -> list:
+    def predict(self: T, input_object: dict) -> list:
         """Predict something with data from inputObject"""
         raise NotImplementedError("generic_model.predict has to be implemented by the subclass")
 
     def save(self: T, path: str) -> None:
         """Function to save the state of the model"""
-        raise NotImplementedError("generic_model.save has to be implemented by the subclass")
+        raise NotImplementedError("GenericModel.save has to be implemented by the subclass")
 
     def load(self: T, path: str) -> None:
         """Function to load the state of the model"""
-        raise NotImplementedError("generic_model.load has to be implemented by the subclass")
+        raise NotImplementedError("GenericModel.load has to be implemented by the subclass")
 
 
 class generic_input_model(BaseModel):

@@ -1,5 +1,5 @@
 """Model used for defining a user; Should be equivilent to the
-definition in the NLP-Land-Backend
+definition in the cs-insights-backend
 """
 from pydantic import BaseModel, Field
 

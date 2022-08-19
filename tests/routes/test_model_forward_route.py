@@ -9,8 +9,8 @@ from requests.models import Response
 
 import cs_insights_prediction_endpoint.app as app
 from cs_insights_prediction_endpoint import __version__
-from cs_insights_prediction_endpoint.models.generic_model import generic_input_model
-from cs_insights_prediction_endpoint.models.model_hosts import remote_host
+from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
+from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
 from cs_insights_prediction_endpoint.routes.route_model import (
     model_creation_request,
     model_deletion_request,
@@ -69,19 +69,19 @@ def hosts_endpoint() -> str:
 
 
 @pytest.fixture
-def dummy_remote_host() -> remote_host:
+def dummy_remote_host() -> RemoteHost:
     dummy_remote_host = {
         "ip": "192.168.0.100",
         "port": "666",
         "models": ["lda"],
         "created_models": ["1234"],
     }
-    return remote_host(**dummy_remote_host)
+    return RemoteHost(**dummy_remote_host)
 
 
 @pytest.fixture
 def remote_host_creation(
-    client: TestClient, dummy_remote_host: remote_host, hosts_endpoint: str
+    client: TestClient, dummy_remote_host: RemoteHost, hosts_endpoint: str
 ) -> None:
     """Creates a dummy remote Host for further tests"""
     client.post(hosts_endpoint, json=dummy_remote_host.dict())
@@ -124,56 +124,56 @@ def mock_creation(monkeypatch: Any) -> None:
 
 
 @pytest.fixture
-def failing_model_creation_request() -> model_creation_request:
+def failing_model_creation_request() -> ModelCreationRequest:
     """Get a correct model creation request
 
     Returns:
         model_creation_request: An correct modelcreation request
     """
-    return model_creation_request(
+    return ModelCreationRequest(
         model_type="non Existent", model_specification={"created_by": "Test"}
     )
 
 
 @pytest.fixture
-def i_model_creation_request() -> model_creation_request:
+def model_creation_request() -> ModelCreationRequest:
     """Get a correct model creation request
 
     Returns:
-        model_creation_request: An correct modelcreation request
+        ModelCreationRequest: An correct modelcreation request
     """
-    return model_creation_request(model_type="lda", model_specification={"created_by": "Test"})
+    return ModelCreationRequest(model_type="lda", model_specification={"created_by": "Test"})
 
 
 @pytest.fixture
-def i_model_function_request() -> model_function_request:
+def model_function_request() -> ModelFunctionRequest:
     """Get a correct model deletion request
 
     Returns:
         model_function_request: An correct modeldeletion request
     """
-    return model_function_request(
+    return ModelFunctionRequest(
         model_id="1234", model_type="lda", model_specification={"created_by": "Test"}
     )
 
 
 # TODO-AT change accordingly to changes in route_model.py
 @pytest.fixture
-def i_modelDeletionRequest() -> model_deletion_request:
+def model_deletion_request() -> ModelDeletionRequest:
     """Get a correct model deletion request
 
     Returns:
         model_deletion_request: An correct modeldeletion request
     """
-    return model_deletion_request(
+    return ModelDeletionRequest(
         model_id="1234", model_type="lda", model_specification={"created_by": "Test"}
     )
 
 
 @pytest.fixture
-def model_function_call_request() -> generic_input_model:
+def model_function_call_request() -> GenericInputModel:
     dummy_input = {"input_data": {}, "function_call": "test"}
-    return generic_input_model(**dummy_input)
+    return GenericInputModel(**dummy_input)
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
@@ -182,7 +182,7 @@ def test_all_gets_forward(
     endpoint: str,
     mock_get_request: Any,
     remote_host_creation: Any,
-    dummy_remote_host: remote_host,
+    dummy_remote_host: RemoteHost,
 ) -> None:
     response = client.get(endpoint)
     assert response.status_code == 200
@@ -201,11 +201,11 @@ def test_all_gets_forward(
 def test_add_model_forward(
     client: TestClient,
     endpoint: str,
-    i_model_creation_request: model_creation_request,
-    failing_model_creation_request: model_creation_request,
+    model_creation_request: ModelCreationRequest,
+    failing_model_creation_request: ModelCreationRequest,
     mock_creation: Any,
 ) -> None:
-    response = client.post(endpoint, json=i_model_creation_request.dict())
+    response = client.post(endpoint, json=model_creation_request.dict())
     assert response.status_code == 201
     response = client.post(endpoint, json=failing_model_creation_request.dict())
     assert response.status_code == 404
@@ -215,7 +215,7 @@ def test_add_model_forward(
 def test_function_call_model_forward(
     client: TestClient,
     endpoint: str,
-    model_function_call_request: generic_input_model,
+    model_function_call_request: GenericInputModel,
     mock_post_request: Any,
 ) -> None:
     response = client.post(endpoint + "1234", json=model_function_call_request.dict())

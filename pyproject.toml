@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "cs-insights-prediction-endpoint"
 version = "v0.22.0"
-description = "This repository implements the processing of machine-learning methods for NLP-Land-backend."
+description = "This repository implements the processing of machine-learning methods for cs-insights-backend."
 authors = ["Jan Philip Wahle <wahle@uni-wuppertal.de>", "Terry Ruas <ruas@uni-wuppertal.de>", "Alexander von Tottleben <alexander@vontottleben.de>", ]
 
 [tool.poetry.dependencies]
@@ -17,6 +17,7 @@ python-dotenv = "^0.20.0"
 pyLDAvis = "^3.3.1"
 pymongo = "=4.1.1"
 click = "8.0.2"
+mongomock = "^4.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

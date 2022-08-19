@@ -13,20 +13,20 @@ from gensim.parsing.preprocessing import (  # type: ignore
 )
 from gensim.test.utils import common_corpus  # type: ignore
 
-from cs_insights_prediction_endpoint.models.generic_model import generic_input_model
 from cs_insights_prediction_endpoint.models.generic_model import (
-    generic_model as my_generic_model,
+    GenericInputModel,
+    GenericModel,
+    GenericOutputModel,
 )
-from cs_insights_prediction_endpoint.models.generic_model import generic_output_model
 
-T = TypeVar("T", bound="LDAModel")
+T = TypeVar("T", bound="LdaModelWrapper")
 
 
-class LDAModel(my_generic_model):
+class LdaModelWrapper(GenericModel):
     """Implementation of the LDA (Latent Dirichlet Allocation Model)"""
 
     def __init__(self: T, **data: Any) -> None:
-        """Create LDAModel"""
+        """Create LdaModelWrapper"""
         if "name" not in data:
             data["name"] = "Unnamed-LDA-" + str(hash(datetime.timestamp(datetime.now())))
         # XXX-TN We should consider adding "description" as a class config example
@@ -41,11 +41,11 @@ class LDAModel(my_generic_model):
             "beta": self.beta,
             "phi": self.phi,
             "theta": self.theta,
-            "getk": self.getk,
-            "get_num_topics": self.get_num_topics,
-            "getK": self.getK,
-            "get_topics": self.get_topics,
-            "getLDAvis": self.getLDAvis,
+            "getk": self.get_k,
+            "getNumTopics": self.get_num_topics,
+            "getK": self.get_topics_in_dict,
+            "getTopics": self.get_topics,
+            "getLDAvis": self.get_lda_vis,
             "train": self.train,
             "predict": self.predict,
         }
@@ -80,13 +80,13 @@ class LDAModel(my_generic_model):
         probability = 0.223
         return probability
 
-    def getk(self: T) -> int:
+    def get_k(self: T) -> int:
         """Returns and computes k (Number of topics)
 
         Returns:
             Any: number of topics
         """
-        return len(self.getK())
+        return len(self.get_topics_in_dict())
 
     def get_num_topics(self: T) -> int:
         """Returns and computes Number of topics
@@ -94,9 +94,9 @@ class LDAModel(my_generic_model):
         Returns:
             Any: number of topics
         """
-        return self.getk()
+        return self.get_k()
 
-    def getK(self: T) -> Any:
+    def get_topics_in_dict(self: T) -> Any:
         """Returns and computes K (Topics in a dict)
 
         Returns:
@@ -110,9 +110,9 @@ class LDAModel(my_generic_model):
         Returns:
             Any: A dictionary containing the topics
         """
-        return self.getK()
+        return self.get_topics_in_dict()
 
-    def getLDAvis(
+    def get_lda_vis(
         self: T,
         data: List[Dict[str, str]],
         num_topics: int = 10,
@@ -153,12 +153,12 @@ class LDAModel(my_generic_model):
         return json.loads(vis.to_json())
 
     def train(self: T, input_object: dict) -> None:
-        """Trains the LDAModel given a input_object.
+        """Trains the LDAModel given a inputObject.
         The input object should at least contain some paper ids,
         which will be requested from the backend
 
         Arguments:
-            input_object (dict): An input_object where
+            input_object (dict): An inputObject where
             at least one key should contain data to process
         """
         # XXX-TN For now we will use corpus as input, which will be a proccessed bag of words.
@@ -169,7 +169,7 @@ class LDAModel(my_generic_model):
         """Given some input_object the LDAModel will classfiy the input data
         according to the data it was trained on
         Arguments:
-            input_object (dict): An input_object where
+            input_object (dict): An inputObject where
             at least one key should contain data to process
 
         Returns:
@@ -189,21 +189,17 @@ class LDAModel(my_generic_model):
         self.processing_model.load(path)
 
 
-class LDAInputModel(generic_input_model):
+class LdaInputModel(GenericInputModel):
     """Input for a generic model"""
 
-    # just docs (M) are mandatory, others can be computed
-    num_of_topics: Optional[int]  # aka k, default = 100
-    topics: Optional[dict]  # aka K
-    num_of_vocs: Optional[int]  # num of words in vocabulary, aka v
-    vocabulary: set  # words in vocabulary, aka V #do as set?
-    num_of_docs: Optional[int]  # num of documents, aka m
+    number_of_topics: Optional[int]
+    topics: Optional[dict]
+    num_of_vocs: Optional[int]
+    vocabulary: set
+    num_of_docs: Optional[int]
 
 
-class LDAOutputModel(generic_output_model):
+class LdaOutputModel(GenericOutputModel):
     """Output for a generic model"""
-
-    # wordID:float -> str: value
-    # Ex.          -> attention: 0.4325
 
     topic_frequency: List[Tuple[str, float]]
