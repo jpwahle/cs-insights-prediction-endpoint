@@ -26,9 +26,9 @@ def encode_token(data: dict, settings: Settings) -> str:
     Returns:
         str: a valid JWT token
     """
-    SECRET = settings.jwt_secret.get_secret_value()
-    ALG = settings.jwt_sign_alg
-    return str(jwt.encode(data, SECRET, ALG))
+    secret = settings.jwt_secret.get_secret_value()
+    sign_alg = settings.jwt_sign_alg
+    return str(jwt.encode(data, secret, sign_alg))
 
 
 def decode_token(token: str, settings: Settings) -> TokenData:
@@ -42,9 +42,9 @@ def decode_token(token: str, settings: Settings) -> TokenData:
     Returns:
         TokenData: a TokenData model representing the decoded JWT token
     """
-    SECRET = settings.jwt_secret.get_secret_value()
-    ALG = settings.jwt_sign_alg
-    return TokenData(**jwt.decode(token, SECRET, [ALG]))
+    secret = settings.jwt_secret.get_secret_value()
+    sign_alg = settings.jwt_sign_alg
+    return TokenData(**jwt.decode(token, secret, [sign_alg]))
 
 
 def create_token(user: UserModel, settings: Settings, expires_delta: timedelta = None) -> str:

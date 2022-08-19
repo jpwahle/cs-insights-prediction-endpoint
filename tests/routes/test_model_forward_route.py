@@ -52,7 +52,7 @@ def mock_deletion(monkeypatch: Any) -> None:
         # type: (*str, **int) -> Response
         response = Response()
         response.status_code = 200
-        response._content = b'{"modelID": "1234"}'
+        response._content = b'{"model_id": "1234"}'
         return response
 
     monkeypatch.setattr(requests, "delete", mock_post)
@@ -117,60 +117,62 @@ def mock_creation(monkeypatch: Any) -> None:
         # type: (*str, **int) -> Response
         response = Response()
         response.status_code = 201
-        response._content = b'{"modelID": "1234"}'
+        response._content = b'{"model_id": "1234"}'
         return response
 
     monkeypatch.setattr(requests, "post", mock_post)
 
 
 @pytest.fixture
-def failingModelCreationRequest() -> ModelCreationRequest:
+def failing_model_creation_request() -> ModelCreationRequest:
     """Get a correct model creation request
 
     Returns:
         ModelCreationRequest: An correct modelcreation request
     """
-    return ModelCreationRequest(modelType="non Existent", modelSpecification={"createdBy": "Test"})
+    return ModelCreationRequest(
+        model_type="non Existent", model_specification={"created_by": "Test"}
+    )
 
 
 @pytest.fixture
-def modelCreationRequest() -> ModelCreationRequest:
+def model_creation_request() -> ModelCreationRequest:
     """Get a correct model creation request
 
     Returns:
         ModelCreationRequest: An correct modelcreation request
     """
-    return ModelCreationRequest(modelType="lda", modelSpecification={"createdBy": "Test"})
+    return ModelCreationRequest(model_type="lda", model_specification={"created_by": "Test"})
 
 
 @pytest.fixture
-def modelFunctionRequest() -> ModelFunctionRequest:
+def model_function_request() -> ModelFunctionRequest:
     """Get a correct model deletion request
 
     Returns:
         ModelFunctionRequest: An correct modeldeletion request
     """
     return ModelFunctionRequest(
-        modelID="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+        model_id="1234", model_type="lda", model_specification={"created_by": "Test"}
     )
 
 
 # TODO-AT change accordingly to changes in route_model.py
 @pytest.fixture
-def modelDeletionRequest() -> ModelDeletionRequest:
+def model_deletion_request() -> ModelDeletionRequest:
     """Get a correct model deletion request
 
     Returns:
         ModelDeletionRequest: An correct modeldeletion request
     """
     return ModelDeletionRequest(
-        modelID="1234", modelType="lda", modelSpecification={"createdBy": "Test"}
+        model_id="1234", model_type="lda", model_specification={"created_by": "Test"}
     )
 
 
 @pytest.fixture
 def model_function_call_request() -> GenericInputModel:
-    dummy_input = {"inputData": {}, "functionCall": "test"}
+    dummy_input = {"input_data": {}, "function_call": "test"}
     return GenericInputModel(**dummy_input)
 
 
@@ -199,13 +201,13 @@ def test_all_gets_forward(
 def test_add_model_forward(
     client: TestClient,
     endpoint: str,
-    modelCreationRequest: ModelCreationRequest,
-    failingModelCreationRequest: ModelCreationRequest,
+    model_creation_request: ModelCreationRequest,
+    failing_model_creation_request: ModelCreationRequest,
     mock_creation: Any,
 ) -> None:
-    response = client.post(endpoint, json=modelCreationRequest.dict())
+    response = client.post(endpoint, json=model_creation_request.dict())
     assert response.status_code == 201
-    response = client.post(endpoint, json=failingModelCreationRequest.dict())
+    response = client.post(endpoint, json=failing_model_creation_request.dict())
     assert response.status_code == 404
 
 
@@ -225,5 +227,5 @@ def test_delete_model_forward(client: TestClient, endpoint: str, mock_deletion: 
     response = client.delete(endpoint + "1234")
     assert response.status_code == 200
     response_json = response.json()
-    assert "modelID" in response_json
-    assert response_json["modelID"] == "1234"
+    assert "model_id" in response_json
+    assert response_json["model_id"] == "1234"

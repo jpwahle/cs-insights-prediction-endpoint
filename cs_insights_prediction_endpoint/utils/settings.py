@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     auth_backend_version: str = "v0"
     implemented_models: list = [
-        {"lda": ["cs_insights_prediction_endpoint.models.lda_model", "LDAModel"]}
+        {"lda": ["cs_insights_prediction_endpoint.models.lda_model", "LdaModelWrapper"]}
     ]
     node_type: str = "SECONDARY"
     remote_host_db_name: str = "remote_hosts"
@@ -19,12 +19,12 @@ class Settings(BaseSettings):
     jwt_sign_alg: str = "HS256"
     jwt_token_expiration_minutes: int = 30
 
-    jwt_secret: SecretStr
-    mongo_user: SecretStr
-    mongo_password: SecretStr
-    mongo_db: str
-    mongo_host: str
-    auth_backend_url: str
+    jwt_secret: SecretStr = SecretStr("super_secret_secret")
+    mongo_user: SecretStr = SecretStr("admin")
+    mongo_password: SecretStr = SecretStr("admin_user")
+    mongo_db: str = "nlpland"
+    mongo_host: str = "127.0.0.1"
+    auth_backend_url: str = "http://127.0.0.1/api/{version}"
 
     class Config:
         """Configuration for settings"""

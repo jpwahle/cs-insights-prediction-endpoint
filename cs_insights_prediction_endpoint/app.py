@@ -4,16 +4,16 @@ from fastapi import FastAPI
 import cs_insights_prediction_endpoint
 
 # from cs_insights_prediction_endpoint.middleware.forward_middleware import ForwardMiddleware
-from cs_insights_prediction_endpoint.routes.route_auth import router as AuthRouter
+from cs_insights_prediction_endpoint.routes.route_auth import router as auth_router
 from cs_insights_prediction_endpoint.routes.route_hosts import (
-    router as RemoteHostRouter,
+    router as remote_host_router,
 )
-from cs_insights_prediction_endpoint.routes.route_model import router as ModelRouter
+from cs_insights_prediction_endpoint.routes.route_model import router as model_router
 from cs_insights_prediction_endpoint.routes.route_model_forward import (
-    router as ModelForwardRouter,
+    router as model_forward_router,
 )
-from cs_insights_prediction_endpoint.routes.route_status import router as StatusRouter
-from cs_insights_prediction_endpoint.routes.route_topic import router as TopicRouter
+from cs_insights_prediction_endpoint.routes.route_status import router as status_router
+from cs_insights_prediction_endpoint.routes.route_topic import router as topic_router
 from cs_insights_prediction_endpoint.utils.settings import get_settings
 from cs_insights_prediction_endpoint.utils.version_getter import get_backend_version
 
@@ -29,39 +29,39 @@ if "{version}" in settings.auth_backend_url:
     get_backend_version()
 
 app.include_router(
-    StatusRouter,
+    status_router,
     tags=["Status"],
     prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/status",
 )
 
 app.include_router(
-    TopicRouter,
+    topic_router,
     tags=["Topics"],
     prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/topics",
 )
 
 if settings.node_type == "MAIN":
     app.include_router(
-        ModelForwardRouter,
+        model_forward_router,
         tags=["ModelForward"],
         prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/models",
     )
 
     app.include_router(
-        RemoteHostRouter,
+        remote_host_router,
         tags=["Hosts"],
         prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/hosts",
     )
 
 else:
     app.include_router(
-        ModelRouter,
+        model_router,
         tags=["Model"],
         prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/models",
     )
 
 app.include_router(
-    AuthRouter,
+    auth_router,
     tags=["Auth"],
     prefix=f"/api/v{cs_insights_prediction_endpoint.__version__.split('.')[0]}/auth",
 )
