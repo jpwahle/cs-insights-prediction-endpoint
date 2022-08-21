@@ -14,7 +14,7 @@ from cs_insights_prediction_endpoint.utils.settings import Settings, get_setting
 T = TypeVar("T", bound="StorageController")
 
 # Attributes to exclude when saving pydentic models to the database
-exclude_attributes: Any = {"functionCalls": True, "processingModel": True}
+exclude_attributes: Any = {"function_calls": True, "processing_model": True}
 
 
 class StorageController:
@@ -39,26 +39,26 @@ class StorageController:
         for db_model in self.model_db.find({}):
             # self.models.append(GenericModel(**model))
             for implemented_models in settings.implemented_models:
-                if db_model["type"] in implemented_models:
-                    model_specs = implemented_models[db_model["type"]]
+                if db_model["type_of_model"] in implemented_models:
+                    model_specs = implemented_models[db_model["type_of_model"]]
                     model_module = import_module(model_specs[0])
                     model_class = model_specs[1]
                     model = getattr(model_module, model_class)(**db_model)
-                    model.load(f"{model.saveDirectory}/{model.id}")
+                    model.load(f"{model.save_directory}/{model.id}")
                     self.models.append(model)
 
-    def getModel(self: T, id: str) -> Optional[GenericModel]:
+    def get_model(self: T, id: str) -> Optional[GenericModel]:
         """Returns the model with id"""
         for model in self.models:
             if model.id == id:
                 return model
         return None
 
-    def getAllModels(self: T) -> List[GenericModel]:
+    def get_all_models(self: T) -> List[GenericModel]:
         """Returns all models"""
         return self.models
 
-    def addModel(self: T, model: GenericModel) -> str:
+    def add_model(self: T, model: GenericModel) -> str:
         """Adds model to models"""
         self.model_db.insert_one(model.dict(exclude=exclude_attributes))
         self.models.append(model)
@@ -66,9 +66,9 @@ class StorageController:
 
     # TODO For consitency maybe return bool or switch
     #      remote_storage_controler function to raise key error
-    def delModel(self: T, id: str) -> None:
+    def del_model(self: T, id: str) -> None:
         """Delete model from storage"""
-        model = self.getModel(id)
+        model = self.get_model(id)
         if model is None:
             raise KeyError("Model not found")
         else:

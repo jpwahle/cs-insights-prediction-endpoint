@@ -9,7 +9,7 @@ from cs_insights_prediction_endpoint.utils.storage_controller import StorageCont
 
 
 @pytest.fixture
-def dummyGenericModel() -> GenericModel:
+def dummy_generic_model() -> GenericModel:
     """Provides a dummy model
 
     Returns:
@@ -17,11 +17,11 @@ def dummyGenericModel() -> GenericModel:
     """
     dummy_values = {
         "name": "Generic",
-        "createdBy": "Alpha Tester",
+        "created_by": "Alpha Tester",
         "description": "This is a test",
-        "creationParameters": {},
-        "functionCalls": {},
-        "type": "lda",
+        "creation_parameters": {},
+        "function_calls": {},
+        "type_of_model": "lda",
     }
     dummy = GenericModel(**dummy_values)
 
@@ -29,7 +29,7 @@ def dummyGenericModel() -> GenericModel:
 
 
 @pytest.fixture
-def dummyStorageController(dummyGenericModel: GenericModel) -> StorageController:
+def dummy_storage_controller(dummy_generic_model: GenericModel) -> StorageController:
     """Provides a dummy storage controller
 
     Returns:
@@ -40,41 +40,41 @@ def dummyStorageController(dummyGenericModel: GenericModel) -> StorageController
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
-def testDeleteModel(dummyGenericModel: GenericModel) -> None:
+def test_delete_model(dummy_generic_model: GenericModel) -> None:
     """Test for deleteing models from the StorageController
 
     Arguments:
-        dummyStorageController (StorageController): A dummy storage_controller
-        dummyGenericModel (GenericModel): A dummy GenericModel
+        dummy_storage_controller (StorageController): A dummy storage_controller
+        dummy_generic_model (GenericModel): A dummy GenericModel
     """
-    dummyStorageController = StorageController(get_settings())
+    dummy_storage_controller = StorageController(get_settings())
     # add
-    dummyStorageController.addModel(dummyGenericModel)
+    dummy_storage_controller.add_model(dummy_generic_model)
     # delete
-    dummyStorageController.delModel(dummyGenericModel.id)
-    assert dummyStorageController.getModel(dummyGenericModel.id) is None
+    dummy_storage_controller.del_model(dummy_generic_model.id)
+    assert dummy_storage_controller.get_model(dummy_generic_model.id) is None
 
     # Try to delete no existent Model
     with pytest.raises(KeyError):
-        dummyStorageController.delModel("kjsdhgf8iuz")
+        dummy_storage_controller.del_model("kjsdhgf8iuz")
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
-def testAddModel(dummyGenericModel: GenericModel) -> None:
+def test_add_model(dummy_generic_model: GenericModel) -> None:
     """Test for adding models to the StorageController
 
     Arguments:
-        dummyStorageController (StorageController): A dummy storage_controller
-        dummyGenericModel (GenericModel): A dummy GenericModel
+        dummy_storage_controller (StorageController): A dummy storage_controller
+        dummy_generic_model (GenericModel): A dummy GenericModel
     """
-    dummyStorageController = StorageController(get_settings())
-    old = dummyStorageController.getAllModels()
-    dummyStorageController.addModel(dummyGenericModel)
+    dummy_storage_controller = StorageController(get_settings())
+    old = dummy_storage_controller.get_all_models()
+    dummy_storage_controller.add_model(dummy_generic_model)
 
-    assert dummyStorageController.getAllModels() == old
-    assert dummyStorageController.getModel(dummyGenericModel.id) == dummyGenericModel
-    restartedStorageController = StorageController(get_settings())
-    assert len(restartedStorageController.getAllModels()) > 0
-    added_model = restartedStorageController.getModel(dummyGenericModel.getId())
+    assert dummy_storage_controller.get_all_models() == old
+    assert dummy_storage_controller.get_model(dummy_generic_model.id) == dummy_generic_model
+    restarted_storage_controller = StorageController(get_settings())
+    assert len(restarted_storage_controller.get_all_models()) > 0
+    added_model = restarted_storage_controller.get_model(dummy_generic_model.get_id())
     assert added_model is not None
-    assert added_model.name == dummyGenericModel.name
+    assert added_model.name == dummy_generic_model.name
