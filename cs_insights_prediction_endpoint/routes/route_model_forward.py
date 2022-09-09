@@ -38,8 +38,8 @@ class ModelCreationRequest(BaseModel):
     which should be parsable to the modelTypes pydentic schema.
     """
 
-    modelType: str
-    modelSpecification: dict
+    model_type: str
+    model_specification: dict
 
 
 @router.get(
@@ -57,38 +57,38 @@ def forward_list_all_implemented_models(
 
 
 @router.get(
-    "/{current_modelID}",
+    "/{current_model_id}",
     response_description="Lists all function calls of the current model",
     # response_model=ModelSpecificFunctionCallResponse,
     status_code=status.HTTP_200_OK,
 )
 def forward_list_all_function_calls(
     request: Request,
-    current_modelID: str,
+    current_model_id: str,
     rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> Response:
     """Endpoint for getting a list of all implemented function calls"""
-    host = get_host(current_modelID, rsc)
+    host = get_host(current_model_id, rsc)
     r = requests.get(f"http://{host}{request.url.path}")
     return build_response(r)
 
 
 @router.delete(
-    "/{current_modelID}",
+    "/{current_model_id}",
     response_description="Delete the current model",
     # response_model=ModelDeletionResponse,
     status_code=status.HTTP_200_OK,
 )
-def forward_deleteModel(
+def forward_delete_model(
     request: Request,
-    current_modelID: str,
+    current_model_id: str,
     rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> Response:
     """Endpoint for deleting a model"""
-    host = get_host(current_modelID, rsc)
+    host = get_host(current_model_id, rsc)
     r = requests.delete(f"http://{host}{request.url.path}")
     if host is not None and r.ok:
-        rsc.remove_model_from_created_model_list(host.split(":")[0], current_modelID)
+        rsc.remove_model_from_created_model_list(host.split(":")[0], current_model_id)
     return build_response(r)
 
 
@@ -116,7 +116,7 @@ def forward_list_all_created_models(
 )
 def forward_create_model(
     request: Request,
-    modelCreationRequest: ModelCreationRequest,
+    model_creation_request: ModelCreationRequest,
     settings: Settings = Depends(get_settings),
     rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> Response:
@@ -129,41 +129,41 @@ def forward_create_model(
     Returns:
         dict: Either an error or the created model id
     """
-    host = rsc.find_model_in_remote_hosts(modelCreationRequest.modelType)
+    host = rsc.find_model_in_remote_hosts(model_creation_request.model_type)
     if host is None:
         raise HTTPException(status_code=404, detail="No hosts contain the specified model")
     else:
-        r = requests.post(f"http://{host}{request.url.path}", json=modelCreationRequest.dict())
+        r = requests.post(f"http://{host}{request.url.path}", json=model_creation_request.dict())
         response = build_response(r)
         if r.ok:
             # Append new model to list:
-            model_id = r.json()["modelID"]
+            model_id = r.json()["model_id"]
             rsc.add_model_to_created_model_list(host.split(":")[0], model_id)
             response.headers["location"] = f"/api/v{__version__.split('.')[0]}/models/{model_id}"
         return response
 
 
 @router.post(
-    "/{current_modelID}",
+    "/{current_model_id}",
     response_description="Runs a function",
     # response_model=GenericOutputModel,
     status_code=status.HTTP_200_OK,
 )
-def forward_getInformation(
+def forward_get_information(
     request: Request,
-    current_modelID: str,
-    genericInput: GenericInputModel,
+    current_model_id: str,
+    generic_input: GenericInputModel,
     rsc: RemoteStorageController = Depends(get_remote_storage_controller),
 ) -> Response:
     """Gets info out of post data"""
-    host = get_host(current_modelID, rsc)
-    r = requests.post(f"http://{host}{request.url.path}", json=genericInput.dict())
+    host = get_host(current_model_id, rsc)
+    r = requests.post(f"http://{host}{request.url.path}", json=generic_input.dict())
     return build_response(r)
 
 
-def get_host(current_modelID: str, rsc: RemoteStorageController) -> Optional[str]:
-    """Get host containing the model current_modelID"""
-    return rsc.find_created_model_in_remote_hosts(current_modelID)
+def get_host(current_model_id: str, rsc: RemoteStorageController) -> Optional[str]:
+    """Get host containing the model current_model_id"""
+    return rsc.find_created_model_in_remote_hosts(current_model_id)
 
 
 def build_response(r: requests.Response) -> Response:
