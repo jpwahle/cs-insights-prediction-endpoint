@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     auth_backend_version: str = "v0"
     implemented_models: list = [
-        {"lda": ["cs_insights_prediction_endpoint.models.lda_model", "LDAModel"]}
+        {"lda": ["cs_insights_prediction_endpoint.models.lda_model", "LdaModelWrapper"]}
     ]
     node_type: str = "SECONDARY"
     remote_host_db_name: str = "remote_hosts"

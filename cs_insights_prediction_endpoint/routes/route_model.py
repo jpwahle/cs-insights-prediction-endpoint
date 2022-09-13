@@ -33,25 +33,24 @@ class StorageControllerListReponse(BaseModel):
     """
 
     models: List[str]
-    # error: str
 
 
 class ModelSpecificFunctionCallResponse(BaseModel):
     """Response model for model specific function calls"""
 
-    functionCalls: List[str]
+    function_calls: List[str]
 
 
 class ModelCreationResponse(BaseModel):
     """Response Model for the successfull creation of a model"""
 
-    modelID: str
+    model_id: str
 
 
 class ModelDeletionResponse(BaseModel):
     """Response Model for the successfull deletion of a model"""
 
-    modelID: str
+    model_id: str
 
 
 # TODO-AT TN: I just copied the ModelCreationRequest,
@@ -63,7 +62,7 @@ class ModelDeletionRequest(BaseModel):
     which should be parsable to the modelTypes pydentic schema.
     """
 
-    modelID: str
+    model_id: str
 
 
 # TODO-AT TN: I just copied the ModelCreationRequest,
@@ -75,7 +74,7 @@ class ModelFunctionRequest(BaseModel):
     which should be parsable to the modelTypes pydentic schema.
     """
 
-    modelID: str
+    model_id: str
 
 
 # TODO-AT TN: I just copied the ModelCreationRequest,
@@ -87,8 +86,8 @@ class ModelUpdateRequest(BaseModel):
     which should be parsable to the modelTypes pydentic schema.
     """
 
-    modelID: str
-    modelSpecification: dict
+    model_id: str
+    model_specification: dict
 
 
 class ModelCreationRequest(BaseModel):
@@ -99,10 +98,10 @@ class ModelCreationRequest(BaseModel):
 
     # XXX-TN I puropsefully chose modelSpecification to be a dict since
     #          using the generic model, would incur the loss of pydantics strengths
-    modelType: str
+    model_type: str
     # XXX-TN For the docker ochestration it will be helpfull to also have an input for
     #        the location of Model initialization (local, local[dockerfile], remote)
-    modelSpecification: dict
+    model_specification: dict
 
 
 @router.get(
@@ -124,72 +123,47 @@ def list_all_implemented_models(
 
 
 @router.get(
-    "/{current_modelID}",
+    "/{current_model_id}",
     response_description="Lists all function calls of the current model",
     response_model=ModelSpecificFunctionCallResponse,
     status_code=status.HTTP_200_OK,
 )
 def list_all_function_calls(
-    current_modelID: str, sc: StorageController = Depends(get_storage_controller)
+    current_model_id: str, sc: StorageController = Depends(get_storage_controller)
 ) -> BaseModel:
     """Endpoint for getting a list of all implemented function calls"""
     # validate id
-    currentModel = sc.getModel(current_modelID)
-    if currentModel is None:
+    current_model = sc.get_model(current_model_id)
+    if current_model is None:
         # error not found
         raise HTTPException(status_code=404, detail="Model not found")
 
     # get fun calls
-    cMFCalls = currentModel.getFunctionCalls()  # current model functioncalls list
-    return ModelSpecificFunctionCallResponse(functionCalls=cMFCalls)
+    current_model_function_calls = (
+        current_model.get_function_calls()
+    )  # current model functioncalls list
+    return ModelSpecificFunctionCallResponse(function_calls=current_model_function_calls)
 
 
 @router.delete(
-    "/{current_modelID}",
+    "/{current_model_id}",
     response_description="Delete the current model",
     response_model=ModelDeletionResponse,
     status_code=status.HTTP_200_OK,
 )
-def deleteModel(
-    current_modelID: str, sc: StorageController = Depends(get_storage_controller)
+def delete_model(
+    current_model_id: str, sc: StorageController = Depends(get_storage_controller)
 ) -> ModelDeletionResponse:
     """Endpoint for deleting a model"""
     # validate id
-    currentModel = sc.getModel(current_modelID)
-    if currentModel is None:
+    current_model = sc.get_model(current_model_id)
+    if current_model is None:
         # error not found
         raise HTTPException(status_code=404, detail="Model not implemented")
 
     # delete it
-    sc.delModel(currentModel.getId())
-    return ModelDeletionResponse(modelID=current_modelID)
-
-
-# TODO-AT I could not get this to work/don't understand what needs to be done
-#         and i think we should not be calling other endpoint functions
-# XXX-AT Some do it like that, but with "FastAPI" and some use just "get" for it.
-#        Other question would be, if we actually need this, if we have delete and put.
-#        Is there a reason, why we use "API-Router" and not "FastAPI"?
-# @router.patch(
-#     "/{current_modelID}",
-#     response_description="Update the current model",
-#     response_model=ModelCreationResponse,
-#     status_code=status.HTTP_201_CREATED,
-# )
-# def updateModel(
-#     modelCreationRequest: ModelCreationRequest, response: Response, current_modelID: str
-# ) -> BaseModel:
-#     """Endpoint for updating a model"""
-#     # validate id
-#     currentModel = storage.getModel(current_modelID)
-#     if currentModel is None:
-#         # error not found
-#         raise HTTPException(status_code=404, detail="Model not implemented")
-#
-#     # create new, delete old
-#     newID = create_model(modelCreationRequest, response)
-#     storage.delModel(currentModel.getId())
-#     return ModelCreationResponse(modelID=newID)
+    sc.del_model(current_model.get_id())
+    return ModelDeletionResponse(model_id=current_model_id)
 
 
 @router.get(
@@ -203,7 +177,7 @@ def list_all_created_models(
     sc: StorageController = Depends(get_storage_controller),
 ) -> StorageControllerListReponse:
     """Endpoint for getting a list of all created models"""
-    all_models = list([str(i) for i in sc.getAllModels()])
+    all_models = list([str(i) for i in sc.get_all_models()])
     return StorageControllerListReponse(models=all_models)
 
 
@@ -214,7 +188,7 @@ def list_all_created_models(
     status_code=status.HTTP_201_CREATED,
 )
 def create_model(
-    modelCreationRequest: ModelCreationRequest,
+    model_creation_request: ModelCreationRequest,
     response: Response,
     settings: Settings = Depends(get_settings),
     sc: StorageController = Depends(get_storage_controller),
@@ -230,60 +204,61 @@ def create_model(
     """
     model = None
     for implemented_models in settings.implemented_models:
-        if modelCreationRequest.modelType in implemented_models:
-            model_specs = implemented_models[modelCreationRequest.modelType]
+        if model_creation_request.model_type in implemented_models:
+            model_specs = implemented_models[model_creation_request.model_type]
             model_module = import_module(model_specs[0])  # TODO Use proper model
             model_class = model_specs[1]
             model = getattr(model_module, model_class)(
-                type=modelCreationRequest.modelType, **(modelCreationRequest.modelSpecification)
+                type_of_model=model_creation_request.model_type,
+                **(model_creation_request.model_specification),
             )
     if model is None:
         raise HTTPException(status_code=404, detail="Model not implemented")
-    sc.addModel(model)
+    sc.add_model(model)
     response.headers["location"] = f"/api/v{__version__.split('.')[0]}/models/{model.id}"
 
-    return ModelCreationResponse(modelID=model.id)
+    return ModelCreationResponse(model_id=model.id)
 
 
 @router.post(
-    "/{current_modelID}",
+    "/{current_model_id}",
     response_description="Runs a function",
     response_model=GenericOutputModel,
     status_code=status.HTTP_200_OK,
 )
-def getInformation(
-    current_modelID: str,
-    genericInput: GenericInputModel,
+def get_information(
+    current_model_id: str,
+    generic_input: GenericInputModel,
     sc: StorageController = Depends(get_storage_controller),
 ) -> BaseModel:
     """Gets info out of post data"""
-    return run_function(current_modelID, genericInput.functionCall, genericInput.inputData, sc)
+    return run_function(current_model_id, generic_input.function_call, generic_input.input_data, sc)
 
 
 def run_function(
-    current_modelID: str, req_function: str, data_input: Dict[Any, Any], sc: StorageController
+    current_model_id: str, req_function: str, data_input: Dict[Any, Any], sc: StorageController
 ) -> BaseModel:
     """Runs a given function of a given model"""
     # Validate id
-    currentModel = sc.getModel(current_modelID)
-    if currentModel is None:
+    current_model = sc.get_model(current_model_id)
+    if current_model is None:
         # error not found
         raise HTTPException(status_code=404, detail="Model not found")
 
     # Check if the function is actually availabe in the requested model
     # Return an HTTPException if not; Execute the function and return Dict otherwise
     try:
-        myFun = getattr(currentModel, req_function)
+        my_fn = getattr(current_model, req_function)
     except AttributeError:
         raise HTTPException(status_code=404, detail="Function not implemented")
 
     # Run function and parse output dict into actual response model
-    output = myFun(**data_input)
+    output = my_fn(**data_input)
     # XXX-TN we have to ensure that we return a dict on a function call
     #        i dont know if the following is the best way to achive this
     if not type(output) is dict:
         # raise HTTPException(status_code=500, detail="Model did not return a valid response")
         output = {req_function: str(output)}  # TODO-TN this is relly hacky
-    outModelResp = GenericOutputModel(outputData=output)
+    out_model_response = GenericOutputModel(output_data=output)
 
-    return outModelResp
+    return out_model_response

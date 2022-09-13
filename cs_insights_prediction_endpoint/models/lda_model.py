@@ -13,44 +13,44 @@ from gensim.parsing.preprocessing import (  # type: ignore
 )
 from gensim.test.utils import common_corpus  # type: ignore
 
-from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
 from cs_insights_prediction_endpoint.models.generic_model import (
-    GenericModel as myGeneric_Model,
+    GenericInputModel,
+    GenericModel,
+    GenericOutputModel,
 )
-from cs_insights_prediction_endpoint.models.generic_model import GenericOutputModel
 
-T = TypeVar("T", bound="LDAModel")
+T = TypeVar("T", bound="LdaModelWrapper")
 
 
-class LDAModel(myGeneric_Model):
+class LdaModelWrapper(GenericModel):
     """Implementation of the LDA (Latent Dirichlet Allocation Model)"""
 
     def __init__(self: T, **data: Any) -> None:
-        """Create LDAModel"""
+        """Create LdaModelWrapper"""
         if "name" not in data:
             data["name"] = "Unnamed-LDA-" + str(hash(datetime.timestamp(datetime.now())))
         # XXX-TN We should consider adding "description" as a class config example
         if "description" not in data:
             data["description"] = "Latent Dirichlet allocation model"
-        if "creationParameters" in data and data["creationParameters"] != {}:
-            data["processingModel"] = LdaModel(**data["creationParameters"])
+        if "creation_parameters" in data and data["creation_parameters"] != {}:
+            data["processing_model"] = LdaModel(**data["creation_parameters"])
         else:
-            data["processingModel"] = LdaModel(common_corpus, num_topics=10)
-        data["functionCalls"] = {
+            data["processing_model"] = LdaModel(common_corpus, num_topics=10)
+        data["function_calls"] = {
             "alpha": self.alpha,
             "beta": self.beta,
             "phi": self.phi,
             "theta": self.theta,
-            "getk": self.getk,
-            "getNumTopics": self.getNumTopics,
-            "getK": self.getK,
-            "getTopics": self.getTopics,
-            "getLDAvis": self.getLDAvis,
+            "getk": self.get_k,
+            "getNumTopics": self.get_num_topics,
+            "getK": self.get_topics_in_dict,
+            "getTopics": self.get_topics,
+            "getLDAvis": self.get_lda_vis,
             "train": self.train,
             "predict": self.predict,
         }
         super().__init__(**data)
-        self.save(f"{self.saveDirectory}/{self.id}")
+        self.save(f"{self.save_directory}/{self.id}")
 
     def alpha(self: T, document: str) -> dict:
         """Calc alpha and return"""
@@ -80,39 +80,39 @@ class LDAModel(myGeneric_Model):
         probability = 0.223
         return probability
 
-    def getk(self: T) -> int:
+    def get_k(self: T) -> int:
         """Returns and computes k (Number of topics)
 
         Returns:
             Any: number of topics
         """
-        return len(self.getK())
+        return len(self.get_topics_in_dict())
 
-    def getNumTopics(self: T) -> int:
+    def get_num_topics(self: T) -> int:
         """Returns and computes Number of topics
 
         Returns:
             Any: number of topics
         """
-        return self.getk()
+        return self.get_k()
 
-    def getK(self: T) -> Any:
+    def get_topics_in_dict(self: T) -> Any:
         """Returns and computes K (Topics in a dict)
 
         Returns:
             Any: A dictionary containing the topics
         """
-        return self.processingModel.get_topics().tolist()
+        return self.processing_model.get_topics().tolist()
 
-    def getTopics(self: T) -> Any:
+    def get_topics(self: T) -> Any:
         """Returns and computes K (Topics in a dict)
 
         Returns:
             Any: A dictionary containing the topics
         """
-        return self.getK()
+        return self.get_topics_in_dict()
 
-    def getLDAvis(
+    def get_lda_vis(
         self: T,
         data: List[Dict[str, str]],
         num_topics: int = 10,
@@ -142,34 +142,34 @@ class LDAModel(myGeneric_Model):
         dictionary = Dictionary(docs)
         bow_corpus = [dictionary.doc2bow(doc) for doc in docs]
 
-        self.processingModel = LdaModel(
+        self.processing_model = LdaModel(
             bow_corpus, num_topics=num_topics, passes=passes, random_state=random_state
         )
 
-        vis = pyLDAvis.gensim_models.prepare(self.processingModel, bow_corpus, dictionary)
+        vis = pyLDAvis.gensim_models.prepare(self.processing_model, bow_corpus, dictionary)
 
         # print(vis.to_json())
 
         return json.loads(vis.to_json())
 
-    def train(self: T, inputObject: dict) -> None:
+    def train(self: T, input_object: dict) -> None:
         """Trains the LDAModel given a inputObject.
         The input object should at least contain some paper ids,
         which will be requested from the backend
 
         Arguments:
-            inputObject (dict): An inputObject where
+            input_object (dict): An inputObject where
             at least one key should contain data to process
         """
         # XXX-TN For now we will use corpus as input, which will be a proccessed bag of words.
         #        Later on this will be an array of paper ids. Maybe create an Issue?
-        self.processingModel.update(**inputObject)
+        self.processing_model.update(**input_object)
 
-    def predict(self: T, inputObject: dict) -> list:
-        """Given some inputObject the LDAModel will classfiy the input data
+    def predict(self: T, input_object: dict) -> list:
+        """Given some input_object the LDAModel will classfiy the input data
         according to the data it was trained on
         Arguments:
-            inputObject (dict): An inputObject where
+            input_object (dict): An inputObject where
             at least one key should contain data to process
 
         Returns:
@@ -178,32 +178,28 @@ class LDAModel(myGeneric_Model):
         """
         # XXX-TN For now we will use corpus as input, which will be a proccessed bag of words.
         #        Later on this will be an array of paper. ids Maybe create an Issue?
-        return list(self.processingModel.get_document_topics(**inputObject))
+        return list(self.processing_model.get_document_topics(**input_object))
 
     def save(self: T, path: str) -> None:
         """Function for saving a model to a path"""
-        self.processingModel.save(path)
+        self.processing_model.save(path)
 
     def load(self: T, path: str) -> None:
         """Function for loading a model from a path"""
-        self.processingModel.load(path)
+        self.processing_model.load(path)
 
 
-class LDAInputModel(GenericInputModel):
+class LdaInputModel(GenericInputModel):
     """Input for a generic model"""
 
-    # just docs (M) are mandatory, others can be computed
-    numOfTopics: Optional[int]  # aka k, default = 100
-    topics: Optional[dict]  # aka K
-    numOfVocs: Optional[int]  # num of words in vocabulary, aka v
-    vocabulary: set  # words in vocabulary, aka V #do as set?
-    numOfDocs: Optional[int]  # num of documents, aka m
+    number_of_topics: Optional[int]
+    topics: Optional[dict]
+    num_of_vocs: Optional[int]
+    vocabulary: set
+    num_of_docs: Optional[int]
 
 
-class LDAOutputModel(GenericOutputModel):
+class LdaOutputModel(GenericOutputModel):
     """Output for a generic model"""
 
-    # wordID:float -> str: value
-    # Ex.          -> attention: 0.4325
-
-    topicFrequency: List[Tuple[str, float]]
+    topic_frequency: List[Tuple[str, float]]
