@@ -96,8 +96,9 @@ See [here](https://github.com/anothrNick/github-tag-action) for more information
 To build changelogs, each pull-request needs one of the labels "fix", "feature", or "test". See [here](https://github.com/mikepenz/release-changelog-builder-action) for more information.
 
 ## Contributing
-
 Fork the repo, make changes and send a PR. We'll review it together!
+
+Commit messages should follow [Angular's conventions](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular).
 
 ## License
 This project is licensed under the terms of MIT license. For more information, please see the [LICENSE](LICENSE) file.
