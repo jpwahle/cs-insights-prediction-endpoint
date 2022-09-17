@@ -249,9 +249,8 @@ def run_function(
     # Return an HTTPException if not; Execute the function and return Dict otherwise
     try:
         my_fn = current_model.function_calls[req_function]
-    except AttributeError:
+    except KeyError:
         raise HTTPException(status_code=404, detail="Function not implemented")
-    
     # Run function and parse output dict into actual response model
     output = my_fn(**data_input)
     # XXX-TN we have to ensure that we return a dict on a function call

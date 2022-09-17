@@ -146,7 +146,9 @@ class LdaModelWrapper(GenericModel):
             bow_corpus, num_topics=num_topics, passes=passes, random_state=random_state
         )
 
-        vis = pyLDAvis.gensim_models.prepare(self.processing_model, bow_corpus, dictionary, mds='mmds')
+        vis = pyLDAvis.gensim_models.prepare(
+            self.processing_model, bow_corpus, dictionary, mds="mmds"
+        )
 
         return json.loads(vis.to_json())
 
