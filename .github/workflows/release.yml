@@ -97,7 +97,7 @@ jobs:
 
       - name: 📦 Push docker image
         run: |
-          docker push ghcr.io/gipplab/cs-insights-prediction-endpoint:${{steps.tagging.outputs.tag}}
+          docker push ghcr.io/gipplab/cs-insights-prediction-endpoint:${{ steps.tag_version.outputs.new_tag }}
           docker push ghcr.io/gipplab/cs-insights-prediction-endpoint:latest
 
   Coverage:
