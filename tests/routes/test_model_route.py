@@ -107,7 +107,7 @@ def model_function_call_request() -> GenericInputModel:
     Returns:
         GenericInputModel: A GenericModelInput with a function call and empty data
     """
-    return GenericInputModel(function_call="get_topics", input_data={})
+    return GenericInputModel(function_call="getTopics", input_data={})
 
 
 @pytest.fixture
@@ -216,7 +216,7 @@ def test_model_function(
     response = client.post(endpoint + str(mfr.model_id), json=model_function_call_request.dict())
     assert response.status_code == 200
     response_json = response.json()
-    assert "output_data" in response_json and "get_topics" in response_json["output_data"]
+    assert "output_data" in response_json and "getTopics" in response_json["output_data"]
 
 
 def test_failing_model_function(
