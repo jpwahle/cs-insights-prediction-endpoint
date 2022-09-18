@@ -57,21 +57,7 @@ poetry run pre-commit run --all-files
 
 ### Replicate CI locally
 
-If you want to replicate the exact same pipeline that runs on GitHub actions, install act from [here](https://github.com/nektos/act).
-
-To run the full check suite, execute:
-
-```sh
-act -j Test
-```
-
-To run a single check from the pipeline such as linting, execute:
-
-```sh
-act -j Lint
-```
-
-You can also run each of the commands checked in `.github/workflows/main.yml`:
+You can run each of the commands checked in `.github/workflows/main.yml`:
 
 ```console
 poetry run poe lint
