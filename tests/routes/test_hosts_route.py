@@ -2,7 +2,7 @@
 from importlib import reload
 from typing import Any, Generator
 
-import mongomock
+import mongomock  # type: ignore
 import pytest
 from fastapi.testclient import TestClient
 

@@ -14,7 +14,7 @@ jobs:
       - name: ✅ Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.10
 
       - name: 💿 Install poetry
         uses: snok/install-poetry@v1
@@ -24,7 +24,7 @@ jobs:
 
       - name: 📦 Install dependencies
         run: poetry install
-        
+
       - name: 🧪 Run tests
         run: |
           poetry run poe alltest

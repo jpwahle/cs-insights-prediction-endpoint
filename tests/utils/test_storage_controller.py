@@ -1,6 +1,6 @@
 """Test the storage controller."""
 
-import mongomock
+import mongomock  # type: ignore
 import pytest
 
 from cs_insights_prediction_endpoint.models.generic_model import GenericModel

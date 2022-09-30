@@ -1,6 +1,4 @@
-from typing import Generator
-
-import mongomock
+import mongomock  # type: ignore
 import pytest
 from fastapi.testclient import TestClient
 
@@ -19,14 +17,13 @@ from cs_insights_prediction_endpoint.utils.storage_controller import (
 
 
 @pytest.fixture()
-def client() -> Generator:
+def client() -> TestClient:
     """Get the test client for tests and reuse it.
 
     Yields:
         Generator: Yields the test client as input argument for each test.
     """
-    with TestClient(app) as tc:
-        yield tc
+    return TestClient(app)
 
 
 @pytest.fixture
@@ -122,7 +119,7 @@ def model_failing_function_call_request() -> GenericInputModel:
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_create(
-    client: Generator, endpoint: str, model_creation_request: ModelCreationRequest
+    client: TestClient, endpoint: str, model_creation_request: ModelCreationRequest
 ) -> None:
     """Test for successfull model creation
 
@@ -146,7 +143,7 @@ def test_model_create(
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
-def test_model_list_function_calls(client: Generator, endpoint: str) -> None:
+def test_model_list_function_calls(client: TestClient, endpoint: str) -> None:
     """Test for listing all functions of a model
 
     Arguments:
@@ -160,15 +157,16 @@ def test_model_list_function_calls(client: Generator, endpoint: str) -> None:
     assert response.status_code == 200
     response_json = response.json()
     assert "function_calls" in response_json
-    assert len(response_json["function_calls"]) == len(
-        get_storage_controller().get_model(test_model_id).function_calls
-    )
+    model = get_storage_controller().get_model(test_model_id)
+    assert model is not None
+    assert model.function_calls
+    assert len(response_json["function_calls"]) == len(model.function_calls)
     failing_response = client.get(endpoint + "thisWillNeverEverExist")
     assert failing_response.status_code == 404
 
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
-def test_model_list_implemented(client: Generator, endpoint: str) -> None:
+def test_model_list_implemented(client: TestClient, endpoint: str) -> None:
     """Test for listing implemented models
 
     Arguments:
@@ -184,7 +182,7 @@ def test_model_list_implemented(client: Generator, endpoint: str) -> None:
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_create_fail(
-    client: Generator, endpoint: str, failing_model_creation_request: ModelCreationRequest
+    client: TestClient, endpoint: str, failing_model_creation_request: ModelCreationRequest
 ) -> None:
     """Test for failing model creation
 
@@ -199,7 +197,7 @@ def test_model_create_fail(
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_function(
-    client: Generator, endpoint: str, model_function_call_request: GenericInputModel
+    client: TestClient, endpoint: str, model_function_call_request: GenericInputModel
 ) -> None:
     """Test for successfull model update
 
@@ -220,7 +218,7 @@ def test_model_function(
 
 
 def test_failing_model_function(
-    client: Generator, endpoint: str, model_failing_function_call_request: GenericInputModel
+    client: TestClient, endpoint: str, model_failing_function_call_request: GenericInputModel
 ) -> None:
     failing_response = client.post(
         endpoint + "nonExistentModel", json=model_failing_function_call_request.dict()
@@ -238,7 +236,7 @@ def test_failing_model_function(
 
 @mongomock.patch(servers=(("127.0.0.1", 27017),))
 def test_model_delete(
-    client: Generator, endpoint: str, model_deletion_request: ModelDeletionRequest
+    client: TestClient, endpoint: str, model_deletion_request: ModelDeletionRequest
 ) -> None:
     """Test for successfull model deletion
 

@@ -83,4 +83,3 @@ class StorageController:
 def get_storage_controller() -> StorageController:
     """Return the storage_controller instance"""
     return StorageController(get_settings())
-    # return storage_controller
