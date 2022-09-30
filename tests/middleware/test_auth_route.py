@@ -2,7 +2,7 @@
 import os
 import time
 from datetime import datetime
-from typing import Any, Generator
+from typing import Any
 
 import pytest
 import requests
