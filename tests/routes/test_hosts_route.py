@@ -1,5 +1,4 @@
 """Test the hosts route."""
-from importlib import reload
 from typing import Any
 
 import mongomock  # type: ignore
@@ -25,8 +24,7 @@ def client(patch_settings: Any) -> TestClient:
     Yields:
         TestClient: Yields the test client as input argument for each test.
     """
-    reload_app = reload(app)
-    return TestClient(reload_app.app)
+    return TestClient(app)
 
 
 @pytest.fixture
