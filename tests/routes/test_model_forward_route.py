@@ -6,8 +6,8 @@ import requests
 from fastapi.testclient import TestClient
 from requests.models import Response
 
-import cs_insights_prediction_endpoint.app as app
 from cs_insights_prediction_endpoint import __version__
+from cs_insights_prediction_endpoint.app import app
 from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
 from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
 from cs_insights_prediction_endpoint.routes.route_model import (

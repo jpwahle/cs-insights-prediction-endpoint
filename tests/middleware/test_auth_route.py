@@ -20,14 +20,13 @@ from cs_insights_prediction_endpoint.utils.settings import get_settings
 
 
 @pytest.fixture
-def client() -> Generator:
+def client() -> TestClient:
     """Get the test client for tests and reuse it.
 
     Yields:
         TestClient: Yields the test client as input argument for each test.
     """
-    with TestClient(app) as tc:
-        yield tc
+    return TestClient(app)
 
 
 @pytest.fixture
