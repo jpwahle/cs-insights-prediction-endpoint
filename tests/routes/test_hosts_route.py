@@ -1,6 +1,6 @@
 """Test the hosts route."""
 from importlib import reload
-from typing import Any, Generator
+from typing import Any
 
 import mongomock  # type: ignore
 import pytest
@@ -23,7 +23,7 @@ def client(patch_settings: Any) -> TestClient:
     """Get the test client for tests and reuse it.
 
     Yields:
-        Generator: Yields the test client as input argument for each test.
+        TestClient: Yields the test client as input argument for each test.
     """
     reload_app = reload(app)
     return TestClient(reload_app.app)

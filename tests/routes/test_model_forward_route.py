@@ -1,5 +1,5 @@
 from importlib import reload
-from typing import Any, Generator
+from typing import Any
 
 import mongomock  # type: ignore
 import pytest
@@ -25,11 +25,11 @@ def patch_settings(monkeypatch: Any) -> None:
 
 
 @pytest.fixture
-def client(patch_settings: Any) -> Generator:
+def client(patch_settings: Any) -> TestClient:
     """Get the test client for tests and reuse it.
 
     Yields:
-        Generator: Yields the test client as input argument for each test.
+        TestClient: Yields the test client as input argument for each test.
     """
     reload_app = reload(app)
     return TestClient(reload_app.app)

@@ -21,7 +21,7 @@ def client() -> TestClient:
     """Get the test client for tests and reuse it.
 
     Yields:
-        Generator: Yields the test client as input argument for each test.
+        TestClient: Yields the test client as input argument for each test.
     """
     return TestClient(app)
 

@@ -13,7 +13,7 @@ def client() -> Generator:
     """Get the test client for tests and reuse it.
 
     Yields:
-        Generator: Yields the test client as input argument for each test.
+        TestClient: Yields the test client as input argument for each test.
     """
     with TestClient(app) as tc:
         yield tc
