@@ -32,8 +32,7 @@ def client(patch_settings: Any) -> Generator:
         Generator: Yields the test client as input argument for each test.
     """
     reload_app = reload(app)
-    with TestClient(reload_app.app) as tc:
-        yield tc
+    return TestClient(reload_app.app)
 
 
 @pytest.fixture
