@@ -1,5 +1,10 @@
-# cs-insights-prediction-endpoint
-
+<br/>
+<div align="center">
+  <a href="https://cs-insights.uni-goettingen.de">
+    <img src="logo.png" alt="Logo" width="600">
+  </a>
+</div>
+<br/>
 <p align="center">
 <a href="https://codecov.io/gh/gipplab/cs-insights-prediction-endpoint" > 
  <img src="https://codecov.io/gh/gipplab/cs-insights-prediction-endpoint/branch/dev/graph/badge.svg?token=KF9ZW8HSJB"/> 
@@ -13,6 +18,7 @@
 <a href="https://gipplab.github.io/cs-insights-uptime/"><img alt="All-time uptime 100.00%" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgipplab%2Fcs-insights-uptime%2FHEAD%2Fapi%2Fprediction-endpoint%2Fuptime.json"></a>
 <a href="https://gipplab.github.io/cs-insights-uptime/"><img alt="Response time 773" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgipplab%2Fcs-insights-uptime%2FHEAD%2Fapi%2Fprediction-endpoint%2Fresponse-time.json"></a>
 </p>
+<br/>
 
 > Starting from version 1.0.0, this project is using [semantic versioning](https://semver.org/). For more infos about the features supported, see the [releases](https://github.com/gipplab/cs-insights-prediction-endpoint/releases).
 
@@ -51,21 +57,7 @@ poetry run pre-commit run --all-files
 
 ### Replicate CI locally
 
-If you want to replicate the exact same pipeline that runs on GitHub actions, install act from [here](https://github.com/nektos/act).
-
-To run the full check suite, execute:
-
-```sh
-act -j Test
-```
-
-To run a single check from the pipeline such as linting, execute:
-
-```sh
-act -j Lint
-```
-
-You can also run each of the commands checked in `.github/workflows/main.yml`:
+You can run each of the commands checked in `.github/workflows/main.yml`:
 
 ```console
 poetry run poe lint
@@ -90,8 +82,9 @@ See [here](https://github.com/anothrNick/github-tag-action) for more information
 To build changelogs, each pull-request needs one of the labels "fix", "feature", or "test". See [here](https://github.com/mikepenz/release-changelog-builder-action) for more information.
 
 ## Contributing
-
 Fork the repo, make changes and send a PR. We'll review it together!
+
+Commit messages should follow [Angular's conventions](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular).
 
 ## License
 This project is licensed under the terms of MIT license. For more information, please see the [LICENSE](LICENSE) file.
