@@ -1,6 +1,4 @@
 """Test the status route."""
-from typing import Generator
-
 import pytest
 from fastapi.testclient import TestClient
 
@@ -10,14 +8,14 @@ from cs_insights_prediction_endpoint.models.model_paper import PaperModel
 
 
 @pytest.fixture
-def client() -> Generator:
+def client() -> TestClient:
     """Get the test client for tests and reuse it.
 
     Yields:
-        Generator: Yields the test client as input argument for each test.
+        TestClient: Yields the test client as input argument for each test.
     """
-    with TestClient(app) as tc:
-        yield tc
+    with TestClient(app) as client:
+        return client
 
 
 @pytest.fixture

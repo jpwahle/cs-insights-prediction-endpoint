@@ -35,7 +35,7 @@ class UserModel(BaseModel):
 
         schema_extra = {
             "example": {
-                "email": "admin@nlp.de",
+                "email": "demo@cs-insights.com",
                 "fullname=": "admin",
                 "token": None,
                 "isAdmin": True,

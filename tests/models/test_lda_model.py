@@ -2,8 +2,8 @@
 from datetime import datetime
 
 import pytest
-from gensim.models.ldamodel import LdaModel
-from gensim.test.utils import common_corpus
+from gensim.models.ldamodel import LdaModel  # type: ignore
+from gensim.test.utils import common_corpus  # type: ignore
 
 from cs_insights_prediction_endpoint.models.lda_model import LdaModelWrapper
 

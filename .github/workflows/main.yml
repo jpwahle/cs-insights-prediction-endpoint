@@ -24,7 +24,10 @@ jobs:
 
       - name: 📦 Install dependencies
         run: poetry install
-        
+
       - name: 🧪 Run tests
         run: |
           poetry run poe alltest
+
+      - name: 🐳 Build docker image
+        run: docker build .

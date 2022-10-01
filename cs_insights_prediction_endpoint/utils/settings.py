@@ -1,5 +1,6 @@
 """This module implements the settings as well as the default settings"""
 from functools import lru_cache
+from typing import Optional
 
 from pydantic import BaseSettings, SecretStr
 
@@ -7,7 +8,7 @@ from pydantic import BaseSettings, SecretStr
 class Settings(BaseSettings):
     """Settings class according to pydantic"""
 
-    auth_backend_version: str = "v0"
+    auth_backend_version: Optional[str] = "v0"
     implemented_models: list = [
         {"lda": ["cs_insights_prediction_endpoint.models.lda_model", "LdaModelWrapper"]}
     ]

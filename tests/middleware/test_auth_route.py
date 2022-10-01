@@ -2,7 +2,7 @@
 import os
 import time
 from datetime import datetime
-from typing import Any, Generator
+from typing import Any
 
 import pytest
 import requests
@@ -20,14 +20,14 @@ from cs_insights_prediction_endpoint.utils.settings import get_settings
 
 
 @pytest.fixture
-def client() -> Generator:
+def client() -> TestClient:
     """Get the test client for tests and reuse it.
 
     Yields:
-        Generator: Yields the test client as input argument for each test.
+        TestClient: Yields the test client as input argument for each test.
     """
-    with TestClient(app) as tc:
-        yield tc
+    with TestClient(app) as client:
+        return client
 
 
 @pytest.fixture
@@ -58,6 +58,7 @@ def dummy_login() -> UserLoginModel:
         UserLoginModel: an example UserLoginModel
     """
     example = UserLoginModel.Config.schema_extra.get("example")
+    assert example
     return UserLoginModel(**example)
 
 
@@ -69,6 +70,7 @@ def dummy_user() -> UserModel:
         UserModel: an example UserModel
     """
     example = UserModel.Config.schema_extra.get("example")
+    assert example
     return UserModel(**example)
 
 
@@ -80,6 +82,7 @@ def dummy_token() -> str:
         str: a valid token created from example in UserModel
     """
     example = UserModel.Config.schema_extra.get("example")
+    assert example
     user = TokenData(**example)
     token = create_token(user, get_settings())
     return token
@@ -205,6 +208,8 @@ def test_refresh(client: TestClient, refresh_endpoint: str, dummy_token: str) ->
     refresh_token = TokenModel(**response.json())
     decoded_refresh = decode_token(refresh_token.access_token, get_settings())
     decoded_dummy = decode_token(dummy_token, get_settings())
+    assert decoded_refresh.exp
+    assert decoded_dummy.exp
     assert datetime.fromtimestamp(int(decoded_refresh.exp)) > datetime.fromtimestamp(
         int(decoded_dummy.exp)
     )
