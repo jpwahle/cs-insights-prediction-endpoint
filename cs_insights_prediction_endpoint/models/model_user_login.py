@@ -24,7 +24,7 @@ class UserLoginModel(BaseModel):
 
         schema_extra = {
             "example": {
-                "email": "admin@nlp.de",
+                "email": "demo@cs-insights.com",
                 "password": "12345",
             }
         }

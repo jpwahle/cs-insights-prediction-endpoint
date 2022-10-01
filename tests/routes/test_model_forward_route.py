@@ -1,3 +1,4 @@
+from importlib import reload
 from typing import Any
 
 import mongomock  # type: ignore
@@ -6,8 +7,8 @@ import requests
 from fastapi.testclient import TestClient
 from requests.models import Response
 
+import cs_insights_prediction_endpoint.app as app
 from cs_insights_prediction_endpoint import __version__
-from cs_insights_prediction_endpoint.app import app
 from cs_insights_prediction_endpoint.models.generic_model import GenericInputModel
 from cs_insights_prediction_endpoint.models.model_hosts import RemoteHost
 from cs_insights_prediction_endpoint.routes.route_model import (
@@ -30,7 +31,9 @@ def client(patch_settings: Any) -> TestClient:
     Yields:
         TestClient: Yields the test client as input argument for each test.
     """
-    return TestClient(app)
+    reload_app = reload(app)
+    with TestClient(reload_app.app) as client:  # type: ignore
+        return client
 
 
 @pytest.fixture

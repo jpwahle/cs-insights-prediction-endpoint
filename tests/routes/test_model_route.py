@@ -23,7 +23,8 @@ def client() -> TestClient:
     Yields:
         TestClient: Yields the test client as input argument for each test.
     """
-    return TestClient(app)
+    with TestClient(app) as client:
+        return client
 
 
 @pytest.fixture
